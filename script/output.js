@@ -6,7 +6,13 @@ Please dont steal my code!!!
 
 //meteor sheep loop
 var loop = 0;
-
+var meteorsheep = {
+  sheep,
+  active: false,
+  fire: false,
+  timer: 0,
+  loop: 0
+}
 //Swords
 var snowsword = {
   active: false,
@@ -17,9 +23,12 @@ var arrowsword = {
   active: false,
   timer: 0
 }
-
-var Mnac = false;
+var hypershooter = {
+  active: false,
+  timer: 0
+}
 //Tardis
+var Mnac = false;
 
 var checkTime = 0;
 var confirm = false;
@@ -30,14 +39,8 @@ var dactivate = false;
 var dLayers = [36, 36, 36];
 var save;
 var tmch = false;
-var pig1;
 
-//Pig tower for luck block
-var pig2;
-var pig3;
-var pig4;
-var pig5;
-var pig6;
+
 
 
 
@@ -82,6 +85,8 @@ const items = {
   tnthelmet: 3026,
   instanttnt: 3027,
   sheeptntthrower: 3028,
+  tntshooter: 3035,
+  tardisessence: 3036
 }
 
 //Ist bei 3033
@@ -92,7 +97,8 @@ const blocks = {
   luckyblockblue: 211,
   luckyblockred: 212,
   luckyblockmini: 230,
-  luckyblockhuge: 242
+  luckyblockhuge: 242,
+  chest: 54
 }
 
 var target;
@@ -103,8 +109,6 @@ var sheep;
 var tardisOpt = false;
 var activate = false;
 var acctivate = false;
-var wider = 0;
-var fire = false;
 var tnt;
 var tower = false
 var exp = 0;
@@ -159,11 +163,9 @@ Block.defineBlock(70, " §2lucky block green edition", ["anvil_top_damaged_x", 0
 Block.setDestroyTime(70, 0.01);
 
 
-//Tardis
-Block.defineBlock(28, "Tardis", ["lapis_block", 0], 46, false, 0);
-Block.setDestroyTime(28, 5);
-Block.setShape(28, 0, 0, 0, 1, 2, 1);
-Item.addShapedRecipe(28, 1, 0, [
+//Tardis original id: 28
+ModPE.setItem(items.tardisessence, "tardisessence", 0, "tardis essence", 0);
+Item.addShapedRecipe(items.tardisessence, 1, 0, [
   " a ",
   " a ",
   " b "
@@ -188,16 +190,10 @@ Block.defineBlock(84, "§6Huge lucky Block", ["luckyblockhuge", 0], 46, false, 0
 Block.setDestroyTime(84, 0.01);
 Block.setShape(84, -1, 0, -1, 2, 3, 2);
 
-Block.defineBlock(25, "jumper", [
-  ["cauldron_top", 0],
-  ["command_block", 0],
-  ["cauldron_side", 0],
-  ["cauldron_side", 0],
-  ["cauldron_side", 0],
-  ["cauldron_side", 0]
-], 46, false, 0);
-Item.addCraftRecipe(25, 4, 0, [265, 1, 0]);
-Block.setDestroyTime(25, 0.01);
+//Jumper original id: 25
+ModPE.setItem(items.jumperessence, "jumperessence", 0, "jumper essence");
+Item.addCraftRecipe(items.jumperessence, 4, 0, [265, 1, 0]);
+
 
 Block.defineBlock(55, "lucky block", ["luckyblock", 0], 46, false, 0);
 Item.addCraftRecipe(55, 4, 0, [266, 1, 0]);
@@ -311,11 +307,18 @@ Item.addShapedRecipe(items.snowsword, 1, 0, [
 Item.setHandEquipped(items.snowsword, 1);
 
 Item.setHandEquipped(items.tntpickaxe, 1);
+
+//Hyper tnt pickaxe
 ModPE.setItem(items.hypertntpickaxe, "hypertntpickaxe", 0, "Hyper TNT pickaxe", 1);
+Item.addShapedRecipe(items.hypertntpickaxe, 1, 0, [
+  "aaa",
+  " b ",
+  " b "
+], ["a", 46, 0, "b", 265, 0]);
 Item.setHandEquipped(items.hypertntpickaxe, 1);
+Item.setMaxDamage(items.hypertntpickaxe, 200);
 
 
-Item.setHandEquipped(items.hypertntsword, 1);
 
 
 ModPE.setItem(428, "removealleffects", 0, "medicine");
@@ -335,8 +338,15 @@ Item.setHandEquipped(items.slingshot, 1);
 
 
 //
-ModPE.setItem(items.hypershooter, "hypershooter", 0, "Hyper shoter"); //
-ModPE.setItem(472, "tntshooter", 0, "tnt shooter", 0); //
+ModPE.setItem(items.hypershooter, "hypershooter", 0, "Hyper shoter");
+
+ModPE.setItem(items.tntshooter, "tntshooter", 0, "tnt shooter", 0);
+Item.addShapedRecipe(items.tntshooter, 1, 0, [
+  " a ",
+  "bcb",
+  "bcb"
+], ["a", 46, 0, "b", 265, 0, "c", 331, 0]);
+
 ModPE.setItem(items.sheeptntthrower, "sheeptntthrower", 0, "sheep TNT thrower", 0);
 ModPE.setItem(items.tntrocket, "tntrocket", 0, "TNT rocket");
 Item.addShapedRecipe(items.tntrocket, 1, 0, [
@@ -346,12 +356,22 @@ Item.addShapedRecipe(items.tntrocket, 1, 0, [
 ], ["a", 46, 0, "b", 288, 0]);
 
 ModPE.setItem(items.meteorsheep, "meteorsheep", 0, "Meteor sheep", 0);
+Item.addShapedRecipe(items.meteorsheep, 1, 0, [
+  "wtw",
+  "twt",
+  "wtw"
+], ["w", 35, 0, "t", 46, 0]);
+
 ModPE.setItem(items.flyingtnt, "flyingtnt", 0, "flying TNT", 0);
 
 
 ModPE.setItem(items.instanttnt, "instanttnt", 0, "instant TNT", 0);
+Item.addShapedRecipe(items.instanttnt, 1, 0, [
+  "aaa",
+  "aba",
+  "   "
+], ["a", 46, 0, "b", 265, 0]);
 Item.setMaxDamage(items.instanttnt, 1000);
-
 
 ModPE.setItem(items.tntsword, "tntsword", 0, "TNT sword", 1);
 Item.addShapedRecipe(items.tntsword, 1, 0, [
@@ -361,10 +381,22 @@ Item.addShapedRecipe(items.tntsword, 1, 0, [
 ], ["a", 46, 0, "b", 280, 0]);
 Item.setMaxDamage(items.tntsword, 80);
 
-
+//Hyper Tnt sword
 ModPE.setItem(items.chickentnt, "chickentnt", 0, "chicken TNT", 0);
+
+
 ModPE.setItem(items.hypertntsword, "hypertntsword", 0, "Hyper TNT sword", 1);
-ModPE.setItem(items.pigtnt, "pigtnt", 0, "pig TNT", 0); //ok
+Item.addShapedRecipe(items.hypertntsword, 1, 0, [
+  " a ",
+  " a ",
+  " b "
+], ["a", items.tntsword, 0, "b", 280, 0]);
+Item.setMaxDamage(items.hypertntsword, 200);
+Item.setHandEquipped(items.hypertntsword, 1);
+
+
+ModPE.setItem(items.pigtnt, "pigtnt", 0, "pig TNT", 0);
+
 ModPE.setItem(items.tntpickaxe, "tntpickaxe", 0, "TNT pickaxe", 1);
 Item.setMaxDamage(items.tntpickaxe, 80);
 
@@ -373,60 +405,48 @@ ModPE.setItem(items.explosivegravitygun, "explosivegravitygun", 0, "explosive gr
 
 //Item.setHandEquipped(
 
+
+Item.defineArmor(items.tnthelmet, "tnthelmet", 0, "TNT helmet", "armor/tnt_1.png", 6, 399, ArmorType.helmet);
+Item.addShapedRecipe(items.tnthelmet, 1, 0, [
+  "aaa",
+  "a a",
+  "   "
+], ["a", 46, 0]);
+
+Item.defineArmor(items.tntchestplate, "tntchestplate", 0, "TNT chestplate", "armor/tnt_1.png", 12, 354, ArmorType.chestplate);
+Item.addShapedRecipe(items.tntchestplate, 1, 0, [
+  "a a",
+  "aaa",
+  "aaa"
+], ["a", 46, 0]);
+
+Item.defineArmor(items.tntleggings, "tntleggings", 0, "TNT leggings", "armor/tnt_2.png", 6, 360, ArmorType.leggings);
+Item.addShapedRecipe(items.tntleggings, 1, 0, [
+  "aaa",
+  "a a",
+  "a a"
+], ["a", 46, 0]);
+
 Item.defineArmor(items.tntboots, "tntboots", 0, "TNT boots", "armor/tnt_1.png", 2, 351, ArmorType.boots);
 Item.addShapedRecipe(items.tntboots, 1, 0, [
   "a a",
   "a a",
   "   "
 ], ["a", 46, 0]);
+
 Item.setMaxDamage(items.tntboots, 5000);
 
-Item.defineArmor(items.tntleggings, "tntleggings", 0, "TNT leggings", "armor/tnt_2.png", 6, 360, ArmorType.leggings);
-Item.defineArmor(items.tntchestplate, "tntchestplate", 0, "TNT chestplate", "armor/tnt_1.png", 12, 354, ArmorType.chestplate);
-Item.defineArmor(items.tnthelmet, "tnthelmet", 0, "TNT helmet", "armor/tnt_1.png", 6, 399, ArmorType.helmet);
 Item.defineArmor(items.speedboots, "speedboots", 0, "speed boots", "armor/tnt_1.png", 2, 315, ArmorType.boots);
+
+
 Item.defineArmor(items.jetpack, "jetpack", 0, "jetpack", "armor/tntarmor.png", 2, 353, ArmorType.chestplate);
-Item.defineArmor(items.dragonglider, "dragonglider", 0, "dragon glider", "armor/dragon.png", 2, 351, ArmorType.chestplate);
-
-Item.setMaxDamage(items.hypertntsword, 200);
-Item.setMaxDamage(items.hypertntpickaxe, 200);
-
-
-
-
-
-//Item.addShapedRecipe(
-Item.addShapedRecipe(items.meteorsheep, 1, 0, [
-  "wtw",
-  "twt",
-  "wtw"
-], ["w", 35, 0, "t", 46, 0]);
-Item.addShapedRecipe(items.hypertntsword, 1, 0, [
-  " a ",
-  " a ",
-  " b "
-], ["a", items.tntsword, 0, "b", 280, 0]);
-
-Item.addShapedRecipe(items.tntleggings, 1, 0, [
-  "aaa",
-  "a a",
-  "a a"
-], ["a", 46, 0]);
-Item.addShapedRecipe(items.tntchestplate, 1, 0, [
-  "a a",
-  "aaa",
-  "aaa"
-], ["a", 46, 0]);
-Item.addShapedRecipe(items.tnthelmet, 1, 0, [
-  "aaa",
-  "a a",
-  "   "
-], ["a", 46, 0]);
 Item.addShapedRecipe(items.jetpack, 1, 0, [
   "aba",
   "a a",
   "c c"
 ], ["a", 265, 0, "b", 331, 0, "c", 325, 10]);
+
+Item.defineArmor(items.dragonglider, "dragonglider", 0, "dragon glider", "armor/dragon.png", 2, 351, ArmorType.chestplate);
 Item.addShapedRecipe(items.dragonglider, 1, 0, [
   "aaa",
   "b b",
@@ -438,11 +458,7 @@ Item.addShapedRecipe(items.hypershooter, 1, 0, [
   "bcb",
   "bcb"
 ], ["a", 46, 0, "b", 265, 0, "c", 331, 0]);
-Item.addShapedRecipe(472, 1, 0, [
-  " a ",
-  "bcb",
-  "bcb"
-], ["a", 46, 0, "b", 265, 0, "c", 331, 0]);
+
 Item.addShapedRecipe(items.sheeptntthrower, 1, 0, [
   " a ",
   "bbb",
@@ -459,21 +475,13 @@ Item.addShapedRecipe(items.flyingtnt, 1, 0, [
   " a ",
   " b "
 ], ["a", 46, 0, "b", 288, 0]);
-Item.addShapedRecipe(items.instanttnt, 1, 0, [
-  "aaa",
-  "aba",
-  "   "
-], ["a", 46, 0, "b", 265, 0]);
+
 Item.addShapedRecipe(items.tntpickaxe, 1, 0, [
   "aaa",
   " b ",
   " b "
 ], ["a", 46, 0, "b", 280, 0]);
-Item.addShapedRecipe(items.hypertntpickaxe, 1, 0, [
-  "aaa",
-  " b ",
-  " b "
-], ["a", 46, 0, "b", 265, 0]);
+
 //Item.addShapedRecipe(
 
 
@@ -506,10 +514,10 @@ function newLevel() {
               shootEntity(ggMob, 4, 4, 4);
               isPickingEntity = false;
             }
-            if (Player.getCarriedItem() == items.hypershooter && dauer == false) {
-              dauer = true;
+            if (Player.getCarriedItem() == items.hypershooter && hypershooter.active == false) {
+              hypershooter.active = true;
             }
-            if (Player.getCarriedItem() == 472) {
+            if (Player.getCarriedItem() == items.tntshooter) {
               var ShootDir = lookDir(getYaw(), getPitch());
               arrow = Level.spawnMob(getPlayerX() + (ShootDir.x * 2), getPlayerY() + (ShootDir.y * 2), getPlayerZ() + (ShootDir.z * 2), 65);
               shootEntity(arrow, 4, 4, 4);
@@ -539,7 +547,6 @@ function newLevel() {
 }
 
 function destroyBlock(x, y, z, side) {
-
   var destroyedblock = Level.getTile(x, y, z);
 
   if (destroyBlock == 70) {
@@ -609,16 +616,16 @@ function destroyBlock(x, y, z, side) {
         Level.spawnMob(x - 4, y, z - 4, 32);
         Entity.addEffect(getPlayerEnt(), MobEffect.wither, 30 * 20, 0, false, true);
       } else if (rnd == 2) {
-        pig1 = Level.spawnMob(x, y, z, 12);
-        pig2 = Level.spawnMob(x, y, z, 12);
+        var pig1 = Level.spawnMob(x, y, z, 12);
+        var pig2 = Level.spawnMob(x, y, z, 12);
         rideAnimal(pig2, pig1);
-        pig3 = Level.spawnMob(x, y, z, 12);
+        var pig3 = Level.spawnMob(x, y, z, 12);
         rideAnimal(pig3, pig2);
-        pig4 = Level.spawnMob(x, y, z, 12);
+        var pig4 = Level.spawnMob(x, y, z, 12);
         rideAnimal(pig4, pig3);
-        pig5 = Level.spawnMob(x, y, z, 12);
+        var pig5 = Level.spawnMob(x, y, z, 12);
         rideAnimal(pig5, pig4);
-        pig6 = Level.spawnMob(x, y, z, 12);
+        var pig6 = Level.spawnMob(x, y, z, 12);
         rideAnimal(pig6, pig5);
 
       } else if (rnd == 3) {
@@ -912,11 +919,11 @@ function useItem(x, y, z, itemId, blockId, side) {
     Player.addItemInventory(items.chickentnt, -1);
   }
   if (Player.getCarriedItem() == items.meteorsheep && activate == false) {
-    sheep = Level.spawnMob(x, y + 1, z, 13, "mob/sheep_14.png");
+    meteorsheep.sheep = Level.spawnMob(x, y + 1, z, 13, "mob/sheep_14.png");
     Entity.setNameTag(sheep, "§cBummmmm!");
     Entity.setVelY(sheep, 3);
-    activate = true;
-    fire = true;
+    meteorsheep.active = true;
+    meteorsheep.fire = true;
     Player.addItemInventory(items.meteorsheep, -1);
     Entity.setHealth(sheep, 3);
   }
@@ -942,9 +949,9 @@ function deathHook(murderer, victim) {
   }
   if (victim == sheep) {
     Level.explode(Entity.getX(sheep), Entity.getY(sheep), Entity.getZ(sheep), 40);
-    loop = 0;
-    wider = 0;
-    fire = false;
+    meteorsheep.timer = 0;
+    meteorsheep.loop = 0;
+    meteorsheep.fire = false;
   }
 }
 //function entityRemovedHook(e){
@@ -1074,6 +1081,7 @@ function modTick() {
   if (Player.getArmorSlot(3) == items.tntboots) {
     setTile(Player.getX(), Player.getY() - 2, Player.getZ(), 46);
   }
+
   if (pigtnt.active == true) {
     pigtnt.timer = pigtnt.timer + 1;
   }
@@ -1082,9 +1090,10 @@ function modTick() {
     Entity.setNameTag(schwein, "pig of awesomeness!!");
   }
   if (uhr == 100) {
-    steak = false;
-    uhr = 0;
+    pigtnt.active = false;
+    pigtnt.timer = 0;
   }
+
   if (jump == true) {
     fly++;
   }
@@ -1125,62 +1134,61 @@ function modTick() {
     tower = false;
     exp = 0;
   }
-  if (activate == true) {
-    setTile(Entity.getX(sheep), Entity.getY(sheep), Entity.getZ(sheep), 12);
-    loop++;
-    wider++;
+  if (meteorsheep.active == true) {
+    setTile(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep), 12);
+    meteorsheep.timer++;
+    meteorsheep.loop++;
   }
-  if (loop == 30) {
+  if (meteorsheep.timer == 30) {
     Entity.setVelX(sheep, 2);
-    Level.spawnMob(Entity.getX(sheep), Entity.getY(sheep), Entity.getZ(sheep), 65);
+    Level.spawnMob(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep), 65);
   }
-  if (loop == 35) {
-    Entity,
-    setVelY(sheep, 1);
-    Level.spawnMob(Entity.getX(sheep), Entity.getY(sheep), Entity.getZ(sheep), 65);
+  if (meteorsheep.timer == 35) {
+    Entity.setVelY(sheep, 1);
+    Level.spawnMob(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep), 65);
   }
-  if (loop == 40) {
+  if (meteorsheep.timer == 40) {
     Entity.setVelZ(sheep, 2);
-    Level.spawnMob(Entity.getX(sheep), Entity.getY(sheep), Entity.getZ(sheep), 65);
+    Level.spawnMob(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep), 65);
   }
-  if (loop == 45) {
+  if (meteorsheep.timer == 45) {
     Entity.setVelY(sheep, 1);
-    Level.spawnMob(Entity.getX(sheep), Entity.getY(sheep), Entity.getZ(sheep), 65);
+    Level.spawnMob(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep), 65);
   }
-  if (loop == 50) {
+  if (meteorsheep.timer == 50) {
     Entity.setVelX(sheep, -2);
-    Level.spawnMob(Entity.getX(sheep), Entity.getY(sheep), Entity.getZ(sheep), 65);
+    Level.spawnMob(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep), 65);
   }
-  if (loop == 30) {
+  if (meteorsheep.timer == 30) {
     Entity.setVelY(sheep, 1);
-    Level.spawnMob(Entity.getX(sheep), Entity.getY(sheep), Entity.getZ(sheep), 65);
+    Level.spawnMob(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep), 65);
   }
-  if (loop == 55) {
-    Entity.setVelZ(sheep, -2);
-    Level.spawnMob(Entity.getX(sheep), Entity.getY(sheep), Entity.getZ(sheep), 65);
+  if (meteorsheep.timer == 55) {
+    Entity.setVelZ(meteorsheep.sheep, -2);
+    Level.spawnMob(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep), 65);
   }
-  if (wider == 60) {
-    loop = 0;
+  if (meteorsheep.loop == 60) {
+    meteorsheep.timer = 0;
   }
-  if (wider == 120) {
-    loop = 0;
+  if (meteorsheep.loop == 120) {
+    meteorsheep.timer = 0;
   }
-  if (wider == 130) {
-    Entity.setVelY(sheep, 5);
-    Level.spawnMob(Entity.getX(sheep), Entity.getY(sheep), Entity.getZ(sheep), 65);
+  if (meteorsheep.loop == 130) {
+    Entity.setVelY(meteorsheep.sheep, 5);
+    Level.spawnMob(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep), 65);
   }
-  if (wider == 160) {
-    Level.spawnMob(Entity.getX(sheep), Entity.getY(sheep) - 5, Entity.getZ(sheep), 10);
-    Level.spawnMob(Entity.getX(sheep), Entity.getY(sheep), Entity.getZ(sheep) + 5, 10);
-    Level.spawnMob(Entity.getX(sheep) + 5, Entity.getY(sheep), Entity.getZ(sheep), 10);
-    Level.spawnMob(Entity.getX(sheep) - 5, Entity.getY(sheep), Entity.getZ(sheep), 10);
-    Level.spawnMob(Entity.getX(sheep), Entity.getY(sheep) + 4, Entity.getZ(sheep), 10);
-    wider = 0;
-    activate = false;
-    loop = 0;
-    Entity.setVelY(sheep, 5);
+  if (meteorsheep.loop == 160) {
+    Level.spawnMob(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep) - 5, Entity.getZ(meteorsheep.sheep), 10);
+    Level.spawnMob(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep) + 5, 10);
+    Level.spawnMob(Entity.getX(meteorsheep.sheep) + 5, Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep), 10);
+    Level.spawnMob(Entity.getX(meteorsheep.sheep) - 5, Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep), 10);
+    Level.spawnMob(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep) + 4, Entity.getZ(meteorsheep.sheep), 10);
+    meteorsheep.loop = 0;
+    meteorsheep.active = false;
+    meteorsheep.timer = 0;
+    Entity.setVelY(meteorsheep.sheep, 15);
   }
-  if (fire == true) {
+  if (meteorsheep.fire == true) {
     Level.addParticle(ParticleType.mobFlame, Entity.getX(sheep), Entity.getY(sheep), Entity.getZ(sheep), 0, 0, 10);
     Level.addParticle(ParticleType.lava, Entity.getX(sheep), Entity.getY(sheep), Entity.getZ(sheep), 0, 0, 10);
   }
