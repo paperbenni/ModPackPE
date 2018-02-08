@@ -1,33 +1,58 @@
 /*
 This is my biggest Mod. Thanks for downloading!
 Please dont steal my code!!!
+
+functions:
+function Level.getChestSlot(x, y, z, slot);
+function Level.getChestSlotCount(x, y, z, slot);
+function Level.getChestSlotData(x, y, z, slot);
+
+
+
 */
-
-
-//meteor sheep loop
-var loop = 0;
+//meteorsheep
 var meteorsheep = {
-  sheep,
+  sheep: 0,
   active: false,
   fire: false,
   timer: 0,
   loop: 0
 }
-//Swords
+
+//snowsword
 var snowsword = {
   active: false,
-  timer: 0
+  timer: 0,
+  victim: 0
 }
 
+//arrowsword
 var arrowsword = {
   active: false,
-  timer: 0
+  timer: 0,
+  victim: 0
 }
+
+//hypershooter
 var hypershooter = {
   active: false,
   timer: 0
 }
+
 //Tardis
+var tardis = {
+  inside: false,
+  generated: false,
+  formerposition: {
+    x: 0,
+    y: 0,
+    z: 0
+  }
+}
+
+
+
+
 var Mnac = false;
 
 var checkTime = 0;
@@ -40,7 +65,11 @@ var dLayers = [36, 36, 36];
 var save;
 var tmch = false;
 
-
+var pigtnt = {
+  active: false,
+  timer: 0,
+  pig
+}
 
 
 
@@ -86,7 +115,18 @@ const items = {
   instanttnt: 3027,
   sheeptntthrower: 3028,
   tntshooter: 3035,
-  tardisessence: 3036
+  tardisessence: 3036,
+  //Lucky blocks
+  luckyessence: 3037,
+  redluckyessence: 3038,
+  greenluckyessence: 3039,
+  blueluckyessence: 3040,
+  bigluckyessence: 3041,
+  miniluckyessence: 3042,
+
+  luckypotion: 3043,
+  medicine: 3044,
+  help: 3045
 }
 
 //Ist bei 3033
@@ -120,24 +160,16 @@ var Huhn = 0;
 var rupf = false;
 var jump = false;
 var fly = 0;
-var zeit = 0;
-var uhr = 0;
-var steak = false;
 
 
-var pigtnt = {
-  active: false,
-  timer: 0,
-  pig
-}
+
+
+var swords = [];
+
 
 
 var rocket;
-var speed = false;
 var fireThrow = 0;
-var xBeforeO = -1,
-  yBeforeO = -1,
-  zBeforeO = -1;
 var arrow;
 var GUI;
 var dauer = false;
@@ -155,12 +187,83 @@ const potionValues = [1, 3, 5, 8, 10, 21, 11, 12, 13, 14, 2, 4, 18, 9, 19, 20];
 //var potionTimes = [
 const itemValues = [256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 268, 269, 270, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 323, 324, 325, 328, 329, 330, 331, 332, 333, 334, 336, 337, 338, 339, 340, 341, 344, 345, items.emeraldpickaxe, 347, 348, 351, 352, 352, 353, 354, 355, 357, 359, 360, 261, 362, 363, 364, 365, 366, 383, 388, 391, 392, 393, 405, 406, 457, 458, 459];
 
-const mobValues = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42];
+//const mobValues = [
+const hostileMobs = [
+  EntityType.ZOMBIE,
+  EntityType.CREEPER,
+  EntityType.SKELETON,
+  EntityType.SPIDER,
+  EntityType.ZOMBIE_PIGMAN,
+  EntityType.SLIME,
+  EntityType.ENDERMAN,
+  EntityType.SILVERFISH,
+  EntityType.CAVESPIDER,
+  EntityType.GHAST,
+  EntityType.MAGMACUBE,
+  EntityType.BLAZE,
+  EntityType.ZOMBIE_VILLAGER,
+  EntityType.WITCH,
+  EntityType.STRAY,
+  EntityType.HUSK,
+  EntityType.WITHER_SKELETON,
+  EntityType.GUARDIAN,
+  EntityType.ELDER_GUARDIAN,
+  EntityType.WITHER,
+  EntityType.ENDER_DRAGON,
+  EntityType.SHULKER,
+  EntityType.ENDERMITE,
+  EntityType.VINDICATOR,
+  EntityType.EVOCATION_VILLAGER,
+];
+
+const passiveMobs = [
+  EntityType.CHICKEN,
+  EntityType.COW,
+  EntityType.PIG,
+  EntityType.SHEEP,
+  EntityType.WOLF,
+  EntityType.VILLAGER,
+  EntityType.MOOSHROOM,
+  EntityType.SQUID,
+  EntityType.RABBIT,
+  EntityType.BAT,
+  EntityType.IRON_GOLEM,
+  EntityType.SNOW_GOLEM,
+  EntityType.OCELOT,
+  EntityType.HORSE,
+  EntityType.DONKEY,
+  EntityType.MULE,
+  EntityType.ZOMBIE_HORSE,
+  EntityType.POLAR_BEAR,
+  EntityType.LLAMA,
+  EntityType.PARROT,
+];
+
+const projectileMobs = [
+  EntityType.SHULKER_BULLET,
+  EntityType.DRAGON_FIREBALL,
+  EntityType.ARROW,
+  EntityType.SNOWBALL,
+  EntityType.EGG,
+  EntityType.LARGE_FIREBALL,
+  EntityType.WITHER_SKULL,
+  EntityType.LIGHTNING_BOLT
+];
+
+
+
+
 const blockDataValues = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 141, 15, 16, 17, 18, 20, 21, 22, 24, 26, 30, 31, 32, 35, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 53, 54, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 67, 68, 71, 73, 74, 78, 79, 80, 81, 82, 83, 85, 87, 89, 92, 95, 98, 102, 103, 105, 107, 109, 108, 112, 114, 128, 155, 156, 245, 246, 247, 248, 249, 253, 254, 255];
 //Item.addShapedRecipe(70, 1, 0, [
 
-Block.defineBlock(70, " §2lucky block green edition", ["anvil_top_damaged_x", 0], 46, false, 0);
-Block.setDestroyTime(70, 0.01);
+//Block.defineBlock(70, " §2lucky block green edition", ["anvil_top_damaged_x", 0], 46, false, 0);
+ModPE.setItem(items.help, "help", 0, "help", 1);
+Item.addShapedRecipe(items.help, 1, 0, [
+  "   ",
+  " a ",
+  "   "], ["a", 280, 0]);
+
+ModPE.setItem(items.greenluckyessence, "greenluckyessence", 0, "greenluckyessence", 1);
 
 
 //Tardis original id: 28
@@ -171,24 +274,33 @@ Item.addShapedRecipe(items.tardisessence, 1, 0, [
   " b "
 ], ["a", 22, 0, "b", 247, 0]);
 
-Block.defineBlock(176, "§d§e§9Lucky Block blue edition", [
-  ["luckyblockblue", 0]
-], 3, true, 0);
-Block.setDestroyTime(176, 0.01);
+//Block.defineBlock(176, "§d§e§9Lucky Block blue edition", [["luckyblockblue", 0]], 3, true, 0);
+//Block.setDestroyTime(176, 0.01);
 //Item.addShapedRecipe(176, 1, 0, [
+ModPE.setItem(items.blueluckyessence, "blueluckyessence", 0, "blue lucky essence", 1);
 
-Block.defineBlock(34, " §clucky block red edition", ["luckyblockred", 0], 46, false, 0);
+
+
+//Block.defineBlock(34, " §clucky block red edition", ["luckyblockred", 0], 46, false, 0);
 //Item.addShapedRecipe(34, 1, 0, [25, 1, 0, 23, 1, 0]);
-Block.setDestroyTime(34, 0.01);
+ModPE.setItem(items.redluckyessence, "redluckyessence", 0, "red lucky essence", 1);
 
-Block.defineBlock(77, "mini lucky block", ["luckyblockmini", 0], 46, false, 0);
-Block.setDestroyTime(77, 0.01);
+
+//Block.defineBlock(77, "mini lucky block", ["luckyblockmini", 0], 46, false, 0);
+//Block.setDestroyTime(77, 0.01);
 //Item.addCraftRecipe(77, 2, 0, [55, 1, 0]);
-Block.setShape(77, 4 / 16, 0, 4 / 16, 12 / 16, 8 / 16, 12 / 16);
+//Block.setShape(77, 4 / 16, 0, 4 / 16, 12 / 16, 8 / 16, 12 / 16);
+ModPE.setItem(items.miniluckyessence, "miniluckyessence", 0, "mini lucky essence");
 
-Block.defineBlock(84, "§6Huge lucky Block", ["luckyblockhuge", 0], 46, false, 0);
-Block.setDestroyTime(84, 0.01);
-Block.setShape(84, -1, 0, -1, 2, 3, 2);
+
+
+
+//Block.defineBlock(84, "§6Huge lucky Block", ["luckyblockhuge", 0], 46, false, 0);
+//Block.setDestroyTime(84, 0.01);
+//Block.setShape(84, -1, 0, -1, 2, 3, 2);
+ModPE.setItem(items.biplaceRandomBlockyessence, "biplaceRandomBlockyessence", 0, "big lucky essence");
+
+
 
 //Jumper original id: 25
 ModPE.setItem(items.jumperessence, "jumperessence", 0, "jumper essence");
@@ -199,9 +311,7 @@ Block.defineBlock(55, "lucky block", ["luckyblock", 0], 46, false, 0);
 Item.addCraftRecipe(55, 4, 0, [266, 1, 0]);
 Block.setDestroyTime(55, 0.01);
 
-Block.defineBlock(36, "Tardis floor", ["lapis_block", 0], 46, false, 0);
-Block.setLightLevel(36, 15);
-Block.setDestroyTime(36, 9999);
+
 
 
 
@@ -288,7 +398,7 @@ Item.setHandEquipped(items.emeraldshovel, 1);
 ModPE.setItem(items.firesword, "firesword", 0, "fire sword", 1);
 Item.setHandEquipped(items.firesword, 1);
 
-ModPE.setItem(431, "luckypotion", 0, "lucky potion");
+ModPE.setItem(items.luckypotion, "luckypotion", 0, "lucky potion");
 
 ModPE.setItem(items.lavasword, "lavasword", 0, "lava sword");
 Item.setHandEquipped(items.lavasword, 1);
@@ -321,10 +431,9 @@ Item.setMaxDamage(items.hypertntpickaxe, 200);
 
 
 
-ModPE.setItem(428, "removealleffects", 0, "medicine");
+ModPE.setItem(items.medicine, "removealleffects", 0, "medicine");
 
 //Item.addShapedRecipe(
-Item.setMaxDamage(items.explosivegravitygun, 200);
 
 //ModPE.setFoodItem(id, iconName, offset, halfhearts, name, maxStack)
 
@@ -398,12 +507,19 @@ Item.setHandEquipped(items.hypertntsword, 1);
 ModPE.setItem(items.pigtnt, "pigtnt", 0, "pig TNT", 0);
 
 ModPE.setItem(items.tntpickaxe, "tntpickaxe", 0, "TNT pickaxe", 1);
+Item.addShapedRecipe(items.tntpickaxe, 1, 0, [
+  "aaa",
+  " b ",
+  " b "
+], ["a", 46, 0, "b", 280, 0]);
 Item.setMaxDamage(items.tntpickaxe, 80);
 
+
+
 ModPE.setItem(items.explosivegravitygun, "explosivegravitygun", 0, "explosive gravity gun", 0);
+Item.setMaxDamage(items.explosivegravitygun, 200);
 
 
-//Item.setHandEquipped(
 
 
 Item.defineArmor(items.tnthelmet, "tnthelmet", 0, "TNT helmet", "armor/tnt_1.png", 6, 399, ArmorType.helmet);
@@ -476,17 +592,10 @@ Item.addShapedRecipe(items.flyingtnt, 1, 0, [
   " b "
 ], ["a", 46, 0, "b", 288, 0]);
 
-Item.addShapedRecipe(items.tntpickaxe, 1, 0, [
-  "aaa",
-  " b ",
-  " b "
-], ["a", 46, 0, "b", 280, 0]);
-
-//Item.addShapedRecipe(
 
 
-var lucky = 55;
-var lucki = 176;
+
+var lucky = 55;//Normal lucky block
 
 function newLevel() {
   //  if(initCreativeItems)
@@ -495,6 +604,7 @@ function newLevel() {
   //    initCreativeItems = false;
   //  }
   //Button setup
+  clientMessage("Thanks for using my mod. You can craft a help item with a stick to get started");
   var ctx = com.mojang.minecraftpe.MainActivity.currentMainActivity.get();
   ctx.runOnUiThread(new java.lang.Runnable({
     run: function() {
@@ -548,313 +658,330 @@ function newLevel() {
 
 function destroyBlock(x, y, z, side) {
   var destroyedblock = Level.getTile(x, y, z);
-
-  if (destroyBlock == 70) {
+  if (destroyedblock == 70) {
     randPotion(getPlayerEnt());
   }
-
-  if (destroyedblock == 77) {
-    randItem(x, y, z);
-    setTile(x, y, z, 0);
-  }
-  if (destroyedblock == 84) {
-    gluck(x + 1, y, z);
-    gluck(x - 1, y, z);
-    gluck(x, y, z + 1);
-    gluck(x, y, z - 1);
-    gluck(x + 1, y, z + 1);
-    gluck(x - 1, y, z - 1);
-    gluck(x - 1, y, z + 1);
-    gluck(x + 1, y, z - 1);
-    gluck(x, y, z);
-
-    gluck(x, y + 2, z);
-    gluck(x + 1, y + 2, z);
-    gluck(x - 1, y + 2, z);
-    gluck(x, y + 2, z + 1);
-    gluck(x, y + 2, z - 1);
-    gluck(x + 1, y + 2, z + 1);
-    gluck(x - 1, y + 2, z - 1);
-    gluck(x - 1, y + 2, z + 1);
-    gluck(x + 1, y + 2, z - 1);
-
-    gluck(x, y + 1, z);
-    gluck(x + 1, y + 1, z);
-    gluck(x - 1, y + 1, z);
-    gluck(x, y + 1, z + 1);
-    gluck(x, y + 1, z - 1);
-    gluck(x + 1, y + 1, z + 1);
-    gluck(x - 1, y + 1, z - 1);
-    gluck(x - 1, y + 1, z + 1);
-    gluck(x + 1, y + 1, z - 1);
-  }
   if (destroyedblock == 34) {
-    turm(x, y, z, 0);
+    mobTurm(x, y, z, 0);
     setTile(x, y, z, 0);
   }
-  if (destroyedblock == lucki) {
-    gluck(x, y, z);
-  }
-  if (destroyedblock == lucky) {
-    var rnd = Math.floor(Math.random() * (10));
-
-    if (rnd == 0 || rnd == 1) {
-      rnd = Math.floor(Math.random() * (5));
-
-      Level.setTime(8280);
-
-      if (rnd == 0) {
-        Level.spawnMob(x + 4, y, z + 4, 33);
-        Level.spawnMob(x - 4, y, z + 4, 33);
-        Level.spawnMob(x + 4, y, z - 4, 33);
-        Level.spawnMob(x - 4, y, z - 4, 41);
-        Entity.addEffect(getPlayerEnt(), MobEffect.poison, 30 * 20, 0, false, true);
-      } else if (rnd == 1) {
-        Level.spawnMob(x + 4, y, z + 4, 32);
-        Level.spawnMob(x - 4, y, z + 4, 41);
-        Level.spawnMob(x + 4, y, z - 4, 32);
-        Level.spawnMob(x - 4, y, z - 4, 32);
-        Entity.addEffect(getPlayerEnt(), MobEffect.wither, 30 * 20, 0, false, true);
-      } else if (rnd == 2) {
-        var pig1 = Level.spawnMob(x, y, z, 12);
-        var pig2 = Level.spawnMob(x, y, z, 12);
-        rideAnimal(pig2, pig1);
-        var pig3 = Level.spawnMob(x, y, z, 12);
-        rideAnimal(pig3, pig2);
-        var pig4 = Level.spawnMob(x, y, z, 12);
-        rideAnimal(pig4, pig3);
-        var pig5 = Level.spawnMob(x, y, z, 12);
-        rideAnimal(pig5, pig4);
-        var pig6 = Level.spawnMob(x, y, z, 12);
-        rideAnimal(pig6, pig5);
-
-      } else if (rnd == 3) {
-        var bob = Level.spawnMob(x + 4, y, z + 4, 41);
-        Entity.setNameTag(bob, "BOB");
-        var schwein = Level.spawnMob(x - 4, y, z + 4, 12);
-        rideAnimal(bob, schwein);
-
-        Entity.addEffect(getPlayerEnt(), MobEffect.wither, 100 * 20, 0, false, true);
-      } else {
-
-        Level.explode(x, y, z, 30);
-        Entity.addEffect(getPlayerEnt(), MobEffect.digSlowdown, 120 * 20, 0, false, true);
-      }
-    } else if (rnd == 2 || rnd == 3 || rnd == 4 || rnd == 5 || rnd == 6 || rnd == 7 || rnd == 8) {
-      rnd = Math.floor(Math.random() * (10));
-
-      if (rnd == 0) {
-        Level.dropItem(x, y, z, 0, items.tntpickaxe, 1, 0);
-        Level.dropItem(x, y, z, 0, 311, 1, 0);
-        Level.dropItem(x, y, z, 0, 312, 1, 0);
-        Level.dropItem(x, y, z, 0, 313, 64, 0);
-        Entity.addEffect(getPlayerEnt(), MobEffect.healthBoost, 120 * 20, 2, false, true);
-        Entity.addEffect(getPlayerEnt(), MobEffect.damageResistance, 120 * 20, 2, false, true);
-        Entity.addEffect(getPlayerEnt(), MobEffect.regeneration, 120 * 20, 2, false, true);
-      } else if (rnd == 1) {
-        Level.dropItem(x, y, z, 0, items.hypertntpickaxe, 1, 0);
-        Level.dropItem(x, y, z, 0, 347, 1, 0);
-        Level.dropItem(x, y, z, 0, 261, 1, 0);
-        Level.dropItem(x, y, z, 0, 262, 64, 0);
-      } else if (rnd == 2) {
-        Level.dropItem(x, y, z, 0, 500, 1, 0);
-        Level.dropItem(x, y, z, 0, 299, 1, 0);
-        Level.dropItem(x, y, z, 0, 300, 1, 0);
-        Level.dropItem(x, y, z, 0, 301, 1, 0);
-      } else if (rnd == 3) {
-        Level.dropItem(x, y, z, 0, items.chickentnt, 1, 0);
-        Level.dropItem(x, y, z, 0, 256, 1, 0);
-        Level.dropItem(x, y, z, 0, 257, 1, 0);
-      } else if (rnd == 4) {
-        pig1 = Level.spawnMob(x, y, z, 12);
-        pig2 = Level.spawnMob(x, y, z, 12);
-        rideAnimal(pig2, pig1);
-        pig3 = Level.spawnMob(x, y, z, 12);
-        rideAnimal(pig3, pig2);
-        pig4 = Level.spawnMob(x, y, z, 12);
-        rideAnimal(pig4, pig3);
-        pig5 = Level.spawnMob(x, y, z, 12);
-        rideAnimal(pig5, pig4);
-        pig6 = Level.spawnMob(x, y, z, 12);
-        rideAnimal(pig6, pig5);
-      } else if (rnd == 5) {
-        Level.dropItem(x, y, z, 0, 391, Math.floor(Math.random() * (6) + 1), 0);
-        Entity.addEffect(getPlayerEnt(), MobEffect.jump, 30 * 20, 0, false, true);
-        Entity.addEffect(getPlayerEnt(), MobEffect.confusion, 120 * 20, 2, false, true);
-      } else if (rnd == 6) {
-        Level.dropItem(x, y, z, 0, 260, Math.floor(Math.random() * (6) + 1), 0);
-        Entity.addEffect(getPlayerEnt(), MobEffect.jump, 30 * 20, 0, false, true);
-
-      } else if (rnd == 7) {
-        Level.dropItem(x, y, z, 0, 388, Math.floor(Math.random() * (10) + 1), 0);
-        Entity.addEffect(getPlayerEnt(), MobEffect.jump, 30 * 20, 0, false, true);
-        Entity.addEffect(getPlayerEnt(), MobEffect.digSlowdown, 120 * 20, 2, false, true);
-      } else if (rnd == 8) {
-        Level.dropItem(x, y, z, 0, 289, Math.floor(Math.random() * (6) + 1), 0);
-        Entity.addEffect(getPlayerEnt(), MobEffect.jump, 30 * 20, 0, false, true);
-      } else {
-        Entity.addEffect(getPlayerEnt(), MobEffect.movementSpeed, 10000 * 20, 4, false, true);
-        Entity.addEffect(getPlayerEnt(), MobEffect.digSpeed, 10000 * 20, 4, false, true);
-        Entity.addEffect(getPlayerEnt(), MobEffect.damageBoost, 16000 * 20, 7, false, true);
-        Entity.addEffect(getPlayerEnt(), MobEffect.jump, 18000 * 20, 8, false, true);
-        Entity.addEffect(getPlayerEnt(), MobEffect.regeneration, 24000 * 20, 11, false, true);
-        Entity.addEffect(getPlayerEnt(), MobEffect.damageResistance, 20000 * 20, 9, false, true);
-        Entity.addEffect(getPlayerEnt(), MobEffect.fireResistance, 28000 * 20, 13, false, true);
-        Entity.addEffect(getPlayerEnt(), MobEffect.waterBreathing, 28000 * 20, 13, false, true);
-        Entity.addEffect(getPlayerEnt(), MobEffect.invisibility, 22000 * 20, 10, false, true);
-        Entity.addEffect(getPlayerEnt(), MobEffect.healthBoost, 22000 * 20, 10, false, true);
-        Entity.addEffect(getPlayerEnt(), MobEffect.absorption, 20000 * 20, 9, false, true);
-        Player.addItemInventory(401, -1, 0);
-        Level.playSound(getPlayerX(), getPlayerY(), getPlayerZ(), "random.burp", 30, 25);
-      }
-    } else {
-      rnd = Math.floor(Math.random() * (3));
-
-      var playerX = getPlayerX();
-      var playerY = getPlayerY();
-      var playerZ = getPlayerZ();
-
-      if (rnd == 0) {
-
-        setTile(playerX + 1, playerY - 1, playerZ, 101);
-        setTile(playerX + 1, playerY, playerZ, 101);
-        setTile(playerX - 1, playerY - 1, playerZ, 101);
-        o(playerX - 1, playerY, playerZ, 101);
-        setTile(playerX, playerY - 1, playerZ + 1, 101);
-        setTile(playerX, playerY - 1, playerZ - 1, 101);
-        setTile(playerX, playerY, playerZ + 1, 101);
-        setTile(playerX, playerY, playerZ - 1, 101);
-
-        setTile(playerX + 1, playerY - 1, playerZ + 1, 101);
-        setTile(playerX + 1, playerY, playerZ + 1, 101);
-        setTile(playerX - 1, playerY - 1, playerZ + 1, 101);
-        setTile(playerX - 1, playerY, playerZ + 1, 101);
-        setTile(playerX + 1, playerY - 1, playerZ - 1, 101);
-        setTile(playerX + 1, playerY, playerZ - 1, 101);
-        setTile(playerX - 1, playerY - 1, playerZ - 1, 101);
-        setTile(playerX - 1, playerY, playerZ - 1, 101);
-        setTile(playerX + 1, playerY - 1, playerZ + 1, 101);
-        setTile(playerX + 1, playerY, playerZ + 1, 101);
-        setTile(playerX - 1, playerY - 1, playerZ + 1, 101);
-        setTile(playerX - 1, playerY, playerZ + 1, 101);
 
 
-        setTile(playerX, playerY + 50, playerZ, 12);
-        setTile(playerX, playerY + 51, playerZ, 12);
-        setTile(playerX, playerY + 52, playerZ, 12);
-
-        Entity.addEffect(getPlayerEnt(), MobEffect.poison, 120 * 20, 5, false, true);
-        Entity.addEffect(getPlayerEnt(), MobEffect.confusion, 120 * 20, 2, false, true);
-        clientMessage("Bye!!!");
-
-      } else if (rnd == 1) {
-        setTile(playerX + 2, playerY, playerZ - 2, 24);
-        setTile(playerX - 2, playerY, playerZ + 2, 24);
-        setTile(playerX - 2, playerY, playerZ - 2, 24);
-        setTile(playerX + 2, playerY, playerZ + 2, 24);
-        setTile(playerX + 2, playerY, playerZ, 24);
-        setTile(playerX - 2, playerY, playerZ, 24);
-        setTile(playerX, playerY, playerZ + 2, 24);
-        setTile(playerX, playerY, playerZ - 2, 24);
-
-        setTile(playerX + 2, playerY - 1, playerZ - 2, 24);
-        setTile(playerX - 2, playerY - 1, playerZ + 2, 24);
-        setTile(playerX - 2, playerY - 1, playerZ - 2, 24);
-        setTile(playerX + 2, playerY - 1, playerZ + 2, 24);
-        setTile(playerX + 2, playerY - 1, playerZ, 24);
-        setTile(playerX - 2, playerY - 1, playerZ, 24);
-        setTile(playerX, playerY - 1, playerZ + 2, 24);
-        setTile(playerX, playerY - 1, playerZ - 2, 24);
-
-        setTile(playerX + 2, playerY, playerZ - 1, 24);
-        setTile(playerX - 2, playerY, playerZ + 1, 24);
-        setTile(playerX - 1, playerY, playerZ - 2, 24);
-        setTile(playerX + 1, playerY, playerZ + 2, 24);
-        setTile(playerX + 1, playerY, playerZ - 2, 24);
-        setTile(playerX - 1, playerY, playerZ + 2, 24);
-        setTile(playerX - 2, playerY, playerZ - 1, 24);
-        setTile(playerX + 2, playerY, playerZ + 1, 24);
-        Entity.addEffect(getPlayerEnt(), MobEffect.wither, 100 * 20, 0, false, true);
-        setTile(playerX + 2, playerY - 1, playerZ - 1, 24);
-        setTile(playerX - 2, playerY - 1, playerZ + 1, 24);
-        setTile(playerX - 1, playerY - 1, playerZ - 2, 24);
-        setTile(playerX + 1, playerY - 1, playerZ + 2, 24);
-        setTile(playerX + 1, playerY - 1, playerZ - 2, 24);
-        setTile(playerX - 1, playerY - 1, playerZ + 2, 24);
-        setTile(playerX - 2, playerY - 1, playerZ - 1, 24);
-        setTile(playerX + 2, playerY - 1, playerZ + 1, 24);
-
-        setTile(playerX, playerY - 2, playerZ, 24);
-
-        setTile(playerX + 1, playerY - 2, playerZ - 1, 24);
-        setTile(playerX - 1, playerY - 2, playerZ + 1, 24);
-        setTile(playerX - 1, playerY - 2, playerZ - 1, 24);
-        setTile(playerX + 1, playerY - 2, playerZ + 1, 24);
-
-        setTile(playerX, playerY - 2, playerZ - 1, 24);
-        setTile(playerX, playerY - 2, playerZ + 1, 24);
-        setTile(playerX - 1, playerY - 2, playerZ, 24);
-        setTile(playerX + 1, playerY - 2, playerZ, 24);
-
-
-        setTile(playerX + 1, playerY - 1, playerZ - 1, lucky);
-        setTile(playerX - 1, playerY - 1, playerZ + 1, lucky);
-        setTile(playerX - 1, playerY - 1, playerZ - 1, lucky);
-        setTile(playerX + 1, playerY - 1, playerZ + 1, lucky);
-        Entity.addEffect(getPlayerEnt(), MobEffect.confusion, 120 * 20, 2, false, true);
-        Entity.addEffect(getPlayerEnt(), MobEffect.wither, 100 * 20, 0, false, true);
-      } else {
-        sheep = Level.spawnMob(x, y + 1, z, 13, "mob/sheep_14.png");
-        Entity.setNameTag(sheep, "§cBummmmm!");
-        Entity.setVelY(sheep, 3);
-        activate = true;
-        fire = true;
-      }
-    }
-
-    Level.destroyBlock(x, y, z, false);
-  }
 
   if (Player.getCarriedItem() == items.tntpickaxe) {
     Level.explode(x, y, z, 5);
-    Schwert(80, items.tntpickaxe);
+    ItemDamage(80, items.tntpickaxe);
   }
   if (Player.getCarriedItem() == items.hypertntpickaxe) {
     Level.explode(x, y, z, 10);
-    Schwert(200, items.hypertntpickaxe);
+    ItemDamage(200, items.hypertntpickaxe);
   }
 }
 
 function startDestroyBlock(x, y, z, side) {
+  //emeraldpickaxe
+  var attemptblock = Level.getTile(x, y, z);
   if (Player.getCarriedItem() == items.emeraldpickaxe) {
     setTile(x, y, z, 0);
+  }
+
+  //Lucky blocks
+  if (attemptblock==blocks.chest) {
+    var essence = Level.getChestSlot(x, y, z, 0);
+    if (essence == items.luckyessence) {
+      Level.destroyBlock(x, y, z, false);
+    }
+    if (essence == items.miniluckyessence) {
+      randItem(x, y+1, z);
+      setTile(x, y, z, 0);
+    }
+    if (essence == items.bigluckyessence) {
+      placeRandomBlock(x + 1, y, z);
+      placeRandomBlock(x - 1, y, z);
+      placeRandomBlock(x, y, z + 1);
+      placeRandomBlock(x, y, z - 1);
+      placeRandomBlock(x + 1, y, z + 1);
+      placeRandomBlock(x - 1, y, z - 1);
+      placeRandomBlock(x - 1, y, z + 1);
+      placeRandomBlock(x + 1, y, z - 1);
+      placeRandomBlock(x, y, z);
+
+      placeRandomBlock(x, y + 2, z);
+      placeRandomBlock(x + 1, y + 2, z);
+      placeRandomBlock(x - 1, y + 2, z);
+      placeRandomBlock(x, y + 2, z + 1);
+      placeRandomBlock(x, y + 2, z - 1);
+      placeRandomBlock(x + 1, y + 2, z + 1);
+      placeRandomBlock(x - 1, y + 2, z - 1);
+      placeRandomBlock(x - 1, y + 2, z + 1);
+      placeRandomBlock(x + 1, y + 2, z - 1);
+
+      placeRandomBlock(x, y + 1, z);
+      placeRandomBlock(x + 1, y + 1, z);
+      placeRandomBlock(x - 1, y + 1, z);
+      placeRandomBlock(x, y + 1, z + 1);
+      placeRandomBlock(x, y + 1, z - 1);
+      placeRandomBlock(x + 1, y + 1, z + 1);
+      placeRandomBlock(x - 1, y + 1, z - 1);
+      placeRandomBlock(x - 1, y + 1, z + 1);
+      placeRandomBlock(x + 1, y + 1, z - 1);
+    }
+    if (essence == items.blueluckyessence) {
+      placeRandomBlock(x, y, z);
+    }
+
+
+    if (essence == items.luckyessence) {
+      var rnd = Math.floor(Math.random() * (10));
+
+      if (rnd == 0 || rnd == 1) {
+        rnd = Math.floor(Math.random() * (5));
+        Level.setTime(8280);
+        if (rnd == 0) {
+          Level.spawnMob(x + 4, y, z + 4, EntityType.CREEPER);
+          Level.spawnMob(x - 4, y, z + 4, EntityType.CREEPER);
+          Level.spawnMob(x + 4, y, z - 4, EntityType.CREEPER);
+          Level.spawnMob(x - 4, y, z - 4, EntityType.GHAST);
+          Entity.addEffect(getPlayerEnt(), MobEffect.poison, 30 * 20, 0, false, true);
+
+        } else if (rnd == 1) {
+          Level.spawnMob(x + 4, y, z + 4, EntityType.ZOMBIE);
+          Level.spawnMob(x - 4, y, z + 4, EntityType.GHAST);
+          Level.spawnMob(x + 4, y, z - 4, EntityType.ZOMBIE);
+          Level.spawnMob(x - 4, y, z - 4, EntityType.ZOMBIE);
+          Entity.addEffect(getPlayerEnt(), MobEffect.wither, 30 * 20, 0, false, true);
+        } else if (rnd == 2) {
+          var pig1 = Level.spawnMob(x, y, z, 12);
+          var pig2 = Level.spawnMob(x, y, z, 12);
+          rideAnimal(pig2, pig1);
+          var pig3 = Level.spawnMob(x, y, z, 12);
+          rideAnimal(pig3, pig2);
+          var pig4 = Level.spawnMob(x, y, z, 12);
+          rideAnimal(pig4, pig3);
+          var pig5 = Level.spawnMob(x, y, z, 12);
+          rideAnimal(pig5, pig4);
+          var pig6 = Level.spawnMob(x, y, z, 12);
+          rideAnimal(pig6, pig5);
+
+        } else if (rnd == 3) {
+          var bob = Level.spawnMob(x + 4, y, z + 4, 41);
+          Entity.setNameTag(bob, "BOB");
+          var schwein = Level.spawnMob(x - 4, y, z + 4, 12);
+          rideAnimal(bob, schwein);
+
+          Entity.addEffect(getPlayerEnt(), MobEffect.wither, 100 * 20, 0, false, true);
+        } else {
+
+          Level.explode(x, y, z, 30);
+          Entity.addEffect(getPlayerEnt(), MobEffect.digSlowdown, 120 * 20, 0, false, true);
+        }
+      } else if (rnd == 2 || rnd == 3 || rnd == 4 || rnd == 5 || rnd == 6 || rnd == 7 || rnd == 8) {
+        rnd = Math.floor(Math.random() * (10));
+
+        if (rnd == 0) {
+          Level.dropItem(x, y, z, 0, items.tntpickaxe, 1, 0);
+          Level.dropItem(x, y, z, 0, 311, 1, 0);
+          Level.dropItem(x, y, z, 0, 312, 1, 0);
+          Level.dropItem(x, y, z, 0, 313, 64, 0);
+          Entity.addEffect(getPlayerEnt(), MobEffect.healthBoost, 120 * 20, 2, false, true);
+          Entity.addEffect(getPlayerEnt(), MobEffect.damageResistance, 120 * 20, 2, false, true);
+          Entity.addEffect(getPlayerEnt(), MobEffect.regeneration, 120 * 20, 2, false, true);
+        } else if (rnd == 1) {
+          Level.dropItem(x, y, z, 0, items.hypertntpickaxe, 1, 0);
+          Level.dropItem(x, y, z, 0, 347, 1, 0);
+          Level.dropItem(x, y, z, 0, 261, 1, 0);
+          Level.dropItem(x, y, z, 0, 262, 64, 0);
+        } else if (rnd == 2) {
+          Level.dropItem(x, y, z, 0, 500, 1, 0);
+          Level.dropItem(x, y, z, 0, 299, 1, 0);
+          Level.dropItem(x, y, z, 0, 300, 1, 0);
+          Level.dropItem(x, y, z, 0, 301, 1, 0);
+        } else if (rnd == 3) {
+          Level.dropItem(x, y, z, 0, items.chickentnt, 1, 0);
+          Level.dropItem(x, y, z, 0, 256, 1, 0);
+          Level.dropItem(x, y, z, 0, 257, 1, 0);
+        } else if (rnd == 4) {
+          pig1 = Level.spawnMob(x, y, z, 12);
+          pig2 = Level.spawnMob(x, y, z, 12);
+          rideAnimal(pig2, pig1);
+          pig3 = Level.spawnMob(x, y, z, 12);
+          rideAnimal(pig3, pig2);
+          pig4 = Level.spawnMob(x, y, z, 12);
+          rideAnimal(pig4, pig3);
+          pig5 = Level.spawnMob(x, y, z, 12);
+          rideAnimal(pig5, pig4);
+          pig6 = Level.spawnMob(x, y, z, 12);
+          rideAnimal(pig6, pig5);
+        } else if (rnd == 5) {
+          Level.dropItem(x, y, z, 0, 391, Math.floor(Math.random() * (6) + 1), 0);
+          Entity.addEffect(getPlayerEnt(), MobEffect.jump, 30 * 20, 0, false, true);
+          Entity.addEffect(getPlayerEnt(), MobEffect.confusion, 120 * 20, 2, false, true);
+        } else if (rnd == 6) {
+          Level.dropItem(x, y, z, 0, 260, Math.floor(Math.random() * (6) + 1), 0);
+          Entity.addEffect(getPlayerEnt(), MobEffect.jump, 30 * 20, 0, false, true);
+
+        } else if (rnd == 7) {
+          Level.dropItem(x, y, z, 0, 388, Math.floor(Math.random() * (10) + 1), 0);
+          Entity.addEffect(getPlayerEnt(), MobEffect.jump, 30 * 20, 0, false, true);
+          Entity.addEffect(getPlayerEnt(), MobEffect.digSlowdown, 120 * 20, 2, false, true);
+        } else if (rnd == 8) {
+          Level.dropItem(x, y, z, 0, 289, Math.floor(Math.random() * (6) + 1), 0);
+          Entity.addEffect(getPlayerEnt(), MobEffect.jump, 30 * 20, 0, false, true);
+        } else {
+          Entity.addEffect(getPlayerEnt(), MobEffect.movementSpeed, 10000 * 20, 4, false, true);
+          Entity.addEffect(getPlayerEnt(), MobEffect.digSpeed, 10000 * 20, 4, false, true);
+          Entity.addEffect(getPlayerEnt(), MobEffect.damageBoost, 16000 * 20, 7, false, true);
+          Entity.addEffect(getPlayerEnt(), MobEffect.jump, 18000 * 20, 8, false, true);
+          Entity.addEffect(getPlayerEnt(), MobEffect.regeneration, 24000 * 20, 11, false, true);
+          Entity.addEffect(getPlayerEnt(), MobEffect.damageResistance, 20000 * 20, 9, false, true);
+          Entity.addEffect(getPlayerEnt(), MobEffect.fireResistance, 28000 * 20, 13, false, true);
+          Entity.addEffect(getPlayerEnt(), MobEffect.waterBreathing, 28000 * 20, 13, false, true);
+          Entity.addEffect(getPlayerEnt(), MobEffect.invisibility, 22000 * 20, 10, false, true);
+          Entity.addEffect(getPlayerEnt(), MobEffect.healthBoost, 22000 * 20, 10, false, true);
+          Entity.addEffect(getPlayerEnt(), MobEffect.absorption, 20000 * 20, 9, false, true);
+          Player.addItemInventory(401, -1, 0);
+          Level.playSound(getPlayerX(), getPlayerY(), getPlayerZ(), "random.burp", 30, 25);
+        }
+      } else {
+        rnd = Math.floor(Math.random() * (3));
+
+        var playerX = getPlayerX();
+        var playerY = getPlayerY();
+        var playerZ = getPlayerZ();
+
+        if (rnd == 0) {
+
+          setTile(playerX + 1, playerY - 1, playerZ, 101);
+          setTile(playerX + 1, playerY, playerZ, 101);
+          setTile(playerX - 1, playerY - 1, playerZ, 101);
+          o(playerX - 1, playerY, playerZ, 101);
+          setTile(playerX, playerY - 1, playerZ + 1, 101);
+          setTile(playerX, playerY - 1, playerZ - 1, 101);
+          setTile(playerX, playerY, playerZ + 1, 101);
+          setTile(playerX, playerY, playerZ - 1, 101);
+
+          setTile(playerX + 1, playerY - 1, playerZ + 1, 101);
+          setTile(playerX + 1, playerY, playerZ + 1, 101);
+          setTile(playerX - 1, playerY - 1, playerZ + 1, 101);
+          setTile(playerX - 1, playerY, playerZ + 1, 101);
+          setTile(playerX + 1, playerY - 1, playerZ - 1, 101);
+          setTile(playerX + 1, playerY, playerZ - 1, 101);
+          setTile(playerX - 1, playerY - 1, playerZ - 1, 101);
+          setTile(playerX - 1, playerY, playerZ - 1, 101);
+          setTile(playerX + 1, playerY - 1, playerZ + 1, 101);
+          setTile(playerX + 1, playerY, playerZ + 1, 101);
+          setTile(playerX - 1, playerY - 1, playerZ + 1, 101);
+          setTile(playerX - 1, playerY, playerZ + 1, 101);
+
+
+          setTile(playerX, playerY + 50, playerZ, 12);
+          setTile(playerX, playerY + 51, playerZ, 12);
+          setTile(playerX, playerY + 52, playerZ, 12);
+
+          Entity.addEffect(getPlayerEnt(), MobEffect.poison, 120 * 20, 5, false, true);
+          Entity.addEffect(getPlayerEnt(), MobEffect.confusion, 120 * 20, 2, false, true);
+          clientMessage("Bye!!!");
+
+        } else if (rnd == 1) {
+          setTile(playerX + 2, playerY, playerZ - 2, 24);
+          setTile(playerX - 2, playerY, playerZ + 2, 24);
+          setTile(playerX - 2, playerY, playerZ - 2, 24);
+          setTile(playerX + 2, playerY, playerZ + 2, 24);
+          setTile(playerX + 2, playerY, playerZ, 24);
+          setTile(playerX - 2, playerY, playerZ, 24);
+          setTile(playerX, playerY, playerZ + 2, 24);
+          setTile(playerX, playerY, playerZ - 2, 24);
+
+          setTile(playerX + 2, playerY - 1, playerZ - 2, 24);
+          setTile(playerX - 2, playerY - 1, playerZ + 2, 24);
+          setTile(playerX - 2, playerY - 1, playerZ - 2, 24);
+          setTile(playerX + 2, playerY - 1, playerZ + 2, 24);
+          setTile(playerX + 2, playerY - 1, playerZ, 24);
+          setTile(playerX - 2, playerY - 1, playerZ, 24);
+          setTile(playerX, playerY - 1, playerZ + 2, 24);
+          setTile(playerX, playerY - 1, playerZ - 2, 24);
+
+          setTile(playerX + 2, playerY, playerZ - 1, 24);
+          setTile(playerX - 2, playerY, playerZ + 1, 24);
+          setTile(playerX - 1, playerY, playerZ - 2, 24);
+          setTile(playerX + 1, playerY, playerZ + 2, 24);
+          setTile(playerX + 1, playerY, playerZ - 2, 24);
+          setTile(playerX - 1, playerY, playerZ + 2, 24);
+          setTile(playerX - 2, playerY, playerZ - 1, 24);
+          setTile(playerX + 2, playerY, playerZ + 1, 24);
+          Entity.addEffect(getPlayerEnt(), MobEffect.wither, 100 * 20, 0, false, true);
+          setTile(playerX + 2, playerY - 1, playerZ - 1, 24);
+          setTile(playerX - 2, playerY - 1, playerZ + 1, 24);
+          setTile(playerX - 1, playerY - 1, playerZ - 2, 24);
+          setTile(playerX + 1, playerY - 1, playerZ + 2, 24);
+          setTile(playerX + 1, playerY - 1, playerZ - 2, 24);
+          setTile(playerX - 1, playerY - 1, playerZ + 2, 24);
+          setTile(playerX - 2, playerY - 1, playerZ - 1, 24);
+          setTile(playerX + 2, playerY - 1, playerZ + 1, 24);
+
+          setTile(playerX, playerY - 2, playerZ, 24);
+
+          setTile(playerX + 1, playerY - 2, playerZ - 1, 24);
+          setTile(playerX - 1, playerY - 2, playerZ + 1, 24);
+          setTile(playerX - 1, playerY - 2, playerZ - 1, 24);
+          setTile(playerX + 1, playerY - 2, playerZ + 1, 24);
+
+          setTile(playerX, playerY - 2, playerZ - 1, 24);
+          setTile(playerX, playerY - 2, playerZ + 1, 24);
+          setTile(playerX - 1, playerY - 2, playerZ, 24);
+          setTile(playerX + 1, playerY - 2, playerZ, 24);
+
+
+          setTile(playerX + 1, playerY - 1, playerZ - 1, lucky);
+          setTile(playerX - 1, playerY - 1, playerZ + 1, lucky);
+          setTile(playerX - 1, playerY - 1, playerZ - 1, lucky);
+          setTile(playerX + 1, playerY - 1, playerZ + 1, lucky);
+          Entity.addEffect(getPlayerEnt(), MobEffect.confusion, 120 * 20, 2, false, true);
+          Entity.addEffect(getPlayerEnt(), MobEffect.wither, 100 * 20, 0, false, true);
+        } else {
+          sheep = Level.spawnMob(x, y + 1, z, 13, "mob/sheep_14.png");
+          Entity.setNameTag(sheep, "§cBummmmm!");
+          Entity.setVelY(sheep, 3);
+          activate = true;
+          fire = true;
+        }
+      }
+
+      Level.destroyBlock(x, y, z, false);
+    }
   }
 }
 
 function useItem(x, y, z, itemId, blockId, side) {
-  if (blockId == 28) {
-    clientMessage("Welcome to the Tardis");
-    clientMessage(ChatColor.GREEN + "Tap the Greeen Block to enter it");
-    clientMessage(ChatColor.RED + "Tap the red block to reset the Tardis");
-    clientMessage("If you are in the Tardis the first time click the red block");
-    var plyr = Player.getEntity();
-    setTile(170, 118, 170, 95);
-    Level.setTile(171, 120, 170, 133);
-    Level.setTile(171, 120, 171, 152);
-    Entity.setPosition(plyr, 170, 120, 170);
+  if (blockId == blocks.chest) {
+    var essence = Level.getChestSlot(x, y, z, 0);
+    if (essence == items.tardisessence) {
+      clientMessage("Welcome to the Tardis");
+      clientMessage(ChatColor.GREEN + "Tap the Greeen Block to enter it");
+      clientMessage(ChatColor.RED + "Tap the red block to reset the Tardis");
+      clientMessage("If you are in the Tardis the first time click the red block");
+      var plyr = Player.getEntity();
+      setTile(170, 118, 170, 95);
+      Level.setTile(171, 120, 170, 133);
+      Level.setTile(171, 120, 171, 152);
+      Entity.setPosition(plyr, 170, 120, 170);
 
 
-    Mnac = true;
-    tardOpt = true;
-    Player.setCanFly(1);
-    save = Level.spawnMob(x, y + 20, z, 13);
-    setTile(x, y + 17, z, 1);
-    Entity.setHealth(save, 9999);
-    tmch = true;
-    //Tardis(0, 0);
-    // checkTardis();
-    //chac=true;
-  }
+      Mnac = true;
+      tardOpt = true;
+      Player.setCanFly(1);
+      save = Level.spawnMob(x, y + 20, z, 13);
+      setTile(x, y + 17, z, 1);
+      Entity.setHealth(save, 9999);
+      tmch = true;
+
+      //Tardis(0, 0);
+      // checkTardis();
+      //chac=true;
+    }
+  }//weiter
+
+
   if (blockId == 152 && tardOpt == true) {
     Tardis(0, 0);
     TardOpt = false;
@@ -889,10 +1016,10 @@ function useItem(x, y, z, itemId, blockId, side) {
     setTile(Entity.getX(save), Entity.getY(save) - 1, Entity.getZ(save), 0);
   }
 
-  if (Player.getCarriedItem() == 431) {
+  if (Player.getCarriedItem() == items.luckypotion) {
     randPotion(Player.getEntity());
   }
-  if (Player.getCarriedItem() == 428) {
+  if (Player.getCarriedItem() == items.medicine) {
     Entity.removeAllEffects(Player.getEntity());
   }
   if (Player.getCarriedItem() == 408) {
@@ -907,25 +1034,28 @@ function useItem(x, y, z, itemId, blockId, side) {
     Player.setArmorSlot(3, items.tntboots, 0);
     Player.addItemInventory(items.tntboots, -1);
   }
+
   if (Player.getCarriedItem() == items.pigtnt) {
     pigtnt.pig = Level.spawnMob(x, y + 1, z, 65, "mob/pig.png");
     Level.spawnMob(x, y + 1, z, 65, "mob/pig.png");
     pigtnt.active = true;
     Player.addItemInventory(items.pigtnt, -1);
   }
+
   if (Player.getCarriedItem() == items.chickentnt && rupf == false) {
     chicken = Level.spawnMob(x, y, z, 65);
     rupf = true;
     Player.addItemInventory(items.chickentnt, -1);
   }
+
   if (Player.getCarriedItem() == items.meteorsheep && activate == false) {
     meteorsheep.sheep = Level.spawnMob(x, y + 1, z, 13, "mob/sheep_14.png");
-    Entity.setNameTag(sheep, "§cBummmmm!");
-    Entity.setVelY(sheep, 3);
+    Entity.setNameTag(meteorsheep.sheep, "§cBooommmmm!");
+    Entity.setVelY(meteorsheep.sheep, 3);
     meteorsheep.active = true;
     meteorsheep.fire = true;
     Player.addItemInventory(items.meteorsheep, -1);
-    Entity.setHealth(sheep, 3);
+    Entity.setHealth(meteorsheep.sheep, 3);
   }
   if (Player.getCarriedItem() == items.flyingtnt) {
     tnt = Level.spawnMob(x, y + 1, z, 65, "mob/creeper.png");
@@ -947,7 +1077,7 @@ function deathHook(murderer, victim) {
     arrowsword.active = false;
     arrowsword.timer = 0;
   }
-  if (victim == sheep) {
+  if (victim == meteorsheep.sheep) {
     Level.explode(Entity.getX(sheep), Entity.getY(sheep), Entity.getZ(sheep), 40);
     meteorsheep.timer = 0;
     meteorsheep.loop = 0;
@@ -960,6 +1090,20 @@ function deathHook(murderer, victim) {
 //}
 //}
 function modTick() {
+  //variablen für blöcke unterm spieler
+  var blockUnderPlayer = Level.getTile(Math.floor(Player.getX()), Math.floor(Player.getY()) - 2, Math.floor(Player.getZ()));
+  var flatBlockUnderPlayer = Level.getTile(Math.floor(Player.getX()), Math.floor(Player.getY()) - 1, Math.floor(Player.getZ()));
+
+
+  //essence hooks
+  if (blockUnderPlayer == blocks.chest) {
+    var essence = Level.getChestSlot(Math.floor(Player.getX()), Math.floor(Player.getY()) - 2, Math.floor(Player.getZ(), 0));
+    if(essence == items.jumperessence) {
+      Entity.setVelY(Player.getEntity(), 1);
+    }
+  }
+
+
   if (conftime == true) {
     confTime++;
   }
@@ -994,19 +1138,18 @@ function modTick() {
   //Shoot snowballs at the target
   if (snowsword.active == true) {
     snowsword.timer++;
-    shootAtTarget(0, 20, 0, target, 81);
+    shootAtTarget(0, 20, 0, snowsword.victim, 81);
   }
   if (snowsword.timer == 400) {
     snowsword.active = false;
-    arrowsword.timer = 0;
+    snowsword.timer = 0;
   }
 
   //shoot arrows at the target
   if (arrowsword.active == true) {
     arrowsword.timer++;
-    shootAtTarget(0, 40, 0, target, 80);
+    shootAtTarget(0, 40, 0, arrowsword.victim, 80);
   }
-
   if (arrowsword.timer == 200) {
     arrowsword.active = false;
     arrowsword.timer = 0;
@@ -1089,7 +1232,7 @@ function modTick() {
     var schwein = Level.spawnMob(Entity.getX(pigtnt.pig), Entity.getY(pigtnt.pig), Entity.getZ(pigtnt.pig), 12, "mob/pig.png");
     Entity.setNameTag(schwein, "pig of awesomeness!!");
   }
-  if (uhr == 100) {
+  if (pigtnt.timer == 100) {
     pigtnt.active = false;
     pigtnt.timer = 0;
   }
@@ -1114,7 +1257,7 @@ function modTick() {
   if (Player.getCarriedItem() == items.instanttnt) {
     setTile(Player.getX(), Player.getY() + 20, Player.getZ(), 46);
     setTile(Player.getX(), Player.getY() + 21, Player.getZ(), 51);
-    Schwert(1000, items.instanttnt);
+    ItemDamage(1000, items.instanttnt);
   }
   if (timer == true) {
     water++
@@ -1134,6 +1277,9 @@ function modTick() {
     tower = false;
     exp = 0;
   }
+
+
+  //meteorsheep start
   if (meteorsheep.active == true) {
     setTile(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep), 12);
     meteorsheep.timer++;
@@ -1192,6 +1338,9 @@ function modTick() {
     Level.addParticle(ParticleType.mobFlame, Entity.getX(sheep), Entity.getY(sheep), Entity.getZ(sheep), 0, 0, 10);
     Level.addParticle(ParticleType.lava, Entity.getX(sheep), Entity.getY(sheep), Entity.getZ(sheep), 0, 0, 10);
   }
+  //meteorsheep end
+
+
 }
 
 function attackHook(attacker, victim) {
@@ -1203,7 +1352,7 @@ function attackHook(attacker, victim) {
   //Snowsword rains snowballs
   if (Player.getCarriedItem() == items.snowsword) {
     snowsword.active = true;
-    target = victim;
+    snowsword.victim = victim;
   }
 
   if (Player.getCarriedItem() == items.lavasword) {
@@ -1211,26 +1360,26 @@ function attackHook(attacker, victim) {
   }
 
   if (Player.getCarriedItem() == items.arrowsword) {
-    target = victim;
+    arrowsword.victim = victim;
     arrowsword.active = true;
   }
 
   if (Player.getCarriedItem() == items.explosivegravitygun) {
     ggMob = victim;
     isPickingEntity = true;
-    Schwert(200, items.explosivegravitygun);
+    ItemDamage(200, items.explosivegravitygun);
   }
   if (Player.getCarriedItem() == items.emeraldsword) {
     Entity.setHealth(victim, Entity.getHealth(victim) - 12);
-    Schwert(100, items.emeraldsword);
+    ItemDamage(100, items.emeraldsword);
   }
   if (Player.getCarriedItem() == items.hypertntsword) {
     Level.explode(Entity.getX(victim), Entity.getY(victim), Entity.getZ(victim), 20);
-    Schwert(200, items.hypertntsword);
+    ItemDamage(200, items.hypertntsword);
   }
   if (Player.getCarriedItem() == items.tntsword) {
     Level.explode(Entity.getX(victim), Entity.getY(victim), Entity.getZ(victim), 5);
-    Schwert(80, items.tntsword);
+    ItemDamage(80, items.tntsword);
   }
 }
 
@@ -1245,6 +1394,17 @@ function leaveGame() {
       }
     }
   }));
+
+
+  //saving stuff
+  var saveFolder = new java.io.File(new android.os.Environment.getExternalStorageDirectory() + "/games/com.mojang/minecraftWorlds/" + Level.getWorldDir() + "/paperbenni-mod");
+  saveFolder.mkdirs();
+  var saveFile = new java.io.File(new android.os.Environment.getExternalStorageDirectory() + "/games/com.mojang/minecraftWorlds/" + Level.getWorldDir() + "/paperbenni-mod/paperbenni.dat");
+  if(saveFile.exists())
+    saveFile['delete']();
+  saveFile.createNewFile();
+  var streamOutput = new java.io.FileOutputStream(saveFile);
+  var streamWriter = new java.io.OutputStreamWriter(streamOutput);
 }
 
 
@@ -1257,7 +1417,7 @@ function leaveGame() {
 //////CUSTOM FUNKTIONEN/////////////////
 ////////////////////////////////////////
 
-function Schwert(maxDamage, id) {
+function ItemDamage(maxDamage, id) {
   var pcid = Player.getCarriedItemData();
   if (pcid !== maxDamage) {
     Entity.setCarriedItem(getPlayerEnt(), id, 1, pcid + 1);
@@ -1276,10 +1436,9 @@ function rideEntity(entity) {
 }
 
 
-function gluck(x, y, z) {
+function placeRandomBlock(x, y, z) {
   var rnd = Math.floor(Math.random() * (blockDataValues.length));
   setTile(x, y, z, blockDataValues[rnd], 0);
-  preventDefault();
 }
 
 function randPotion(entity) {
@@ -1293,13 +1452,19 @@ function randItem(x, y, z) {
   Level.dropItem(x, y, z, 0, itemValues[itemId], 1, 0);
 }
 
-function randMob(x, y, z) {
-  var mobId = Math.floor(Math.random() * (mobValues.length));
-  Level.spawnMob(x, y, z, mobValues[mobId]);
+function randPassiveMob(x, y, z) {
+  var mobId = Math.floor(Math.random() * (passiveMobs.length));
+  Level.spawnMob(x, y, z, passiveMobs[mobId]);
+}
+
+function randHostileMob(x, y, z) {
+  var mobId = Math.floor(Math.random() * (hostileMobs.length));
+  Level.spawnMob(x, y, z, hostileMobs[mobId]);
 }
 
 
-function turm(x, y, z, mobid) {
+
+function mobTurm(x, y, z, mobid) {
   if (mobid == 0) {
     var mobId = Math.floor(Math.random() * (mobValues.length));
     var mob1 = Level.spawnMob(x, y, z, mobValues[mobId]);
@@ -1552,4 +1717,13 @@ function shootAtTarget(xx, yy, zz, target, id) {
   var z = Entity.getZ(target);
   arrow = Level.spawnMob(x + xx, y + yy, z + zz, id);
   Entity.setVelY(arrow, -2);
+}
+
+function flipCoin() {
+  var rnd = Math.round(Math.random());
+  if (rnd == 0) {
+    return false;
+  }else {
+    return true;
+  }
 }
