@@ -37,8 +37,22 @@ var arrowsword = {
 //hypershooter
 var hypershooter = {
   active: false,
-  timer: 0
+  timer: 0,
+  arrow: 0
 }
+
+var tntshooter = {
+  active: false,
+  timer: 0,
+  arrow: 0
+}
+
+var hypershootertntshooter = {
+  active: false,
+  timer: 0,
+  arrow: 0
+}
+
 
 //Tardis
 var tardis = {
@@ -51,14 +65,31 @@ var tardis = {
   }
 }
 
-
+var tntarmor = {
+  wearing: false
+}
 
 var pigtnt = {
   active: false,
   timer: 0,
-  pig
+  pig: 0
 }
 
+var chickentnt = {
+  active: false,
+  timer: 0,
+  chicken: 0
+}
+
+var instanttnt = {
+  active: false,
+  timer: 0,
+  health: 0
+}
+
+var dragonglider = {
+  gliding: false
+}
 
 
 //Item ids
@@ -114,7 +145,9 @@ const items = {
 
   luckypotion: 3043,
   medicine: 3044,
-  help: 3045
+  help: 3045,
+  debugger: 3046,
+  mobstacker: 3047
 }
 
 //Ist bei 3033
@@ -161,7 +194,11 @@ var bio = 0;
 var ride = false;
 var pferd;
 var reit = 0.7;
-var elevator = false;
+var elevator = {
+  active: false,
+  timer: 0,
+  speed: 0.4
+};
 var hoch = 0;
 var upspeed = 0.4
 var pick;
@@ -174,7 +211,8 @@ const itemValues = [256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 
   295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317,
   318, 319, 320, 321, 323, 324, 325, 328, 329, 330, 331, 332, 333, 334, 336, 337, 338, 339, 340, 341, 344, 345,
   items.emeraldpickaxe, 347, 348, 351, 352, 352, 353, 354, 355, 357, 359, 360, 261, 362, 363, 364, 365, 366, 383,
-  388, 391, 392, 393, 405, 406, 457, 458, 459];
+  388, 391, 392, 393, 405, 406, 457, 458, 459
+];
 
 //const mobValues = [
 const hostileMobs = [
@@ -241,8 +279,9 @@ const projectileMobs = [
 
 
 const blockDataValues = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 141, 15, 16, 17, 18, 20, 21, 22, 24, 26, 30, 31, 32, 35, 37, 38, 39,
-   40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 53, 54, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 67, 68, 71, 73, 74, 78, 79, 80, 81,
-   82, 83, 85, 87, 89, 92, 95, 98, 102, 103, 105, 107, 109, 108, 112, 114, 128, 155, 156, 245, 246, 247, 248, 249, 253, 254, 255];
+  40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 53, 54, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 67, 68, 71, 73, 74, 78, 79, 80, 81,
+  82, 83, 85, 87, 89, 92, 95, 98, 102, 103, 105, 107, 109, 108, 112, 114, 128, 155, 156, 245, 246, 247, 248, 249, 253, 254, 255
+];
 //Item.addShapedRecipe(70, 1, 0, [
 
 //Block.defineBlock(70, " §2lucky block green edition", ["anvil_top_damaged_x", 0], 46, false, 0);
@@ -252,6 +291,10 @@ Item.addShapedRecipe(items.help, 1, 0, [
   " a ",
   "   "
 ], ["a", 280, 0]);
+
+ModPE.setItem(items.debugger, "debugger", 0, "debugger", 1);
+
+ModPE.setItem(items.mobstacker, "mobstacker", 0, "mob stacker", 1);
 
 ModPE.setItem(items.greenluckyessence, "greenluckyessence", 0, "greenluckyessence", 1);
 
@@ -409,7 +452,6 @@ Item.setMaxDamage(items.hypertntpickaxe, 200);
 
 ModPE.setItem(items.medicine, "removealleffects", 0, "medicine");
 
-//Item.addShapedRecipe(
 
 //ModPE.setFoodItem(id, iconName, offset, halfhearts, name, maxStack)
 
@@ -424,6 +466,13 @@ Item.setHandEquipped(items.slingshot, 1);
 
 //
 ModPE.setItem(items.hypershooter, "hypershooter", 0, "Hyper shoter");
+Item.addShapedRecipe(items.hypershooter, 1, 0, [
+  " a ",
+  "bcb",
+  "bcb"
+], ["a", 46, 0, "b", 265, 0, "c", 331, 0]);
+
+
 
 ModPE.setItem(items.tntshooter, "tntshooter", 0, "tnt shooter", 0);
 Item.addShapedRecipe(items.tntshooter, 1, 0, [
@@ -433,11 +482,12 @@ Item.addShapedRecipe(items.tntshooter, 1, 0, [
 ], ["a", 46, 0, "b", 265, 0, "c", 331, 0]);
 
 ModPE.setItem(items.sheeptntthrower, "sheeptntthrower", 0, "sheep TNT thrower", 0);
-Item.addShapedRecipe(items.pigtnt, 1, 0, [
-  "aaa",
-  "aba",
-  "aaa"
-], ["a", 319, 0, "b", 46, 0]);
+Item.addShapedRecipe(items.sheeptntthrower, 1, 0, [
+  " a ",
+  "bbb",
+  "cdc"
+], ["a", 46, 0, "b", 35, 0, "c", 265, 0, "d", 331, 0]);
+
 
 
 ModPE.setItem(items.tntrocket, "tntrocket", 0, "TNT rocket");
@@ -465,8 +515,8 @@ ModPE.setItem(items.instanttnt, "instanttnt", 0, "instant TNT", 0);
 Item.addShapedRecipe(items.instanttnt, 1, 0, [
   "aaa",
   "aba",
-  "   "
-], ["a", 46, 0, "b", 265, 0]);
+  "aaa"
+], ["a", 12, 0, "b", 289, 0]);
 Item.setMaxDamage(items.instanttnt, 1000);
 
 ModPE.setItem(items.tntsword, "tntsword", 0, "TNT sword", 1);
@@ -562,19 +612,6 @@ Item.addShapedRecipe(items.dragonglider, 1, 0, [
   " c "
 ], ["a", 35, 0, "b", 265, 0, "c", 334, 0]);
 
-Item.addShapedRecipe(items.hypershooter, 1, 0, [
-  " a ",
-  "bcb",
-  "bcb"
-], ["a", 46, 0, "b", 265, 0, "c", 331, 0]);
-
-Item.addShapedRecipe(items.sheeptntthrower, 1, 0, [
-  " a ",
-  "bbb",
-  "cdc"
-], ["a", 46, 0, "b", 35, 0, "c", 265, 0, "d", 331, 0]);
-
-
 
 
 
@@ -588,13 +625,14 @@ function newLevel() {
   //  }
   //Button setup
   clientMessage("Thanks for using my mod. You can craft a help item with a stick to get started");
+
+  //Button machen
   var ctx = com.mojang.minecraftpe.MainActivity.currentMainActivity.get();
   ctx.runOnUiThread(new java.lang.Runnable({
     run: function() {
       try {
         var layout = new android.widget.LinearLayout(ctx);
         layout.setOrientation(1);
-
         var button = new android.widget.Button(ctx);
         button.setText('-:-');
         button.setOnClickListener(new android.view.View.OnClickListener({
@@ -634,21 +672,18 @@ function newLevel() {
       }
     }
   }));
+  loadTardis();
 
-
-  jump = true;
 }
 
 function destroyBlock(x, y, z, side) {
   var destroyedblock = Level.getTile(x, y, z);
 
-
-
-
   if (Player.getCarriedItem() == items.tntpickaxe) {
     Level.explode(x, y, z, 5);
     ItemDamage(80, items.tntpickaxe);
   }
+
   if (Player.getCarriedItem() == items.hypertntpickaxe) {
     Level.explode(x, y, z, 10);
     ItemDamage(200, items.hypertntpickaxe);
@@ -661,7 +696,6 @@ function startDestroyBlock(x, y, z, side) {
   if (Player.getCarriedItem() == items.emeraldpickaxe) {
     setTile(x, y, z, 0);
   }
-
   if (attemptblock == 7 && tardis.inside == true) { // bedrock as tardiswall
     Entity.setPosition(Player.getEntity(), tardis.formerposition.x, tardis.formerposition.y, tardis.formerposition.z);
     tardis.inside = false;
@@ -938,12 +972,12 @@ function startDestroyBlock(x, y, z, side) {
 }
 
 function useItem(x, y, z, itemId, blockId, side) {
-  if (Level.getTile(x, y+1, z) == blocks.chest) {
-    var essence = Level.getChestSlot(x, y+1, z, 0);
+  if (Level.getTile(x, y + 1, z) == blocks.chest) {
+    var essence = Level.getChestSlot(x, y + 1, z, 0);
     if (blockId == blocks.lapisblock && essence == items.tardisessence) {
       //saving position
       tardis.formerposition.x = x;
-      tardis.formerposition.y = y+3;
+      tardis.formerposition.y = y + 3;
       tardis.formerposition.z = z;
       clientMessage("welcome to the tardis. tap and hold on the walls to exit. hope you brought torches");
 
@@ -985,11 +1019,13 @@ function useItem(x, y, z, itemId, blockId, side) {
     Player.addItemInventory(items.pigtnt, -1);
   }
 
-  if (Player.getCarriedItem() == items.chickentnt && rupf == false) {
-    chicken = Level.spawnMob(x, y, z, 65);
-    rupf = true;
+  if (Player.getCarriedItem() == items.chickentnt && chickentnt.active == false) {
+    chickentnt.chicken = Level.spawnMob(x, y, z, 65);
+    chickentnt.active = true;
     Player.addItemInventory(items.chickentnt, -1);
   }
+
+
 
   if (Player.getCarriedItem() == items.meteorsheep && activate == false) {
     meteorsheep.sheep = Level.spawnMob(x, y + 1, z, 13, "mob/sheep_14.png");
@@ -1000,6 +1036,7 @@ function useItem(x, y, z, itemId, blockId, side) {
     Player.addItemInventory(items.meteorsheep, -1);
     Entity.setHealth(meteorsheep.sheep, 3);
   }
+
   if (Player.getCarriedItem() == items.flyingtnt) {
     tnt = Level.spawnMob(x, y + 1, z, 65, "mob/creeper.png");
     Entity.setVelY(tnt, 3);
@@ -1007,10 +1044,11 @@ function useItem(x, y, z, itemId, blockId, side) {
     Player.addItemInventory(items.tntchestplate, -1);
   }
   if (Player.getCarriedItem() == items.instanttnt) {
-    werf = Level.spawnMob(x, y + 1, z, 65, "mob/creeper.png");
-    Entity.setVelY(werf, 5);
-    timer = true;
+    instanttnt.active = true;
+    instanttnt.health = Entity.getHealth(Player.getEntity());
+    Player.setHealth(1000);
     Player.addItemInventory(items.instanttnt, -1);
+    Level.explode(Entity.getX(sheep), Entity.getY(sheep), Entity.getZ(sheep), 40);
   }
 }
 
@@ -1046,7 +1084,9 @@ function modTick() {
     }
   }
 
-
+  if (Level.getTile(Player.getX(), Player.getY(), Player.getZ()) == 55) {
+    elevator.active = true;
+  }
 
   //Shoot snowballs at the target
   if (snowsword.active == true) {
@@ -1067,7 +1107,7 @@ function modTick() {
     arrowsword.active = false;
     arrowsword.timer = 0;
   }
-
+  //Gravity gun
   if (isPickingEntity) {
     var ggMobDirection = lookDir(Entity.getYaw(Player.getEntity()), Entity.getPitch(Player.getEntity()));
     if (getPlayerX() + (ggMobDirection.x * 3) - Entity.getX(ggMob) > 0.5 || getPlayerX() + (ggMobDirection.x * 3) - Entity.getX(ggMob) < -0.5 || getPlayerY() + (ggMobDirection.y * 3) - Entity.getY(ggMob) > 0.5 || getPlayerY() + (ggMobDirection.y * 3) - Entity.getY(ggMob) < -0.5 || getPlayerZ() + (ggMobDirection.z * 3) - Entity.getZ(ggMob) > 0.5 || getPlayerZ() + (ggMobDirection.z * 3) - Entity.getZ(ggMob) < -0.5) {
@@ -1081,92 +1121,92 @@ function modTick() {
     }
   }
 
-  if (Level.getTile(Player.getX(), Player.getY(), Player.getZ()) == 55) {
-    elevator = true;
-  }
 
-  if (elevator == true) {
-    hoch++;
+
+  if (elevator.active) {
+    elevator.timer++;
     Entity.setVelY(Player.getEntity(), 0.5, 0.5, 0.5);
     setTile(Player.getX(), Player.getY(), Player.getZ, 55);
   }
 
-  if (hoch == 300) {
-    elevator = false;
-    hoch = 0;
+  if (elevator.timer == 300) {
+    elevator.active = false;
+    elevator.timer = 0;
   }
-  if ((Player.getX(), Player.getY() - 3, Player.getZ()) && ride == true) {
-    Entity.remove(pferd);
-    var player = Player.getEntity();
-    Entity.setHealth(Entity.getRider(player), 0);
-    ride = false;
+
+
+  if (Level.getTile(Player.getX(), Player.getY() - 3, Player.getZ()) != 0 && dragonglider.gliding == true) {
+    Entity.addEffect(Player.getEntity(), MobEffect.levitation, 40, 10, false, false);
+    dragonglider.gliding = false;
   }
-  if (ride == true) {
-    rideEntity(pferd);
+  if (dragonglider.gliding == true) {
+    Entity.setVelY(Player.getEntity(), -0.01);
   }
-  if (Entity.getVelY(Player.getEntity()) <= -0.5 && Player.getArmorSlot(1) == items.dragonglider && ride == false) {
-    pferd = Level.spawnMob(Player.getX(), Player.getY(), Player.getZ(), 10);
-    Entity.setHealth(pferd, 1000);
-    rideAnimal(Player.getEntity(), pferd);
-    ride = true;
-    Entity.addEffect(pferd, MobEffect.invisibility, 22000 * 20, 10, false, false);
-    var brett = Level.spawnMob(Player.getX(), Player.getY() + 1, Player.getZ(), 10, "mob/black.png");
-    Entity.setHealth(brett, 1);
-    Entity.setRenderType(brett, HovRenderer.renderType);
-    Entity.rideAnimal(brett, Player.getEntity());
+  if (Player.getArmorSlot(1) == items.dragonglider && Entity.getVelY(Player.getEntity()) <= -0.5 && dragonglider.gliding == false) {
+    dragonglider.gliding = true;
   }
-  if (ride == true) {
-    rideEntity(pferd);
-  }
+
+
+
   if (Player.getArmorSlot(1) == items.jetpack) {
     shootEntity(Player.getEntity(), 0.3, 0.3, 0.3);
   }
-  if (dauer == true && Player.getCarriedItem() == items.hypershooter) {
+
+  if (hypershooter.active && Player.getCarriedItem() == items.hypershooter) {
     var ShootDir = lookDir(getYaw(), getPitch());
-    arrow = Level.spawnMob(getPlayerX() + (ShootDir.x * 2), getPlayerY() + (ShootDir.y * 2), getPlayerZ() + (ShootDir.z * 2), 80);
-    shootEntity(arrow, 4, 4, 4);
+    hypershooter.arrow = Level.spawnMob(getPlayerX() + (ShootDir.x * 2), getPlayerY() + (ShootDir.y * 2), getPlayerZ() + (ShootDir.z * 2), 80);
+    shootEntity(hypershooter.arrow, 4, 4, 4);
     Level.playSound(Player.getX(), Player.getY(), Player.getZ(), "random.bow", 30, 5);
-    bio++;
-
+    hypershooter.timer++;
   }
 
-  if (bio == 100) {
-    dauer = false;
-    bio = 0;
+  if (hypershooter.timer == 100) {
+    hypershooter.active = false;
+    hypershooter.timer = 0;
   }
-  if (Player.getArmorSlot(3) == items.tntboots) {
-    setTile(Player.getX(), Player.getY() - 2, Player.getZ(), 46);
+
+  //WTF
+
+  if (Player.getArmorSlot(0) == items.tnthelmet && Player.getArmorSlot(1) == items.tntchestplate &&
+    Player.getArmorSlot(2) == items.tntleggings && Player.getArmorSlot(3) == items.tntboots) {
+    if (tntarmor.wearing == false) {
+      tntarmor.wearing = true;
+      Player.setCanFly(1);
+      clientMessage("TNT armor active. Maybe try double jumping?")
+    }
+  } else if (tntarmor.active) {
+    tntarmor.active = false;
+    Player.setCanFly(0);
   }
+
+  if (tntarmor.active) {
+    if (Player.isFlying()) {
+      Player.setFlying(0);
+      Level.spawnMob(Player.getX(), Player.getY(), Player.getZ(), EntityType.TNT);
+      setVelY(Player, 1);
+    }
+  }
+
+
 
   if (pigtnt.active == true) {
     pigtnt.timer = pigtnt.timer + 1;
-  }
-  if (pigtnt.active == true) {
-    var schwein = Level.spawnMob(Entity.getX(pigtnt.pig), Entity.getY(pigtnt.pig), Entity.getZ(pigtnt.pig), 12, "mob/pig.png");
-    Entity.setNameTag(schwein, "pig of awesomeness!!");
+    pigtnt.pig = Level.spawnMob(Entity.getX(pigtnt.pig), Entity.getY(pigtnt.pig), Entity.getZ(pigtnt.pig), 12, "mob/pig.png");
+    Entity.setNameTag(pigtnt.pig, "pig of awesomeness!!");
   }
   if (pigtnt.timer == 100) {
     pigtnt.active = false;
     pigtnt.timer = 0;
   }
-
-  if (jump == true) {
-    fly++;
-  }
-  if (fly == 70) {
-    jump = false;
-    fly = 0;
-  }
-  if (rupf == true) {
-    Huhn++;
-  }
-  if (Huhn == 100) {
-    Huhn = 0;
-    rupf = false;
-  }
-  if (rupf == true) {
+  if (chickentnt.active == true) {
+    chickentnt.timer++;
     Level.spawnMob(Entity.getX(chicken), Entity.getY(chicken), Entity.getZ(chicken), 10);
   }
+  if (chickentnt.timer == 100) {
+    chickentnt.timer = 0;
+    chickentnt.active = false;
+  }
+
   if (Player.getCarriedItem() == items.instanttnt) {
     setTile(Player.getX(), Player.getY() + 20, Player.getZ(), 46);
     setTile(Player.getX(), Player.getY() + 21, Player.getZ(), 51);
@@ -1191,7 +1231,14 @@ function modTick() {
     exp = 0;
   }
 
-
+  if (instanttnt.active) {
+    instant.timer++;
+    if (instanttnt.timer >= 40) {
+      Player.setHealth(instanttnt.health());
+      instanttnt.timer = 0;
+      instanttnt.active = false;
+    }
+  }
   //meteorsheep start
   if (meteorsheep.active == true) {
     setTile(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep), 12);
@@ -1257,9 +1304,10 @@ function modTick() {
 }
 
 function attackHook(attacker, victim) {
-  //firesword sets mobs on fire
+  //firesword sets player on fire
   if (Player.getCarriedItem() == items.firesword) {
-    Entity.setFireTicks(victim, 5);
+    Entity.setFireTicks(Player.getEntity(), 5);
+    Entity.setHealth(Entity.getHealth(victim) - 20);
   }
 
   //Snowsword rains snowballs
@@ -1282,6 +1330,7 @@ function attackHook(attacker, victim) {
     isPickingEntity = true;
     ItemDamage(200, items.explosivegravitygun);
   }
+
   if (Player.getCarriedItem() == items.emeraldsword) {
     Entity.setHealth(victim, Entity.getHealth(victim) - 12);
     ItemDamage(100, items.emeraldsword);
@@ -1296,6 +1345,11 @@ function attackHook(attacker, victim) {
   }
 }
 
+function entityAddedHook(entity) {
+  if (Entity.getEntityTypeId(entity) == 65 && Player.getArmorSlot(3) == items.tntboots) {
+    Entity.addEffect(getPlayerEnt(), MobEffect.speed, 3 * 20, 0, false, true);
+  }
+}
 
 function leaveGame() {
   var ctx = com.mojang.minecraftpe.MainActivity.currentMainActivity.get();
@@ -1307,7 +1361,7 @@ function leaveGame() {
       }
     }
   }));
-
+  saveTardis();
 
 }
 
@@ -1486,7 +1540,7 @@ function hugeBlock(minX, minY, minZ, maxX, maxY, maxZ, id) {
         }
       }
     }
-  }else {
+  } else {
     clientMessage("please put in correct values.\n If you happen to see this as a casual player, you just need to know that something went wrong, you can't do anything about it and i'ts all the programmers fault!")
   }
 }
@@ -1509,53 +1563,46 @@ function flipCoin() {
 }
 
 
-function loadTardis()
-{
-	currentActivity.runOnUiThread(new java.lang.Runnable(
-	{
-		run: function()
-		{
-			try
-			{
-				var loadFile = java.io.File(new android.os.Environment.getExternalStorageDirectory() + "/games/com.mojang/minecraftWorlds/" + Level.getWorldDir() + "/paperbenni/paperbenni.dat");
-				if(loadFile.exists())
-				{
-					// load streams
-					var streamInput = new java.io.FileInputStream(loadFile);
-					var streamReader = new java.io.InputStreamReader(streamInput);
+function loadTardis() {
+  currentActivity.runOnUiThread(new java.lang.Runnable({
+    run: function() {
+      try {
+        var loadFile = java.io.File(new android.os.Environment.getExternalStorageDirectory() + "/games/com.mojang/minecraftWorlds/" + Level.getWorldDir() + "/paperbenni/paperbenni.dat");
+        if (loadFile.exists()) {
+          // load streams
+          var streamInput = new java.io.FileInputStream(loadFile);
+          var streamReader = new java.io.InputStreamReader(streamInput);
 
-					var properties = new java.util.Properties();
-					properties.load(streamReader);
+          var properties = new java.util.Properties();
+          properties.load(streamReader);
 
-					tardis.generated = Convert.stringToBoolean(properties.getProperty("tardis", "0"));
-					tardis.inside = Convert.stringToBoolean(properties.getProperty("inside", "0"));
-					if(tardis.generated && tardis.inside)
-					{
-						tardis.formerposition.x = parseInt(properties.getProperty("tardisformerx"));
-						tardis.formerposition.y = parseInt(properties.getProperty("tardisformery"));
-						tardis.formerposition.z = parseInt(properties.getProperty("tardisformerz"));
+          tardis.generated = Convert.stringToBoolean(properties.getProperty("tardis", "0"));
+          tardis.inside = Convert.stringToBoolean(properties.getProperty("inside", "0"));
+          if (tardis.generated && tardis.inside) {
+            tardis.formerposition.x = parseInt(properties.getProperty("tardisformerx"));
+            tardis.formerposition.y = parseInt(properties.getProperty("tardisformery"));
+            tardis.formerposition.z = parseInt(properties.getProperty("tardisformerz"));
             clientMessage("welcome back to the tardis. Remember to tap and hold on a wall to exit");
-					}
-					// close streams
-					streamReader.close();
-					streamInput.close();
-				}else {
+          }
+          // close streams
+          streamReader.close();
+          streamInput.close();
+        } else {
           generateTardis();
           saveTardis();
         }
-			}catch(err)
-			{
-				clientMessage("Error: " + err);
-			}
-		}
-	}));
+      } catch (err) {
+        clientMessage("Error: " + err);
+      }
+    }
+  }));
 }
 
-function saveTardis(){
+function saveTardis() {
   var saveFolder = new java.io.File(new android.os.Environment.getExternalStorageDirectory() + "/games/com.mojang/minecraftWorlds/" + Level.getWorldDir() + "/paperbenni-mod");
   saveFolder.mkdirs();
   var saveFile = new java.io.File(new android.os.Environment.getExternalStorageDirectory() + "/games/com.mojang/minecraftWorlds/" + Level.getWorldDir() + "/paperbenni-mod/paperbenni.dat");
-  if (saveFile.exists()){
+  if (saveFile.exists()) {
     saveFile['delete']();
   }
   saveFile.createNewFile();
