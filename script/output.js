@@ -11,6 +11,7 @@ function Level.getChestSlotData(x, y, z, slot);
 
 */
 //meteorsheep
+
 var meteorsheep = {
   sheep: 0,
   active: false,
@@ -51,19 +52,6 @@ var tardis = {
 }
 
 
-
-
-var Mnac = false;
-
-var checkTime = 0;
-var confirm = false;
-var chac = false;
-var confTime = 0;
-var conftime = false;
-var dactivate = false;
-var dLayers = [36, 36, 36];
-var save;
-var tmch = false;
 
 var pigtnt = {
   active: false,
@@ -133,12 +121,8 @@ const items = {
 
 
 const blocks = {
-  luckyblock: 210,
-  luckyblockblue: 211,
-  luckyblockred: 212,
-  luckyblockmini: 230,
-  luckyblockhuge: 242,
-  chest: 54
+  chest: 54,
+  lapisblock: 22
 }
 
 var target;
@@ -185,7 +169,12 @@ var pick;
 const potionLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const potionValues = [1, 3, 5, 8, 10, 21, 11, 12, 13, 14, 2, 4, 18, 9, 19, 20];
 //var potionTimes = [
-const itemValues = [256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 268, 269, 270, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 323, 324, 325, 328, 329, 330, 331, 332, 333, 334, 336, 337, 338, 339, 340, 341, 344, 345, items.emeraldpickaxe, 347, 348, 351, 352, 352, 353, 354, 355, 357, 359, 360, 261, 362, 363, 364, 365, 366, 383, 388, 391, 392, 393, 405, 406, 457, 458, 459];
+const itemValues = [256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 268, 269, 270, 270, 271,
+  272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294,
+  295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317,
+  318, 319, 320, 321, 323, 324, 325, 328, 329, 330, 331, 332, 333, 334, 336, 337, 338, 339, 340, 341, 344, 345,
+  items.emeraldpickaxe, 347, 348, 351, 352, 352, 353, 354, 355, 357, 359, 360, 261, 362, 363, 364, 365, 366, 383,
+  388, 391, 392, 393, 405, 406, 457, 458, 459];
 
 //const mobValues = [
 const hostileMobs = [
@@ -251,9 +240,9 @@ const projectileMobs = [
 ];
 
 
-
-
-const blockDataValues = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 141, 15, 16, 17, 18, 20, 21, 22, 24, 26, 30, 31, 32, 35, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 53, 54, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 67, 68, 71, 73, 74, 78, 79, 80, 81, 82, 83, 85, 87, 89, 92, 95, 98, 102, 103, 105, 107, 109, 108, 112, 114, 128, 155, 156, 245, 246, 247, 248, 249, 253, 254, 255];
+const blockDataValues = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 141, 15, 16, 17, 18, 20, 21, 22, 24, 26, 30, 31, 32, 35, 37, 38, 39,
+   40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 53, 54, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 67, 68, 71, 73, 74, 78, 79, 80, 81,
+   82, 83, 85, 87, 89, 92, 95, 98, 102, 103, 105, 107, 109, 108, 112, 114, 128, 155, 156, 245, 246, 247, 248, 249, 253, 254, 255];
 //Item.addShapedRecipe(70, 1, 0, [
 
 //Block.defineBlock(70, " §2lucky block green edition", ["anvil_top_damaged_x", 0], 46, false, 0);
@@ -261,7 +250,8 @@ ModPE.setItem(items.help, "help", 0, "help", 1);
 Item.addShapedRecipe(items.help, 1, 0, [
   "   ",
   " a ",
-  "   "], ["a", 280, 0]);
+  "   "
+], ["a", 280, 0]);
 
 ModPE.setItem(items.greenluckyessence, "greenluckyessence", 0, "greenluckyessence", 1);
 
@@ -274,30 +264,16 @@ Item.addShapedRecipe(items.tardisessence, 1, 0, [
   " b "
 ], ["a", 22, 0, "b", 247, 0]);
 
-//Block.defineBlock(176, "§d§e§9Lucky Block blue edition", [["luckyblockblue", 0]], 3, true, 0);
-//Block.setDestroyTime(176, 0.01);
-//Item.addShapedRecipe(176, 1, 0, [
 ModPE.setItem(items.blueluckyessence, "blueluckyessence", 0, "blue lucky essence", 1);
 
 
 
-//Block.defineBlock(34, " §clucky block red edition", ["luckyblockred", 0], 46, false, 0);
-//Item.addShapedRecipe(34, 1, 0, [25, 1, 0, 23, 1, 0]);
 ModPE.setItem(items.redluckyessence, "redluckyessence", 0, "red lucky essence", 1);
 
 
-//Block.defineBlock(77, "mini lucky block", ["luckyblockmini", 0], 46, false, 0);
-//Block.setDestroyTime(77, 0.01);
-//Item.addCraftRecipe(77, 2, 0, [55, 1, 0]);
-//Block.setShape(77, 4 / 16, 0, 4 / 16, 12 / 16, 8 / 16, 12 / 16);
 ModPE.setItem(items.miniluckyessence, "miniluckyessence", 0, "mini lucky essence");
 
 
-
-
-//Block.defineBlock(84, "§6Huge lucky Block", ["luckyblockhuge", 0], 46, false, 0);
-//Block.setDestroyTime(84, 0.01);
-//Block.setShape(84, -1, 0, -1, 2, 3, 2);
 ModPE.setItem(items.biplaceRandomBlockyessence, "biplaceRandomBlockyessence", 0, "big lucky essence");
 
 
@@ -457,6 +433,13 @@ Item.addShapedRecipe(items.tntshooter, 1, 0, [
 ], ["a", 46, 0, "b", 265, 0, "c", 331, 0]);
 
 ModPE.setItem(items.sheeptntthrower, "sheeptntthrower", 0, "sheep TNT thrower", 0);
+Item.addShapedRecipe(items.pigtnt, 1, 0, [
+  "aaa",
+  "aba",
+  "aaa"
+], ["a", 319, 0, "b", 46, 0]);
+
+
 ModPE.setItem(items.tntrocket, "tntrocket", 0, "TNT rocket");
 Item.addShapedRecipe(items.tntrocket, 1, 0, [
   " a ",
@@ -472,7 +455,11 @@ Item.addShapedRecipe(items.meteorsheep, 1, 0, [
 ], ["w", 35, 0, "t", 46, 0]);
 
 ModPE.setItem(items.flyingtnt, "flyingtnt", 0, "flying TNT", 0);
-
+Item.addShapedRecipe(items.flyingtnt, 1, 0, [
+  " a ",
+  " a ",
+  " b "
+], ["a", 46, 0, "b", 288, 0]);
 
 ModPE.setItem(items.instanttnt, "instanttnt", 0, "instant TNT", 0);
 Item.addShapedRecipe(items.instanttnt, 1, 0, [
@@ -505,6 +492,12 @@ Item.setHandEquipped(items.hypertntsword, 1);
 
 
 ModPE.setItem(items.pigtnt, "pigtnt", 0, "pig TNT", 0);
+Item.addShapedRecipe(items.pigtnt, 1, 0, [
+  "aaa",
+  "aba",
+  "aaa"
+], ["a", 319, 0, "b", 46, 0]);
+
 
 ModPE.setItem(items.tntpickaxe, "tntpickaxe", 0, "TNT pickaxe", 1);
 Item.addShapedRecipe(items.tntpickaxe, 1, 0, [
@@ -581,21 +574,11 @@ Item.addShapedRecipe(items.sheeptntthrower, 1, 0, [
   "cdc"
 ], ["a", 46, 0, "b", 35, 0, "c", 265, 0, "d", 331, 0]);
 
-Item.addShapedRecipe(items.pigtnt, 1, 0, [
-  "aaa",
-  "aba",
-  "aaa"
-], ["a", 319, 0, "b", 46, 0]);
-Item.addShapedRecipe(items.flyingtnt, 1, 0, [
-  " a ",
-  " a ",
-  " b "
-], ["a", 46, 0, "b", 288, 0]);
 
 
 
 
-var lucky = 55;//Normal lucky block
+
 
 function newLevel() {
   //  if(initCreativeItems)
@@ -658,13 +641,7 @@ function newLevel() {
 
 function destroyBlock(x, y, z, side) {
   var destroyedblock = Level.getTile(x, y, z);
-  if (destroyedblock == 70) {
-    randPotion(getPlayerEnt());
-  }
-  if (destroyedblock == 34) {
-    mobTurm(x, y, z, 0);
-    setTile(x, y, z, 0);
-  }
+
 
 
 
@@ -685,15 +662,20 @@ function startDestroyBlock(x, y, z, side) {
     setTile(x, y, z, 0);
   }
 
+  if (attemptblock == 7 && tardis.inside == true) { // bedrock as tardiswall
+    Entity.setPosition(Player.getEntity(), tardis.formerposition.x, tardis.formerposition.y, tardis.formerposition.z);
+    tardis.inside = false;
+    clientMessage(ChatColor.GREEN + "exited the tardis");
+  }
   //Lucky blocks
-  if (attemptblock==blocks.chest) {
+  if (attemptblock == blocks.chest) {
     var essence = Level.getChestSlot(x, y, z, 0);
-    if (essence == items.luckyessence) {
-      Level.destroyBlock(x, y, z, false);
-    }
     if (essence == items.miniluckyessence) {
-      randItem(x, y+1, z);
+      randItem(x, y + 1, z);
       setTile(x, y, z, 0);
+    }
+    if (essence == items.greenluckyessence) {
+      randPotion(getPlayerEnt());
     }
     if (essence == items.bigluckyessence) {
       placeRandomBlock(x + 1, y, z);
@@ -729,7 +711,10 @@ function startDestroyBlock(x, y, z, side) {
     if (essence == items.blueluckyessence) {
       placeRandomBlock(x, y, z);
     }
-
+    if (essence == items.redluckyessence) {
+      mobTurm(x, y, z, 0);
+      setTile(x, y, z, 0);
+    }
 
     if (essence == items.luckyessence) {
       var rnd = Math.floor(Math.random() * (10));
@@ -953,68 +938,26 @@ function startDestroyBlock(x, y, z, side) {
 }
 
 function useItem(x, y, z, itemId, blockId, side) {
-  if (blockId == blocks.chest) {
-    var essence = Level.getChestSlot(x, y, z, 0);
-    if (essence == items.tardisessence) {
-      clientMessage("Welcome to the Tardis");
-      clientMessage(ChatColor.GREEN + "Tap the Greeen Block to enter it");
-      clientMessage(ChatColor.RED + "Tap the red block to reset the Tardis");
-      clientMessage("If you are in the Tardis the first time click the red block");
-      var plyr = Player.getEntity();
-      setTile(170, 118, 170, 95);
-      Level.setTile(171, 120, 170, 133);
-      Level.setTile(171, 120, 171, 152);
-      Entity.setPosition(plyr, 170, 120, 170);
+  if (Level.getTile(x, y+1, z) == blocks.chest) {
+    var essence = Level.getChestSlot(x, y+1, z, 0);
+    if (blockId == blocks.lapisblock && essence == items.tardisessence) {
+      //saving position
+      tardis.formerposition.x = x;
+      tardis.formerposition.y = y+3;
+      tardis.formerposition.z = z;
+      clientMessage("welcome to the tardis. tap and hold on the walls to exit. hope you brought torches");
+
+      Entity.setPosition(Player.getEntity(), 0, 25, 0);
+      tardis.inside = true;
 
 
-      Mnac = true;
-      tardOpt = true;
-      Player.setCanFly(1);
-      save = Level.spawnMob(x, y + 20, z, 13);
-      setTile(x, y + 17, z, 1);
-      Entity.setHealth(save, 9999);
-      tmch = true;
-
-      //Tardis(0, 0);
-      // checkTardis();
-      //chac=true;
     }
-  }//weiter
-
-
-  if (blockId == 152 && tardOpt == true) {
-    Tardis(0, 0);
-    TardOpt = false;
-    Player.setFlying(0);
-    //confirm=false;
-    Mnac = false;
-  }
-  /*
-  if(blockId==152&&confirm==false){
-  clientMessage(ChatColor.RED + "are you sure to reset the Tardis?");
-  clientMessage(ChatColor.RED + "All your stuff in it will be destroyed!!");
-  clientMessage(ChatColor.RED + "Tapp again to confirm.");
-  conftime=true;
-  }
-  */
-  if (blockId == 133 && tardOpt == true) {
-    var plyr = Player.getEntity();
-    Entity.setPosition(plyr, 0, 6, 0);
-    tardOpt = false;
-    Mnac = false;
-    Player.setFlying(0);
-
-
   }
 
-  if (tmch == true && blockId == 71) {
-    setPosition(Player.getEntity(), Entity.getX(save), Entity.getY(save) - 13, Entity.getZ(save));
-    tmch = false;
-    Player.setFlying(0);
-    Player.setCanFly(0);
-    Entity.setHealth(save, 0);
-    setTile(Entity.getX(save), Entity.getY(save) - 1, Entity.getZ(save), 0);
-  }
+
+
+
+
 
   if (Player.getCarriedItem() == items.luckypotion) {
     randPotion(Player.getEntity());
@@ -1098,43 +1041,13 @@ function modTick() {
   //essence hooks
   if (blockUnderPlayer == blocks.chest) {
     var essence = Level.getChestSlot(Math.floor(Player.getX()), Math.floor(Player.getY()) - 2, Math.floor(Player.getZ(), 0));
-    if(essence == items.jumperessence) {
+    if (essence == items.jumperessence) {
       Entity.setVelY(Player.getEntity(), 1);
     }
   }
 
 
-  if (conftime == true) {
-    confTime++;
-  }
-  if (confTime == 2) {
-    confirm = true;
-  }
-  if (Player.getCarriedItem() == items.lavasword) {
-    Level.addParticle(ParticleType.lava, Player.getX(), Player.getY(), Player.getZ(), 0, 0.3, 0, 400);
-  }
 
-  if (Mnac == true) {
-    setTile(Player.getX() + 1, Player.getY(), Player.getZ(), 133);
-    setTile(Player.getX() - 1, Player.getY(), Player.getZ(), 152);
-    Player.setFlying(1);
-    Entity.setPosition(Player.getEntity(), 170.5, 120, 170);
-  }
-  if (chac == true) {
-    checkTime++;
-  }
-  if (checkTime == 2 && check == false) {
-    Tardis(0, 0);
-  }
-  if (checkTime == 4 && check == true) {
-    var plyr = Player.getEntity();
-    Entity.setPosition(plyr, 0, 6, 0);
-    Player.setCanFly(1);
-    save = Level.spawnMob(x, y + 20, z, 13);
-    setTile(x, y + 17, z, 1);
-    Entity.setHealth(save, 9999);
-    tmch = true;
-  }
   //Shoot snowballs at the target
   if (snowsword.active == true) {
     snowsword.timer++;
@@ -1396,15 +1309,6 @@ function leaveGame() {
   }));
 
 
-  //saving stuff
-  var saveFolder = new java.io.File(new android.os.Environment.getExternalStorageDirectory() + "/games/com.mojang/minecraftWorlds/" + Level.getWorldDir() + "/paperbenni-mod");
-  saveFolder.mkdirs();
-  var saveFile = new java.io.File(new android.os.Environment.getExternalStorageDirectory() + "/games/com.mojang/minecraftWorlds/" + Level.getWorldDir() + "/paperbenni-mod/paperbenni.dat");
-  if(saveFile.exists())
-    saveFile['delete']();
-  saveFile.createNewFile();
-  var streamOutput = new java.io.FileOutputStream(saveFile);
-  var streamWriter = new java.io.OutputStreamWriter(streamOutput);
 }
 
 
@@ -1466,25 +1370,25 @@ function randHostileMob(x, y, z) {
 
 function mobTurm(x, y, z, mobid) {
   if (mobid == 0) {
-    var mobId = Math.floor(Math.random() * (mobValues.length));
-    var mob1 = Level.spawnMob(x, y, z, mobValues[mobId]);
+    var mobId = Math.floor(Math.random() * (passiveMobs.length));
+    var mob1 = Level.spawnMob(x, y, z, passiveMobs[mobId]);
 
-    var mob2 = Level.spawnMob(x, y, z, mobValues[mobId]);
+    var mob2 = Level.spawnMob(x, y, z, passiveMobs[mobId]);
     rideAnimal(mob2, mob1);
-    var  mob3= Level.spawnMob(x, y, z, mobValues[mobId]);
+    var mob3 = Level.spawnMob(x, y, z, passiveMobs[mobId]);
     rideAnimal(mob3, mob2);
-    var mob4 = Level.spawnMob(x, y, z, mobValues[mobId]);
+    var mob4 = Level.spawnMob(x, y, z, passiveMobs[mobId]);
     rideAnimal(mob4, mob3);
-    var mob5 = Level.spawnMob(x, y, z, mobValues[mobId]);
+    var mob5 = Level.spawnMob(x, y, z, passiveMobs[mobId]);
     rideAnimal(mob5, mob4);
-    var mob6 = Level.spawnMob(x, y, z, mobValues[mobId]);
+    var mob6 = Level.spawnMob(x, y, z, passiveMobs[mobId]);
     rideAnimal(mob6, mob5);
-  }else {
+  } else {
     var mob1 = Level.spawnMob(x, y, z, mobid);
 
     var mob2 = Level.spawnMob(x, y, z, mobid);
     rideAnimal(mob2, mob1);
-    var  mob3= Level.spawnMob(x, y, z, mobid);
+    var mob3 = Level.spawnMob(x, y, z, mobid);
     rideAnimal(mob3, mob2);
     var mob4 = Level.spawnMob(x, y, z, mobid);
     rideAnimal(mob4, mob3);
@@ -1538,144 +1442,6 @@ addHovRenderType(HovRenderer);
 
 
 
-function Tardis(x, z) {
-  setTile(19, 40, 0, 95);
-  clientMessage(ChatColor.BLUE + "Use the iron door to get back");
-  var plyr = getPlayerEnt();
-  Entity.setPosition(plyr, 0, 6, 0);
-  setTile(Player.getX() + 2, Player.getY(), Player.getZ(), 71);
-  setTile(Player.getX() + 2, Player.getY() - 1, Player.getZ(), 71);
-  for (i = 0; i <= 32; i++) {
-    for (j = 0; j <= 32; j++) {
-      for (k = 0; k < 13; k++) {
-        Level.setTile(x - 16 + i, 1 + k, z - 16 + j, 0);
-      }
-    }
-  }
-
-  //floor
-  for (i = 0; i <= 36; i++) {
-    for (j = 0; j <= 36; j++) {
-      Level.setTile(x - 18 + i, 0, z - 18 + j, 7, 7);
-    }
-  }
-
-  Level.setTile(x, 0, z, 7, 8);
-
-  //Layers
-  for (l = 0; l < dLayers.length; l++) {
-    for (i = 0; i <= 32; i++) {
-      for (j = 0; j <= 32; j++) {
-        Level.setTile(x - 16 + i, 1 + l, z - 16 + j, dLayers[l]);
-      }
-    }
-  }
-
-  //ceiling
-  for (i = 0; i <= 32; i++) {
-    for (j = 0; j <= 32; j++) {
-      Level.setTile(x - 16 + i, 14, z - 16 + j, 95);
-    }
-  }
-
-  //ceiling 2
-  for (i = 0; i <= 34; i++) {
-    for (j = 0; j <= 34; j++) {
-      Level.setTile(x - 17 + i, 15, z - 17 + j, 7);
-    }
-  }
-
-  //walls
-  for (i = 0; i <= 34; i++) {
-    for (k = 0; k < 14; k++) {
-      Level.setTile(x - 17 + i, 1 + k, z - 17, 62);
-    }
-  }
-
-  for (i = 0; i <= 34; i++) {
-    for (k = 0; k < 14; k++) {
-      Level.setTile(x - 17 + i, 1 + k, z + 17, 20);
-    }
-  }
-
-
-  for (j = 0; j <= 32; j++) {
-    for (k = 0; k < 14; k++) {
-      Level.setTile(x - 17, 1 + k, z - 16 + j, 89);
-    }
-  }
-
-  for (j = 0; j <= 32; j++) {
-    for (k = 0; k < 14; k++) {
-      Level.setTile(x + 17, 1 + k, z - 16 + j, 58);
-    }
-  }
-
-  //walls 2
-  for (i = 0; i <= 36; i++) {
-    for (k = 0; k < 14; k++) {
-      Level.setTile(x - 18 + i, 1 + k, z - 18, 95);
-    }
-  }
-
-  for (i = 0; i <= 36; i++) {
-    for (k = 0; k < 14; k++) {
-      Level.setTile(x - 18 + i, 1 + k, z + 18, 95);
-    }
-  }
-
-  for (j = 0; j <= 34; j++) {
-    for (k = 0; k < 14; k++) {
-      Level.setTile(x - 18, 1 + k, z - 17 + j, 95);
-    }
-  }
-
-
-  for (j = 0; j <= 34; j++) {
-    for (k = 0; k < 14; k++) {
-      Level.setTile(x + 18, 1 + k, z + 17 + j, 95);
-    }
-  }
-  for (j = 0; j <= 32; j++) {
-    for (k = 0; k < 14; k++) {
-      Level.setTile(x + 18, 1 + k, z - 18 + j, 95);
-    }
-  }
-
-
-  //walls 3
-
-  for (j = 0; j <= 32; j++) {
-    for (k = 0; k < 14; k++) {
-      Level.setTile(x + 19, 1 + k, z - 18 + j, 7);
-    }
-  }
-  for (j = 0; j <= 34; j++) {
-    for (k = 0; k < 14; k++) {
-      Level.setTile(x - 19, 1 + k, z - 18 + j, 7);
-    }
-  }
-
-  for (j = 0; j <= 34; j++) {
-    for (k = 0; k < 14; k++) {
-      Level.setTile(x + 18, 1 + k, z + 17 + j, 7);
-    }
-  }
-
-  for (i = 0; i <= 36; i++) {
-    for (k = 0; k < 14; k++) {
-      Level.setTile(x - 19 + i, 1 + k, z - 19, 95);
-    }
-  }
-
-  for (i = 0; i <= 36; i++) {
-    for (k = 0; k < 14; k++) {
-      Level.setTile(x - 19 + i, 1 + k, z + 19, 95);
-    }
-  }
-}
-
-
 
 
 function TardisMenu() {
@@ -1711,6 +1477,20 @@ function Wall(minX, minY, minZ, maxX, maxY, maxZ, mat) {
   }
 }
 
+function hugeBlock(minX, minY, minZ, maxX, maxY, maxZ, id) {
+  if (minX < maxX && minY < maxY && minZ < maxZ) {
+    for (x = minX; x < maxX; x++) {
+      for (var y = minY; y < maxY; y++) {
+        for (var z = minZ; z < maxZ; z++) {
+          setTile(x, y, z, id);
+        }
+      }
+    }
+  }else {
+    clientMessage("please put in correct values.\n If you happen to see this as a casual player, you just need to know that something went wrong, you can't do anything about it and i'ts all the programmers fault!")
+  }
+}
+
 function shootAtTarget(xx, yy, zz, target, id) {
   var x = Entity.getX(target);
   var y = Entity.getY(target);
@@ -1723,7 +1503,82 @@ function flipCoin() {
   var rnd = Math.round(Math.random());
   if (rnd == 0) {
     return false;
-  }else {
+  } else {
     return true;
   }
+}
+
+
+function loadTardis()
+{
+	currentActivity.runOnUiThread(new java.lang.Runnable(
+	{
+		run: function()
+		{
+			try
+			{
+				var loadFile = java.io.File(new android.os.Environment.getExternalStorageDirectory() + "/games/com.mojang/minecraftWorlds/" + Level.getWorldDir() + "/paperbenni/paperbenni.dat");
+				if(loadFile.exists())
+				{
+					// load streams
+					var streamInput = new java.io.FileInputStream(loadFile);
+					var streamReader = new java.io.InputStreamReader(streamInput);
+
+					var properties = new java.util.Properties();
+					properties.load(streamReader);
+
+					tardis.generated = Convert.stringToBoolean(properties.getProperty("tardis", "0"));
+					tardis.inside = Convert.stringToBoolean(properties.getProperty("inside", "0"));
+					if(tardis.generated && tardis.inside)
+					{
+						tardis.formerposition.x = parseInt(properties.getProperty("tardisformerx"));
+						tardis.formerposition.y = parseInt(properties.getProperty("tardisformery"));
+						tardis.formerposition.z = parseInt(properties.getProperty("tardisformerz"));
+            clientMessage("welcome back to the tardis. Remember to tap and hold on a wall to exit");
+					}
+					// close streams
+					streamReader.close();
+					streamInput.close();
+				}else {
+          generateTardis();
+          saveTardis();
+        }
+			}catch(err)
+			{
+				clientMessage("Error: " + err);
+			}
+		}
+	}));
+}
+
+function saveTardis(){
+  var saveFolder = new java.io.File(new android.os.Environment.getExternalStorageDirectory() + "/games/com.mojang/minecraftWorlds/" + Level.getWorldDir() + "/paperbenni-mod");
+  saveFolder.mkdirs();
+  var saveFile = new java.io.File(new android.os.Environment.getExternalStorageDirectory() + "/games/com.mojang/minecraftWorlds/" + Level.getWorldDir() + "/paperbenni-mod/paperbenni.dat");
+  if (saveFile.exists()){
+    saveFile['delete']();
+  }
+  saveFile.createNewFile();
+  var streamOutput = new java.io.FileOutputStream(saveFile);
+  var streamWriter = new java.io.OutputStreamWriter(streamOutput);
+
+  var properties = new java.util.Properties();
+
+  properties.setProperty("tardis", String(tardis.generated));
+  properties.setProperty("inside", String(tardis.inside));
+
+  if (tardis.generated && tardis.inside) {
+    properties.setProperty("tardisformerx", tardis.formerposition.x1);
+    properties.setProperty("tardisformery", tardis.formerposition.x1);
+    properties.setProperty("tardisformerz", tardis.formerposition.x1);
+  }
+  properties.store(streamWriter, "paperbennis modpack");
+  streamWriter.close();
+  streamOutput.close();
+}
+
+function generateTardis() {
+  hugeBlock(-20, 20, -20, 20, 30, 20, 7);
+  hugeBlock(-19, 21, -19, 19, 29, 0);
+  tardis.generated = true;
 }
