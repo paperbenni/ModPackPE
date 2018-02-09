@@ -15,9 +15,11 @@ function Level.getChestSlotData(x, y, z, slot);
 var meteorsheep = {
   sheep: 0,
   active: false,
-  fire: false,
-  timer: 0,
-  loop: 0
+  timer1: 0,
+  timer2: 0,
+  x: 0,
+  y: 0,
+  z: 0
 }
 
 //snowsword
@@ -65,6 +67,10 @@ var tardis = {
   }
 }
 
+var flyingtnt = {
+  active: false,
+  tnt: 0,
+}
 var tntarmor = {
   wearing: false
 }
@@ -112,7 +118,7 @@ const items = {
   watersword: 3022,
   //Random shit
   slingshot: 3012,
-  explosivegravitygun: 3013,
+  gravitygun: 3013,
   hypertntpickaxe: 3014,
   hypershooter: 3029,
   meteorsheep: 3030,
@@ -147,8 +153,11 @@ const items = {
   medicine: 3044,
   help: 3045,
   debugger: 3046,
-  mobstacker: 3047
+  mobstacker: 3047,
+  elevatoressence: 3048,
+  slomosword: 3049
 }
+//ModPE.setGameSpeed(speed: default 20);
 
 //Ist bei 3033
 
@@ -169,9 +178,6 @@ var acctivate = false;
 var tnt;
 var tower = false
 var exp = 0;
-var werf;
-var water = 0;
-var timer = false;
 var chicken;
 var Huhn = 0;
 var rupf = false;
@@ -185,7 +191,6 @@ var swords = [];
 
 
 
-var rocket;
 var fireThrow = 0;
 var arrow;
 var GUI;
@@ -204,7 +209,35 @@ var upspeed = 0.4
 var pick;
 //var luckyEffects = [
 const potionLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-const potionValues = [1, 3, 5, 8, 10, 21, 11, 12, 13, 14, 2, 4, 18, 9, 19, 20];
+const potionValues = [
+  MobEffect.absorption,
+  MobEffect.blindness,
+  MobEffect.confusion,
+  MobEffect.damageBoost,
+  MobEffect.damageResistance,
+  MobEffect.digSlowdown,
+  MobEffect.digSpeed,
+  MobEffect.effectIds,
+  MobEffect.fatalPoison,
+  MobEffect.fireResistance,
+  MobEffect.harm,
+  MobEffect.heal,
+  MobEffect.healthBoost,
+  MobEffect.hunger,
+  MobEffect.invisibility,
+  MobEffect.jump,
+  MobEffect.levitation,
+  MobEffect.movementSlowdown,
+  MobEffect.movementSpeed,
+  MobEffect.nightVision,
+  MobEffect.poison,
+  MobEffect.regeneration,
+  MobEffect.saturation,
+  MobEffect.waterBreathing,
+  MobEffect.weakness,
+  MobEffect.wither,
+];
+  //1, 3, 5, 8, 10, 21, 11, 12, 13, 14, 2, 4, 18, 9, 19, 20];
 //var potionTimes = [
 const itemValues = [256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 268, 269, 270, 270, 271,
   272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294,
@@ -282,6 +315,20 @@ const blockDataValues = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 141, 15, 
   40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 53, 54, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 67, 68, 71, 73, 74, 78, 79, 80, 81,
   82, 83, 85, 87, 89, 92, 95, 98, 102, 103, 105, 107, 109, 108, 112, 114, 128, 155, 156, 245, 246, 247, 248, 249, 253, 254, 255
 ];
+
+
+Entity.Throwable = function(type, vel) {
+  var p = ((Entity.getPitch(getPlayerEnt()) + 90) * Math.PI) / 180;
+  var y = ((Entity.getYaw(getPlayerEnt()) + 90) * Math.PI) / 180;
+  var xx = Math.sin(p) * Math.cos(y) * (1.5);
+  var yy = Math.sin(p) * Math.sin(y) * (1.5);
+  var zz = Math.cos(p) * (1.5);
+  var mob = Level.spawnMob(Player.getX() + xx, Player.getY() + zz, Player.getZ() + yy, type);
+  setVelX(mob, vel * xx);
+  setVelY(mob, vel * zz);
+  setVelZ(mob, vel * yy);
+};
+
 //Item.addShapedRecipe(70, 1, 0, [
 
 //Block.defineBlock(70, " §2lucky block green edition", ["anvil_top_damaged_x", 0], 46, false, 0);
@@ -455,7 +502,7 @@ ModPE.setItem(items.medicine, "removealleffects", 0, "medicine");
 
 //ModPE.setFoodItem(id, iconName, offset, halfhearts, name, maxStack)
 
-ModPE.setItem(items.slingshot, "slingshot", 0, "slingshot");
+Item.defineThrowable(items.slingshot, "slingshot", 0, "slingshot", 1);
 Item.addShapedRecipe(items.slingshot, 1, 0, [
   "a a",
   " b ",
@@ -465,7 +512,7 @@ Item.setHandEquipped(items.slingshot, 1);
 
 
 //
-ModPE.setItem(items.hypershooter, "hypershooter", 0, "Hyper shoter");
+Item.defineThrowable(items.hypershooter, "hypershooter", 0, "Hyper shoter", 1);
 Item.addShapedRecipe(items.hypershooter, 1, 0, [
   " a ",
   "bcb",
@@ -474,14 +521,14 @@ Item.addShapedRecipe(items.hypershooter, 1, 0, [
 
 
 
-ModPE.setItem(items.tntshooter, "tntshooter", 0, "tnt shooter", 0);
+Item.defineThrowable(items.tntshooter, "tntshooter", 0, "tnt shooter", 0);
 Item.addShapedRecipe(items.tntshooter, 1, 0, [
   " a ",
   "bcb",
   "bcb"
 ], ["a", 46, 0, "b", 265, 0, "c", 331, 0]);
 
-ModPE.setItem(items.sheeptntthrower, "sheeptntthrower", 0, "sheep TNT thrower", 0);
+Item.defineThrowable(items.sheeptntthrower, "sheeptntthrower", 0, "sheep TNT thrower", 0);
 Item.addShapedRecipe(items.sheeptntthrower, 1, 0, [
   " a ",
   "bbb",
@@ -559,8 +606,8 @@ Item.setMaxDamage(items.tntpickaxe, 80);
 
 
 
-ModPE.setItem(items.explosivegravitygun, "explosivegravitygun", 0, "explosive gravity gun", 0);
-Item.setMaxDamage(items.explosivegravitygun, 200);
+Item.defineThrowable(items.gravitygun, "gravitygun", 0, "gravity gun", 0);
+Item.setMaxDamage(items.gravitygun, 200);
 
 
 
@@ -626,52 +673,6 @@ function newLevel() {
   //Button setup
   clientMessage("Thanks for using my mod. You can craft a help item with a stick to get started");
 
-  //Button machen
-  var ctx = com.mojang.minecraftpe.MainActivity.currentMainActivity.get();
-  ctx.runOnUiThread(new java.lang.Runnable({
-    run: function() {
-      try {
-        var layout = new android.widget.LinearLayout(ctx);
-        layout.setOrientation(1);
-        var button = new android.widget.Button(ctx);
-        button.setText('-:-');
-        button.setOnClickListener(new android.view.View.OnClickListener({
-          onClick: function(viewarg) {
-            if (Player.getCarriedItem() == items.slingshot) {
-              shootEntity(Player.getEntity(), 6, 6, 6);
-            }
-
-            if (Player.getCarriedItem() == items.explosivegravitygun && isPickingEntity) {
-              shootEntity(ggMob, 4, 4, 4);
-              isPickingEntity = false;
-            }
-            if (Player.getCarriedItem() == items.hypershooter && hypershooter.active == false) {
-              hypershooter.active = true;
-            }
-            if (Player.getCarriedItem() == items.tntshooter) {
-              var ShootDir = lookDir(getYaw(), getPitch());
-              arrow = Level.spawnMob(getPlayerX() + (ShootDir.x * 2), getPlayerY() + (ShootDir.y * 2), getPlayerZ() + (ShootDir.z * 2), 65);
-              shootEntity(arrow, 4, 4, 4);
-              fireThrow = 2;
-            }
-            if (Player.getCarriedItem() == items.sheeptntthrower) {
-              var ShootDir = lookDir(getYaw(), getPitch());
-              arrow = Level.spawnMob(getPlayerX() + (ShootDir.x * 2), getPlayerY() + (ShootDir.y * 2), getPlayerZ() + (ShootDir.z * 2), 13);
-              shootEntity(arrow, 4, 4, 4);
-              fireThrow = 1;
-            }
-
-          }
-        }));
-        layout.addView(button);
-        GUI = new android.widget.PopupWindow(layout, android.widget.RelativeLayout.LayoutParams.WRAP_CONTENT, android.widget.RelativeLayout.LayoutParams.WRAP_CONTENT);
-        GUI.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
-        GUI.showAtLocation(ctx.getWindow().getDecorView(), android.view.Gravity.RIGHT | android.view.Gravity.TOP, 90, 0);
-      } catch (err) {
-        print('An error occured: ' + err);
-      }
-    }
-  }));
   loadTardis();
 
 }
@@ -1003,14 +1004,11 @@ function useItem(x, y, z, itemId, blockId, side) {
     Entity.removeAllEffects(Player.getEntity());
   }
   if (Player.getCarriedItem() == items.tntrocket) {
-    rocket = Level.spawnMob(x, y + 1, z, 65);
+    var rocket = Level.spawnMob(x, y + 1, z, 65);
     Entity.setVelY(rocket, 3);
     Player.addItemInventory(items.tntrocket, -1);
   }
-  if (Player.getCarriedItem() == items.tntboots) {
-    Player.setArmorSlot(3, items.tntboots, 0);
-    Player.addItemInventory(items.tntboots, -1);
-  }
+
 
   if (Player.getCarriedItem() == items.pigtnt) {
     pigtnt.pig = Level.spawnMob(x, y + 1, z, 65, "mob/pig.png");
@@ -1038,11 +1036,10 @@ function useItem(x, y, z, itemId, blockId, side) {
   }
 
   if (Player.getCarriedItem() == items.flyingtnt) {
-    tnt = Level.spawnMob(x, y + 1, z, 65, "mob/creeper.png");
-    Entity.setVelY(tnt, 3);
-    tower = true;
-    Player.addItemInventory(items.tntchestplate, -1);
+    flyingtnt.tnt = Level.spawnMob(x, y + 1, z, 65);
+    flyingtnt.active = true;
   }
+
   if (Player.getCarriedItem() == items.instanttnt) {
     instanttnt.active = true;
     instanttnt.health = Entity.getHealth(Player.getEntity());
@@ -1054,27 +1051,35 @@ function useItem(x, y, z, itemId, blockId, side) {
 
 
 function deathHook(murderer, victim) {
-  if (victim == target) {
+  if (victim == arrowsword.victim) {
     arrowsword.active = false;
     arrowsword.timer = 0;
   }
+  if (victim == snowsword.victim) {
+    snowsword.active = false;
+    snowsword.timer = 0;
+  }
+
+
+
   if (victim == meteorsheep.sheep) {
     Level.explode(Entity.getX(sheep), Entity.getY(sheep), Entity.getZ(sheep), 40);
-    meteorsheep.timer = 0;
-    meteorsheep.loop = 0;
-    meteorsheep.fire = false;
+    meteorsheep.timer1 = 0;
+    meteorsheep.timer2 = 0;
+    meteorsheep.active = false;
+  }
+
+
+}
+function entityRemovedHook(e){
+  if (e == flyingtnt.tnt) {
+    flyingtnt.active = false;
   }
 }
-//function entityRemovedHook(e){
-//if(Entity.getEntityTypeId(e)==33&&Player.getArmorSlot(1), items.tntchestplate){
-//Player.setHealth(20);
-//}
-//}
 function modTick() {
   //variablen für blöcke unterm spieler
   var blockUnderPlayer = Level.getTile(Math.floor(Player.getX()), Math.floor(Player.getY()) - 2, Math.floor(Player.getZ()));
   var flatBlockUnderPlayer = Level.getTile(Math.floor(Player.getX()), Math.floor(Player.getY()) - 1, Math.floor(Player.getZ()));
-
 
   //essence hooks
   if (blockUnderPlayer == blocks.chest) {
@@ -1082,11 +1087,12 @@ function modTick() {
     if (essence == items.jumperessence) {
       Entity.setVelY(Player.getEntity(), 1);
     }
+    if (essence == items.elevatoressence) {
+      elevator.active = true;
+    }
   }
 
-  if (Level.getTile(Player.getX(), Player.getY(), Player.getZ()) == 55) {
-    elevator.active = true;
-  }
+
 
   //Shoot snowballs at the target
   if (snowsword.active == true) {
@@ -1125,10 +1131,10 @@ function modTick() {
 
   if (elevator.active) {
     elevator.timer++;
-    Entity.setVelY(Player.getEntity(), 0.5, 0.5, 0.5);
-    setTile(Player.getX(), Player.getY(), Player.getZ, 55);
+    Entity.setVelY(Player.getEntity(), 0.2);
+    Entity.setVelX(Player.getEntity(), 0);
+    Entity.setVelZ(Player.getEntity(), 0);
   }
-
   if (elevator.timer == 300) {
     elevator.active = false;
     elevator.timer = 0;
@@ -1136,7 +1142,7 @@ function modTick() {
 
 
   if (Level.getTile(Player.getX(), Player.getY() - 3, Player.getZ()) != 0 && dragonglider.gliding == true) {
-    Entity.addEffect(Player.getEntity(), MobEffect.levitation, 40, 10, false, false);
+    Entity.addEffect(Player.getEntity(), MobEffect.levitation, 20, 10, false, false);
     dragonglider.gliding = false;
   }
   if (dragonglider.gliding == true) {
@@ -1149,23 +1155,24 @@ function modTick() {
 
 
   if (Player.getArmorSlot(1) == items.jetpack) {
-    shootEntity(Player.getEntity(), 0.3, 0.3, 0.3);
+    shootEntity(Player.getEntity(), 0.1, 0.1, 0.1);
+    Level.addParticle(ParticleType.mobFlame, Player.getX(), Player.getY()-1, Player.getZ(), 0, 0, 10);
   }
 
-  if (hypershooter.active && Player.getCarriedItem() == items.hypershooter) {
+
+  if (hypershooter.active) {
     var ShootDir = lookDir(getYaw(), getPitch());
     hypershooter.arrow = Level.spawnMob(getPlayerX() + (ShootDir.x * 2), getPlayerY() + (ShootDir.y * 2), getPlayerZ() + (ShootDir.z * 2), 80);
     shootEntity(hypershooter.arrow, 4, 4, 4);
+    shootEntity(Player.getEntity(), -0.2);
     Level.playSound(Player.getX(), Player.getY(), Player.getZ(), "random.bow", 30, 5);
     hypershooter.timer++;
   }
-
   if (hypershooter.timer == 100) {
     hypershooter.active = false;
     hypershooter.timer = 0;
   }
 
-  //WTF
 
   if (Player.getArmorSlot(0) == items.tnthelmet && Player.getArmorSlot(1) == items.tntchestplate &&
     Player.getArmorSlot(2) == items.tntleggings && Player.getArmorSlot(3) == items.tntboots) {
@@ -1178,19 +1185,21 @@ function modTick() {
     tntarmor.active = false;
     Player.setCanFly(0);
   }
-
   if (tntarmor.active) {
     if (Player.isFlying()) {
       Player.setFlying(0);
       Level.spawnMob(Player.getX(), Player.getY(), Player.getZ(), EntityType.TNT);
       setVelY(Player, 1);
+      if (blockUnderPlayer == 51) {
+        Level.explode(Player.getX(), Player.getY(), Player.getZ(), 4);
+      }
     }
   }
 
 
 
   if (pigtnt.active == true) {
-    pigtnt.timer = pigtnt.timer + 1;
+    pigtnt.timer++;
     pigtnt.pig = Level.spawnMob(Entity.getX(pigtnt.pig), Entity.getY(pigtnt.pig), Entity.getZ(pigtnt.pig), 12, "mob/pig.png");
     Entity.setNameTag(pigtnt.pig, "pig of awesomeness!!");
   }
@@ -1198,6 +1207,7 @@ function modTick() {
     pigtnt.active = false;
     pigtnt.timer = 0;
   }
+
   if (chickentnt.active == true) {
     chickentnt.timer++;
     Level.spawnMob(Entity.getX(chicken), Entity.getY(chicken), Entity.getZ(chicken), 10);
@@ -1207,99 +1217,44 @@ function modTick() {
     chickentnt.active = false;
   }
 
-  if (Player.getCarriedItem() == items.instanttnt) {
-    setTile(Player.getX(), Player.getY() + 20, Player.getZ(), 46);
-    setTile(Player.getX(), Player.getY() + 21, Player.getZ(), 51);
-    ItemDamage(1000, items.instanttnt);
+
+
+  if (flyingtnt.active) {
+    Entity.setVelY(flyingtnt.tnt, 0.1);
   }
-  if (timer == true) {
-    water++
-    Level.addParticle(ParticleType.mobFlame, Entity.getX(werf), Entity.getY(werf), Entity.getZ(werf), 0, 0, 10);
-  }
-  if (water == 100) {
-    water = 0;
-    timer = false;
-    clientMessage(ChatColor.RED + "BUMMM!");
-  }
-  if (tower == true) {
-    exp++;
-    setTile(Entity.getX(tnt), Entity.getY(tnt), Entity.getZ(tnt) + 1, 46);
-    Level.addParticle(ParticleType.heart, Entity.getX(tnt), Entity.getY(tnt), Entity.getZ(tnt), 0, 0, 10);
-  }
-  if (exp == 99) {
-    tower = false;
-    exp = 0;
-  }
+
 
   if (instanttnt.active) {
     instant.timer++;
-    if (instanttnt.timer >= 40) {
+    if (instanttnt.timer >= 50) {
       Player.setHealth(instanttnt.health());
       instanttnt.timer = 0;
       instanttnt.active = false;
     }
   }
+
+
   //meteorsheep start
   if (meteorsheep.active == true) {
     setTile(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep), 12);
-    meteorsheep.timer++;
-    meteorsheep.loop++;
+    Entity.setVelX(meteorsheep.sheep, meteorsheep.x);
+    Entity.setVelY(meteorsheep.sheep, meteorsheep.y);
+    Entity.setVelZ(meteorsheep.sheep, meteorsheep.z);
+    meteorsheep.timer1++;
+    if (meteorsheep.timer == 20) {
+      meteorsheep.timer1 = 0;
+      meteorsheep.timer2++;
+      meteorsheep.x = randomize(-1, 1);
+      meteorsheep.y = randomize(-0.5, 1.5);
+      meteorsheep.z = randomize(-1, 1);
+    }
+    if (meteorsheep.timer2 >= 15) {
+      Entity.setVelY(meteorsheep.sheep, 10);
+      meteorsheep.timer1 = 0;
+      meteorsheep.timer2 = 0;
+      meteorsheep.active = false;
+    }
   }
-  if (meteorsheep.timer == 30) {
-    Entity.setVelX(sheep, 2);
-    Level.spawnMob(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep), 65);
-  }
-  if (meteorsheep.timer == 35) {
-    Entity.setVelY(sheep, 1);
-    Level.spawnMob(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep), 65);
-  }
-  if (meteorsheep.timer == 40) {
-    Entity.setVelZ(sheep, 2);
-    Level.spawnMob(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep), 65);
-  }
-  if (meteorsheep.timer == 45) {
-    Entity.setVelY(sheep, 1);
-    Level.spawnMob(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep), 65);
-  }
-  if (meteorsheep.timer == 50) {
-    Entity.setVelX(sheep, -2);
-    Level.spawnMob(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep), 65);
-  }
-  if (meteorsheep.timer == 30) {
-    Entity.setVelY(sheep, 1);
-    Level.spawnMob(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep), 65);
-  }
-  if (meteorsheep.timer == 55) {
-    Entity.setVelZ(meteorsheep.sheep, -2);
-    Level.spawnMob(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep), 65);
-  }
-  if (meteorsheep.loop == 60) {
-    meteorsheep.timer = 0;
-  }
-  if (meteorsheep.loop == 120) {
-    meteorsheep.timer = 0;
-  }
-  if (meteorsheep.loop == 130) {
-    Entity.setVelY(meteorsheep.sheep, 5);
-    Level.spawnMob(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep), 65);
-  }
-  if (meteorsheep.loop == 160) {
-    Level.spawnMob(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep) - 5, Entity.getZ(meteorsheep.sheep), 10);
-    Level.spawnMob(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep) + 5, 10);
-    Level.spawnMob(Entity.getX(meteorsheep.sheep) + 5, Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep), 10);
-    Level.spawnMob(Entity.getX(meteorsheep.sheep) - 5, Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep), 10);
-    Level.spawnMob(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep) + 4, Entity.getZ(meteorsheep.sheep), 10);
-    meteorsheep.loop = 0;
-    meteorsheep.active = false;
-    meteorsheep.timer = 0;
-    Entity.setVelY(meteorsheep.sheep, 15);
-  }
-  if (meteorsheep.fire == true) {
-    Level.addParticle(ParticleType.mobFlame, Entity.getX(sheep), Entity.getY(sheep), Entity.getZ(sheep), 0, 0, 10);
-    Level.addParticle(ParticleType.lava, Entity.getX(sheep), Entity.getY(sheep), Entity.getZ(sheep), 0, 0, 10);
-  }
-  //meteorsheep end
-
 
 }
 
@@ -1316,25 +1271,26 @@ function attackHook(attacker, victim) {
     snowsword.victim = victim;
   }
 
-  if (Player.getCarriedItem() == items.lavasword) {
-    Level.setTile(Entity.getX(victim), Entity.getY(victim), Entity.getZ(victim), 10);
-  }
-
   if (Player.getCarriedItem() == items.arrowsword) {
     arrowsword.victim = victim;
     arrowsword.active = true;
   }
 
-  if (Player.getCarriedItem() == items.explosivegravitygun) {
+  if (Player.getCarriedItem() == items.lavasword) {
+    Level.setTile(Entity.getX(victim), Entity.getY(victim), Entity.getZ(victim), 10);
+  }
+
+  if (Player.getCarriedItem() == items.gravitygun) {
     ggMob = victim;
     isPickingEntity = true;
-    ItemDamage(200, items.explosivegravitygun);
+    ItemDamage(200, items.gravitygun);
   }
 
   if (Player.getCarriedItem() == items.emeraldsword) {
     Entity.setHealth(victim, Entity.getHealth(victim) - 12);
     ItemDamage(100, items.emeraldsword);
   }
+
   if (Player.getCarriedItem() == items.hypertntsword) {
     Level.explode(Entity.getX(victim), Entity.getY(victim), Entity.getZ(victim), 20);
     ItemDamage(200, items.hypertntsword);
@@ -1345,24 +1301,63 @@ function attackHook(attacker, victim) {
   }
 }
 
-function entityAddedHook(entity) {
+
+
+
+function entityAddedHook(added) {
+
+  //TNT makes you faster
   if (Entity.getEntityTypeId(entity) == 65 && Player.getArmorSlot(3) == items.tntboots) {
     Entity.addEffect(getPlayerEnt(), MobEffect.speed, 3 * 20, 0, false, true);
   }
+
+
+  switch (Entity.getRenderType(added)) {
+    case Item.getCustomThrowableRenderType(items.slingshot):
+      Entity.remove(added);
+      Entity.setCarriedItem(Player.getEntity(), items.slingshot, 1, 0);
+      shootEntity(Player.getEntity(), 6, 6, 6);
+      break;
+
+    case Item.getCustomThrowableRenderType(items.hypershooter): //hypershooter
+      Entity.remove(added);
+      Entity.setCarriedItem(Player.getEntity(), items.hypershooter, 1, 0);
+      if (hypershooter.active == false) {
+        hypershooter.active = true;
+      }
+      break;
+
+    case Item.getCustomThrowableRenderType(items.gravitygun): //gravitygun
+      Entity.remove(added);
+      Entity.setCarriedItem(Player.getEntity(), items.gravitygun, 1, 0);
+      if (isPickingEntity) {
+        shootEntity(ggMob, 4, 4, 4);
+        isPickingEntity = false;
+      }
+      break;
+
+    case Item.getCustomThrowableRenderType(items.tntshooter): //tntshooter
+      Entity.remove(added);
+      Entity.setCarriedItem(Player.getEntity(), items.tntshooter, 1, 0);
+      var ShootDir = lookDir(getYaw(), getPitch());
+      arrow = Level.spawnMob(getPlayerX() + (ShootDir.x * 2), getPlayerY() + (ShootDir.y * 2), getPlayerZ() + (ShootDir.z * 2), 65);
+      shootEntity(arrow, 4, 4, 4);
+      fireThrow = 2;
+      break;
+
+    case Item.getCustomThrowableRenderType(items.sheeptntthrower): //sheeptntthrower
+      Entity.remove(added);
+      var ShootDir = lookDir(getYaw(), getPitch());
+      arrow = Level.spawnMob(getPlayerX() + (ShootDir.x * 2), getPlayerY() + (ShootDir.y * 2), getPlayerZ() + (ShootDir.z * 2), 13);
+      shootEntity(arrow, 4, 4, 4);
+      fireThrow = 1;
+      break;
+  }
+
 }
 
 function leaveGame() {
-  var ctx = com.mojang.minecraftpe.MainActivity.currentMainActivity.get();
-  ctx.runOnUiThread(new java.lang.Runnable({
-    run: function() {
-      if (GUI != null) {
-        GUI.dismiss();
-        GUI = null;
-      }
-    }
-  }));
   saveTardis();
-
 }
 
 
@@ -1562,6 +1557,9 @@ function flipCoin() {
   }
 }
 
+function randomize(min, max) {
+  return Math.random() * (max - min) + min;
+}
 
 function loadTardis() {
   currentActivity.runOnUiThread(new java.lang.Runnable({
