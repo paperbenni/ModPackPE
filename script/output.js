@@ -8,7 +8,6 @@ function Level.getChestSlotCount(x, y, z, slot);
 function Level.getChestSlotData(x, y, z, slot);
 
 
-
 */
 //meteorsheep
 
@@ -363,7 +362,7 @@ ModPE.setItem(items.redluckyessence, "redluckyessence", 0, "red lucky essence", 
 ModPE.setItem(items.miniluckyessence, "miniluckyessence", 0, "mini lucky essence");
 
 
-ModPE.setItem(items.biplaceRandomBlockyessence, "biplaceRandomBlockyessence", 0, "big lucky essence");
+ModPE.setItem(items.bigluckyessence, "bigluckyessence", 0, "big lucky essence");
 
 
 
@@ -657,8 +656,6 @@ Item.addShapedRecipe(items.dragonglider, 1, 0, [
   "b b",
   " c "
 ], ["a", 35, 0, "b", 265, 0, "c", 334, 0]);
-
-
 
 
 
@@ -1593,6 +1590,7 @@ function loadTardis() {
     }
   }));
 }
+
 
 function saveTardis() {
   var saveFolder = new java.io.File(new android.os.Environment.getExternalStorageDirectory() + "/games/com.mojang/minecraftWorlds/" + Level.getWorldDir() + "/paperbenni-mod");
