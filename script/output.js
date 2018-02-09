@@ -172,7 +172,6 @@ var isPickingEntity = false;
 var ggMob;
 var initCreativeItems = true;
 var sheep;
-var tardisOpt = false;
 var activate = false;
 var acctivate = false;
 var tnt;
@@ -1025,12 +1024,11 @@ function useItem(x, y, z, itemId, blockId, side) {
 
 
 
-  if (Player.getCarriedItem() == items.meteorsheep && activate == false) {
+  if (Player.getCarriedItem() == items.meteorsheep && meteorsheep.active == false) {
     meteorsheep.sheep = Level.spawnMob(x, y + 1, z, 13, "mob/sheep_14.png");
     Entity.setNameTag(meteorsheep.sheep, "§cBooommmmm!");
     Entity.setVelY(meteorsheep.sheep, 3);
     meteorsheep.active = true;
-    meteorsheep.fire = true;
     Player.addItemInventory(items.meteorsheep, -1);
     Entity.setHealth(meteorsheep.sheep, 3);
   }
