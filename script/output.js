@@ -154,7 +154,16 @@ const items = {
   debugger: 3046,
   mobstacker: 3047,
   elevatoressence: 3048,
-  slomosword: 3049
+  slomosword: 3049,
+  enderboots: 3050,
+  enderparachute: 3051,
+  fastbuilder: 3052,
+  fastpadxpos: 3053,
+  fastpadxneg: 3054,
+  fastpadypos: 3055,
+  fastpadyneg: 3056
+
+
 }
 //ModPE.setGameSpeed(speed: default 20);
 
@@ -337,6 +346,9 @@ Item.addShapedRecipe(items.help, 1, 0, [
   "   "
 ], ["a", 280, 0]);
 
+ModPE.setItem(items.enderparachutem, "enderparachute", 0, "enderparachute", 1);
+
+
 ModPE.setItem(items.debugger, "debugger", 0, "debugger", 1);
 
 ModPE.setItem(items.mobstacker, "mobstacker", 0, "mob stacker", 1);
@@ -376,7 +388,12 @@ Item.addCraftRecipe(55, 4, 0, [266, 1, 0]);
 Block.setDestroyTime(55, 0.01);
 
 
-
+Item.defineArmor(items.enderboots, "enderboots", 0, "ender boots", "armor/ender_2.png", 3, 351, ArmorType.boots);
+Item.addShapedRecipe(items.enderboots, 1, 0, [
+  "   ",
+  "a a",
+  "a a"
+], ["a", 121, 0]);//end stone
 
 
 //Emerald armor
@@ -1088,6 +1105,18 @@ function modTick() {
   }
 
 
+  if (Player.getCarriedItem() == items.enderparachute) {
+    if (blockUnderPlayer == 0) {
+      var distance = 0;
+      while (distance <= 30) {
+        distance++;
+        if (Level.getTile(Math.floor(Player.getX()), Math.floor(Player.getY()) - distance, Math.floor(Player.getZ())) != 0) {
+          Entity.setPosition(Player.getEntity(), Math.floor(Player.getX()), Math.floor(Player.getY()) - distance + 2, Math.floor(Player.getZ()));
+        }
+      }
+    }
+  }
+
 
   //Shoot snowballs at the target
   if (snowsword.active == true) {
@@ -1156,6 +1185,12 @@ function modTick() {
     Level.addParticle(ParticleType.mobFlame, Player.getX(), Player.getY()-1, Player.getZ(), 0, 0, 10);
   }
 
+  if (Player.getArmorSlot(3) == items.enderboots) {
+    if (Entity.getVelY() <= 0.02) {
+      Entity.setPosition(Player.getEntity(), Player.getX(), Player.getY()+3, Player.getZ());
+      Entity.setVelY(Player.getEntity(), 0);
+    }
+  }
 
   if (hypershooter.active) {
     var ShootDir = lookDir(getYaw(), getPitch());
