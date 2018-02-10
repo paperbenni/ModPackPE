@@ -124,7 +124,7 @@ const items = {
   flyingtnt: 3031,
   jetpack: 3034,
   dragonglider: 3032,
-  speedboots: 3033,
+  hoverboots: 3033,
   //TNT tools
   tntpickaxe: 3015,
   tntrocket: 3016,
@@ -640,7 +640,7 @@ Item.addShapedRecipe(items.tntboots, 1, 0, [
 
 Item.setMaxDamage(items.tntboots, 5000);
 
-Item.defineArmor(items.speedboots, "speedboots", 0, "speed boots", "armor/tnt_1.png", 2, 315, ArmorType.boots);
+Item.defineArmor(items.hoverboots, "hoverboots", 0, "hover boots", "armor/hover_1.png", 2, 315, ArmorType.boots);
 
 
 Item.defineArmor(items.jetpack, "jetpack", 0, "jetpack", "armor/tntarmor.png", 2, 353, ArmorType.chestplate);
@@ -1147,7 +1147,9 @@ function modTick() {
     dragonglider.gliding = true;
   }
 
-
+  if (Player.getArmorSlot(items.hoverboots)) {
+    Entity.setVelY(Player.getEntity(), 0);
+  }
 
   if (Player.getArmorSlot(1) == items.jetpack) {
     shootEntity(Player.getEntity(), 0.1, 0.1, 0.1);
