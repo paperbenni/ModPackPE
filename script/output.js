@@ -192,7 +192,8 @@ var rupf = false;
 var jump = false;
 var fly = 0;
 
-
+var previousCarriedItem = 0;
+var previousSlotId = 0;
 
 
 var swords = [];
@@ -1093,6 +1094,7 @@ function entityRemovedHook(e){
 }
 function modTick() {
   //variablen für blöcke unterm spieler
+  checkChangedCarriedItem();
   var blockUnderPlayer = Level.getTile(Math.floor(Player.getX()), Math.floor(Player.getY()) - 2, Math.floor(Player.getZ()));
   var flatBlockUnderPlayer = Level.getTile(Math.floor(Player.getX()), Math.floor(Player.getY()) - 1, Math.floor(Player.getZ()));
 
@@ -1395,7 +1397,53 @@ function leaveGame() {
   saveTardis();
 }
 
+var currentScreen = "null"; // will remain to null if screenChangeHook doesn't work or is not called (for example with BL for MCPE 0.14)
+function screenChangeHook(screenName)
+{
+	switch(screenName)
+	{
+		case "play_screen - worlds":
+		{
+			currentScreen = "not_in_game";
+			break;
+		}
+		case "hud_screen":
+		{
+			if(currentScreen != "not_in_game" && currentScreen != "hud_screen")
+			{
+				previousCarriedItem = 0;
+			}
 
+			currentScreen = "hud_screen";
+			break;
+		}
+		case "creative_inventory_screen":
+		case "inventory_screen_pocket":
+		case "inventory_screen":
+		case "survival_inventory_screen":
+		case "pause_screen":
+		case "chat_screen":
+		case "hopper_screen":
+		case "small_chest_screen":
+		case "large_chest_screen":
+		case "dropper_screen":
+		case "dispenser_screen":
+		case "furnace_screen":
+		case "brewing_stand_screen":
+		case "anvil_screen":
+		case "horse_screen":
+		{
+			resetGunsVariables();
+
+			removeShootAndAimButtons();
+			removeInfoItemUI();
+			removeHealButton();
+
+			currentScreen = screenName;
+			break;
+		}
+	}
+}
 
 
 
@@ -1619,6 +1667,24 @@ Item.defineItem = function(id, textureName, textureNumber, name, stackLimit)
 	}
 }
 
+
+ function checkChangedCarriedItem(){
+  if(currentScreen == "hud_screen" || currentScreen == "null")
+  {
+    if(Player.getCarriedItem() != previousCarriedItem)
+      changeCarriedItemHook(Player.getCarriedItem(), previousCarriedItem);
+    else
+    {
+      // switching between items with same id but different damage for example
+      if(Player.getSelectedSlotId() != previousSlotId)
+      {
+        changeCarriedItemHook(previousCarriedItem, previousCarriedItem);
+      }
+    }
+    previousCarriedItem = Player.getCarriedItem();
+    previousSlotId = Player.getSelectedSlotId();
+  }
+}
 
 function loadTardis() {
   currentActivity.runOnUiThread(new java.lang.Runnable({
