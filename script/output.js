@@ -1741,6 +1741,8 @@ function startup() {
         createMachineItems();
         createShooterItems();
         createMiscellaniousItems();
+
+        createRecipies();
 }
 
 startup();
