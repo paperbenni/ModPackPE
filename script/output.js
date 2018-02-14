@@ -54,7 +54,7 @@ var hypershootertntshooter = {
         arrow: 0
 };
 var sheeptntthrower = {
-	shootDir: 0
+        shootDir: 0
 };
 
 //Tardis
@@ -1435,12 +1435,6 @@ function screenChangeHook(screenName) {
                 case "anvil_screen":
                 case "horse_screen":
                         {
-                                resetGunsVariables();
-
-                                removeShootAndAimButtons();
-                                removeInfoItemUI();
-                                removeHealButton();
-
                                 currentScreen = screenName;
                                 break;
                         }
