@@ -11,6 +11,9 @@ function Level.getChestSlotData(x, y, z, slot);
 */
 //meteorsheep
 
+var currentActivity = com.mojang.minecraftpe.MainActivity.currentMainActivity.get();
+var sdcard = android.os.Environment.getExternalStorageDirectory();
+
 var meteorsheep = {
         sheep: 0,
         active: false,
@@ -46,6 +49,30 @@ var tntshooter = {
         active: false,
         timer: 0,
         arrow: 0
+};
+
+var tntsword = {
+        active: false,
+        timer: 0,
+        victim: 0
+};
+
+var hypertntsword = {
+        active: false,
+        timer: 0,
+        victim: 0
+};
+
+var tntpickaxe = {
+        active: false,
+        timer: 0,
+        victim: 0
+};
+
+var hypertntpickaxe = {
+        active: false,
+        timer: 0,
+        victim: 0
 };
 
 var hypershootertntshooter = {
@@ -167,14 +194,15 @@ const items = {
         fastpadypos: 3055,
         fastpadyneg: 3056,
         machinetester: 3057,
-        jumperessence: 3058, 
-        shop:3059 
+        jumperessence: 3058,
+        shop: 3059
 
 };
 //ModPE.setGameSpeed(speed: default 20);
 
 //Ist bei 3033
 
+var maxDamages = [];
 
 const blocks = {
         chest: 54,
@@ -700,12 +728,6 @@ function newLevel() {
 
 function destroyBlock(x, y, z, side) {
         var destroyedblock = Level.getTile(x, y, z);
-
-        if (Player.getCarriedItem() == items.tntpickaxe) {
-                Level.explode(x, y, z, 5);
-                ItemDamage(80, items.tntpickaxe);
-        }
-
         if (Player.getCarriedItem() == items.hypertntpickaxe) {
                 Level.explode(x, y, z, 10);
                 ItemDamage(200, items.hypertntpickaxe);
@@ -715,6 +737,14 @@ function destroyBlock(x, y, z, side) {
 function startDestroyBlock(x, y, z, side) {
         //emeraldpickaxe
         var attemptblock = Level.getTile(x, y, z);
+        var item = Player.getCarriedItem();
+        if (item == items.tntpickaxe) {
+                clientMessage("run (dödddööööödödöödö)!");
+                tntpickaxe.active = true;
+                preventDefault();
+        }
+
+
         if (Player.getCarriedItem() == items.emeraldpickaxe) {
                 setTile(x, y, z, 0);
         }
@@ -1187,7 +1217,7 @@ function modTick() {
                 dragonglider.gliding = true;
         }
 
-        if (Player.getArmorSlot(items.hoverboots)) {
+        if (Player.getArmorSlot(3, items.hoverboots)) {
                 Entity.setVelY(Player.getEntity(), 0);
         }
 
@@ -1350,7 +1380,7 @@ function attackHook(attacker, victim) {
 function entityAddedHook(added) {
 
         //TNT makes you faster
-        if (Entity.getEntityTypeId(entity) == 65 && Player.getArmorSlot(3) == items.tntboots) {
+        if (Entity.getEntityTypeId(added) == 65 && Player.getArmorSlot(3) == items.tntboots) {
                 Entity.addEffect(getPlayerEnt(), MobEffect.speed, 3 * 20, 0, false, true);
         }
 
@@ -1450,13 +1480,17 @@ function screenChangeHook(screenName) {
 //////CUSTOM FUNKTIONEN/////////////////
 ////////////////////////////////////////
 
-function ItemDamage(maxDamage, id) {
+function ItemDamage() {
         var pcid = Player.getCarriedItemData();
-        if (pcid !== maxDamage) {
-                Entity.setCarriedItem(getPlayerEnt(), id, 1, pcid + 1);
-        } else if (pcid == maxDamage) {
-                Level.playSound(Player.getX(), Player.getY(), Player.getZ(), "random.break", 2);
-                Entity.setCarriedItem(getPlayerEnt(), 0, 0, 0);
+        for (var i in maxDamages) {
+                if (Player.getCarriedItem() == maxDamages[i][0]) {
+                        if (pcid >= maxDamages[i][1]) {
+                                Level.playSound(Player.getX(), Player.getY(), Player.getZ(), "random.break", 2);
+                                Entity.setCarriedItem(getPlayerEnt(), 0, 0, 0);
+                        } else {
+                                Entity.setCarriedItem(getPlayerEnt(), id, 1, pcid + 1);
+                        }
+                }
         }
 }
 
@@ -1625,6 +1659,11 @@ Item.newArmor = function(id, iconName, iconIndex, name, texture, damageReduceAmo
         }
 };
 
+Item.maxDmg = function(item, max) {
+        Item.setMaxDamage(item, max);
+        MaxDamages.push([item, max]);
+};
+
 Item.defineItem = function(id, textureName, textureNumber, name, stackLimit) {
         try {
                 ModPE.setItem(id, textureName, textureNumber, name, stackLimit);
@@ -1633,19 +1672,19 @@ Item.defineItem = function(id, textureName, textureNumber, name, stackLimit) {
         }
 };
 
-Item.recipe = function(id1, ammount1, damage1, order1, ingredients1) { 
+Item.recipe = function(id1, ammount1, damage1, order1, ingredients1) {
         recipes.push({
-                id: id1, 
-                ammount: ammount1, 
-                damage: damage1, 
-                order: order1, 
+                id: id1,
+                ammount: ammount1,
+                damage: damage1,
+                order: order1,
                 ingredients: ingredients1
         });
 };
 
 
 function createRecipies() {
-        for(var i in recipes){
+        for (var i in recipes) {
                 Item.addShapedRecipe(recipes[i].id, recipes[i].ammount, recipes[i].damage, recipes[i].order, recipes[i].ingredients);
         }
 }
@@ -1664,6 +1703,10 @@ function checkChangedCarriedItem() {
                 previousCarriedItem = Player.getCarriedItem();
                 previousSlotId = Player.getSelectedSlotId();
         }
+}
+
+function changeCarriedItemHook() {
+        clientMessage("changed item");
 }
 
 function loadTardis() {
