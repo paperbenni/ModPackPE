@@ -99,6 +99,7 @@ var dragonglider = {
         gliding: false
 };
 
+var recipes = [];
 
 //Item ids
 const items = {
@@ -166,7 +167,8 @@ const items = {
         fastpadypos: 3055,
         fastpadyneg: 3056,
         machinetester: 3057,
-        jumperessence: 3058
+        jumperessence: 3058, 
+        shop:3059 
 
 };
 //ModPE.setGameSpeed(speed: default 20);
@@ -341,7 +343,6 @@ Entity.Throwable = function(type, vel) {
         setVelZ(mob, vel * yy);
 };
 
-//Item.addShapedRecipe(70, 1, 0, [
 
 
 function createLuckyItems() {
@@ -369,7 +370,7 @@ function createEmeraldItems() {
 
         //Emerald armor
         Item.newArmor(items.emeraldhelmet, "emeraldhelmet", 0, "emerald helmet", "armor/emerald_1.png", 3, 351, ArmorType.helmet);
-        Item.addShapedRecipe(items.emeraldhelmet, 1, 0, [
+        Item.recipe(items.emeraldhelmet, 1, 0, [
                 "aaa",
                 "a a",
                 "   "
@@ -378,21 +379,21 @@ function createEmeraldItems() {
 
 
         Item.newArmor(items.emeraldchestplate, "emeraldchestplate", 0, "emerald chestplate", "armor/emerald_1.png", 8, 351, ArmorType.chestplate);
-        Item.addShapedRecipe(items.emeraldchestplate, 1, 0, [
+        Item.recipe(items.emeraldchestplate, 1, 0, [
                 "a a",
                 "aaa",
                 "aaa"
         ], ["a", items.emeraldingot, 0]);
 
         Item.newArmor(items.emeraldleggings, "emeraldleggings", 0, "emerald leggings", "armor/emerald_2.png", 5, 351, ArmorType.leggings);
-        Item.addShapedRecipe(items.emeraldleggings, 1, 0, [
+        Item.recipe(items.emeraldleggings, 1, 0, [
                 "aaa",
                 "a a",
                 "a a"
         ], ["a", items.emeraldingot, 0]);
 
         Item.newArmor(items.emeraldboots, "emeraldboots", 0, "emerald boots", "armor/emerald_1.png", 7, 351, ArmorType.boots);
-        Item.addShapedRecipe(items.emeraldboots, 1, 0, [
+        Item.recipe(items.emeraldboots, 1, 0, [
                 "a a",
                 "a a",
                 "   "
@@ -400,16 +401,16 @@ function createEmeraldItems() {
 
         //Item.newArmor(LONG_FALL_BOOTS_ID,"longfallboots",0,"Long Fall Boots","armor/longfallboots.png",1,LONG_FALL_BOOTS_MAX_DAMAGE,ArmorType.boots);
 
-        //emerald recipie ingredients
+        //emerald recipe ingredients
         Item.defineItem(items.emeralddust, "emeralddust", 0, "emerald dust", 0);
-        Item.addShapedRecipe(items.emeralddust, 4, 0, [
+        Item.recipe(items.emeralddust, 4, 0, [
                 " a ",
                 "   ",
                 "   "
         ], ["a", 388, 0]);
 
         Item.defineItem(items.emeraldingot, "emeraldingot", 0, "emerald ingot", 0);
-        Item.addShapedRecipe(items.emeraldingot, 1, 0, [
+        Item.recipe(items.emeraldingot, 1, 0, [
                 "  a",
                 " b ",
                 "   "
@@ -417,7 +418,7 @@ function createEmeraldItems() {
 
         //Emeralddsword
         Item.defineItem(items.emeraldsword, "emeraldsword", 0, "emerald sword", 0);
-        Item.addShapedRecipe(items.emeraldsword, 1, 0, [
+        Item.recipe(items.emeraldsword, 1, 0, [
                 " a ",
                 " a ",
                 " b "
@@ -428,7 +429,7 @@ function createEmeraldItems() {
 
         //Emerald pickaxe
         Item.defineItem(items.emeraldpickaxe, "emeraldpickaxe", 0, "emerald pickaxe", 0);
-        Item.addShapedRecipe(items.emeraldpickaxe, 1, 0, [
+        Item.recipe(items.emeraldpickaxe, 1, 0, [
                 "aaa",
                 " b ",
                 " b "
@@ -439,7 +440,7 @@ function createEmeraldItems() {
 
         //Emerald shovel
         Item.defineItem(items.emeraldshowel, "emeraldshowel", 0, "emerald showel", 0);
-        Item.addShapedRecipe(items.emeraldshowel, 1, 0, [
+        Item.recipe(items.emeraldshowel, 1, 0, [
                 " a ",
                 " b ",
                 " b "
@@ -453,7 +454,7 @@ function createMachineItems() {
         Item.defineItem(items.debugger, "debugger", 0, "debugger", 1);
         Item.defineItem(items.mobstacker, "mobstacker", 0, "mob stacker", 1);
         Item.defineItem(items.tardisessence, "tardisessence", 0, "tardis essence", 0);
-        Item.addShapedRecipe(items.tardisessence, 1, 0, [
+        Item.recipe(items.tardisessence, 1, 0, [
                 " a ",
                 " a ",
                 " b "
@@ -465,14 +466,14 @@ function createMachineItems() {
 
 function createMiscellaniousItems() {
         Item.defineItem(items.help, "help", 0, "help", 1);
-        Item.addShapedRecipe(items.help, 1, 0, [
+        Item.recipe(items.help, 1, 0, [
                 "   ",
                 " a ",
                 "   "
         ], ["a", 280, 0]);
         Item.defineItem(items.enderparachute, "enderparachute", 0, "enderparachute", 1);
         Item.newArmor(items.enderboots, "enderboots", 0, "ender boots", "armor/ender_2.png", 3, 351, ArmorType.boots);
-        Item.addShapedRecipe(items.enderboots, 1, 0, [
+        Item.recipe(items.enderboots, 1, 0, [
                 "   ",
                 "a a",
                 "a a"
@@ -483,7 +484,7 @@ function createMiscellaniousItems() {
         //ModPE.setFoodItem(id, iconName, offset, halfhearts, name, maxStack)
 
         Item.defineThrowable(items.slingshot, "slingshot", 0, "slingshot", 1);
-        Item.addShapedRecipe(items.slingshot, 1, 0, [
+        Item.recipe(items.slingshot, 1, 0, [
                 "a a",
                 " b ",
                 "a a"
@@ -491,7 +492,7 @@ function createMiscellaniousItems() {
         Item.setHandEquipped(items.slingshot, 1);
 
         Item.defineItem(items.meteorsheep, "meteorsheep", 0, "Meteor sheep", 0);
-        Item.addShapedRecipe(items.meteorsheep, 1, 0, [
+        Item.recipe(items.meteorsheep, 1, 0, [
                 "wtw",
                 "twt",
                 "wtw"
@@ -510,14 +511,14 @@ function createMiscellaniousItems() {
 
 
         Item.newArmor(items.jetpack, "jetpack", 0, "jetpack", "armor/tntarmor.png", 2, 353, ArmorType.chestplate);
-        Item.addShapedRecipe(items.jetpack, 1, 0, [
+        Item.recipe(items.jetpack, 1, 0, [
                 "aba",
                 "a a",
                 "c c"
         ], ["a", 265, 0, "b", 331, 0, "c", 325, 10]);
 
         Item.newArmor(items.dragonglider, "dragonglider", 0, "dragon glider", "armor/dragon.png", 2, 351, ArmorType.chestplate);
-        Item.addShapedRecipe(items.dragonglider, 1, 0, [
+        Item.recipe(items.dragonglider, 1, 0, [
                 "aaa",
                 "b b",
                 " c "
@@ -537,7 +538,7 @@ function createSwordItems() {
         Item.defineItem(items.arrowsword, "arrowsword", 0, "arrow sword");
 
         Item.defineItem(items.snowsword, "snowsword", 0, "snow sword", 0);
-        Item.addShapedRecipe(items.snowsword, 1, 0, [
+        Item.recipe(items.snowsword, 1, 0, [
                 " a ",
                 " a ",
                 " b "
@@ -551,7 +552,7 @@ function createSwordItems() {
 function createTntItems() {
 
         Item.defineItem(items.tntpickaxe, "tntpickaxe", 0, "TNT pickaxe", 1);
-        Item.addShapedRecipe(items.tntpickaxe, 1, 0, [
+        Item.recipe(items.tntpickaxe, 1, 0, [
                 "aaa",
                 " b ",
                 " b "
@@ -560,7 +561,7 @@ function createTntItems() {
         Item.setHandEquipped(items.tntpickaxe, 1);
 
         Item.defineItem(items.hypertntpickaxe, "hypertntpickaxe", 0, "Hyper TNT pickaxe", 1);
-        Item.addShapedRecipe(items.hypertntpickaxe, 1, 0, [
+        Item.recipe(items.hypertntpickaxe, 1, 0, [
                 "aaa",
                 " b ",
                 " b "
@@ -569,7 +570,7 @@ function createTntItems() {
         Item.setMaxDamage(items.hypertntpickaxe, 200);
 
         Item.defineItem(items.tntrocket, "tntrocket", 0, "TNT rocket");
-        Item.addShapedRecipe(items.tntrocket, 1, 0, [
+        Item.recipe(items.tntrocket, 1, 0, [
                 " a ",
                 " b ",
                 "   "
@@ -577,14 +578,14 @@ function createTntItems() {
 
 
         Item.defineItem(items.flyingtnt, "flyingtnt", 0, "flying TNT", 0);
-        Item.addShapedRecipe(items.flyingtnt, 1, 0, [
+        Item.recipe(items.flyingtnt, 1, 0, [
                 " a ",
                 " a ",
                 " b "
         ], ["a", 46, 0, "b", 288, 0]);
 
         Item.defineItem(items.instanttnt, "instanttnt", 0, "instant TNT", 0);
-        Item.addShapedRecipe(items.instanttnt, 1, 0, [
+        Item.recipe(items.instanttnt, 1, 0, [
                 "aaa",
                 "aba",
                 "aaa"
@@ -592,7 +593,7 @@ function createTntItems() {
         Item.setMaxDamage(items.instanttnt, 1000);
 
         Item.defineItem(items.tntsword, "tntsword", 0, "TNT sword", 1);
-        Item.addShapedRecipe(items.tntsword, 1, 0, [
+        Item.recipe(items.tntsword, 1, 0, [
                 " a ",
                 " a ",
                 " b "
@@ -604,7 +605,7 @@ function createTntItems() {
 
 
         Item.defineItem(items.hypertntsword, "hypertntsword", 0, "Hyper TNT sword", 1);
-        Item.addShapedRecipe(items.hypertntsword, 1, 0, [
+        Item.recipe(items.hypertntsword, 1, 0, [
                 " a ",
                 " a ",
                 " b "
@@ -614,35 +615,35 @@ function createTntItems() {
 
 
         Item.defineItem(items.pigtnt, "pigtnt", 0, "pig TNT", 0);
-        Item.addShapedRecipe(items.pigtnt, 1, 0, [
+        Item.recipe(items.pigtnt, 1, 0, [
                 "aaa",
                 "aba",
                 "aaa"
         ], ["a", 319, 0, "b", 46, 0]);
 
         Item.newArmor(items.tnthelmet, "tnthelmet", 0, "TNT helmet", "armor/tnt_1.png", 6, 399, ArmorType.helmet);
-        Item.addShapedRecipe(items.tnthelmet, 1, 0, [
+        Item.recipe(items.tnthelmet, 1, 0, [
                 "aaa",
                 "a a",
                 "   "
         ], ["a", 46, 0]);
 
         Item.newArmor(items.tntchestplate, "tntchestplate", 0, "TNT chestplate", "armor/tnt_1.png", 12, 354, ArmorType.chestplate);
-        Item.addShapedRecipe(items.tntchestplate, 1, 0, [
+        Item.recipe(items.tntchestplate, 1, 0, [
                 "a a",
                 "aaa",
                 "aaa"
         ], ["a", 46, 0]);
 
         Item.newArmor(items.tntleggings, "tntleggings", 0, "TNT leggings", "armor/tnt_2.png", 6, 360, ArmorType.leggings);
-        Item.addShapedRecipe(items.tntleggings, 1, 0, [
+        Item.recipe(items.tntleggings, 1, 0, [
                 "aaa",
                 "a a",
                 "a a"
         ], ["a", 46, 0]);
 
         Item.newArmor(items.tntboots, "tntboots", 0, "TNT boots", "armor/tnt_1.png", 2, 351, ArmorType.boots);
-        Item.addShapedRecipe(items.tntboots, 1, 0, [
+        Item.recipe(items.tntboots, 1, 0, [
                 "a a",
                 "a a",
                 "   "
@@ -656,7 +657,7 @@ function createTntItems() {
 function createShooterItems() {
         //
         Item.defineThrowable(items.hypershooter, "hypershooter", 0, "Hyper shoter", 1);
-        Item.addShapedRecipe(items.hypershooter, 1, 0, [
+        Item.recipe(items.hypershooter, 1, 0, [
                 " a ",
                 "bcb",
                 "bcb"
@@ -665,14 +666,14 @@ function createShooterItems() {
 
 
         Item.defineThrowable(items.tntshooter, "tntshooter", 0, "tnt shooter", 0);
-        Item.addShapedRecipe(items.tntshooter, 1, 0, [
+        Item.recipe(items.tntshooter, 1, 0, [
                 " a ",
                 "bcb",
                 "bcb"
         ], ["a", 46, 0, "b", 265, 0, "c", 331, 0]);
 
         Item.defineThrowable(items.sheeptntthrower, "sheeptntthrower", 0, "sheep TNT thrower", 0);
-        Item.addShapedRecipe(items.sheeptntthrower, 1, 0, [
+        Item.recipe(items.sheeptntthrower, 1, 0, [
                 " a ",
                 "bbb",
                 "cdc"
@@ -1631,6 +1632,23 @@ Item.defineItem = function(id, textureName, textureNumber, name, stackLimit) {
                 ModPE.setItem(id, "skull_zombie", 0, name, stackLimit);
         }
 };
+
+Item.recipe = function(id1, ammount1, damage1, order1, ingredients1) { 
+        recipes.push({
+                id: id1, 
+                ammount: ammount1, 
+                damage: damage1, 
+                order: order1, 
+                ingredients: ingredients1
+        });
+};
+
+
+function createRecipies() {
+        for(var i in recipes){
+                Item.addShapedRecipe(recipes[i].id, recipes[i].ammount, recipes[i].damage, recipes[i].order, recipes[i].ingredients);
+        }
+}
 
 
 function checkChangedCarriedItem() {
