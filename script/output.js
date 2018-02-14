@@ -730,7 +730,7 @@ function destroyBlock(x, y, z, side) {
         var destroyedblock = Level.getTile(x, y, z);
         if (Player.getCarriedItem() == items.hypertntpickaxe) {
                 Level.explode(x, y, z, 10);
-                ItemDamage(200, items.hypertntpickaxe);
+                Item.Damage();
         }
 }
 
@@ -739,13 +739,21 @@ function startDestroyBlock(x, y, z, side) {
         var attemptblock = Level.getTile(x, y, z);
         var item = Player.getCarriedItem();
         if (item == items.tntpickaxe) {
-                clientMessage("run (dödddööööödödöödö)!");
+                clientMessage("better run");
                 tntpickaxe.active = true;
                 preventDefault();
+                Item.Damage();
+        }
+
+        if (item == items.hypertntpickaxe) {
+                clientMessage("better run");
+                hypertntpickaxe.active = true;
+                preventDefault();
+                Item.Damage();
         }
 
 
-        if (Player.getCarriedItem() == items.emeraldpickaxe) {
+        if (item == items.emeraldpickaxe) {
                 setTile(x, y, z, 0);
         }
         if (attemptblock == 7 && tardis.inside == true) { // bedrock as tardiswall
@@ -1356,21 +1364,23 @@ function attackHook(attacker, victim) {
         if (Player.getCarriedItem() == items.gravitygun) {
                 ggMob = victim;
                 isPickingEntity = true;
-                ItemDamage(200, items.gravitygun);
+                Item.Damage();
         }
 
         if (Player.getCarriedItem() == items.emeraldsword) {
                 Entity.setHealth(victim, Entity.getHealth(victim) - 12);
-                ItemDamage(100, items.emeraldsword);
+                Item.Damage();
         }
 
         if (Player.getCarriedItem() == items.hypertntsword) {
-                Level.explode(Entity.getX(victim), Entity.getY(victim), Entity.getZ(victim), 20);
-                ItemDamage(200, items.hypertntsword);
+                hypertntsword.active = true;
+                hypertntsword.victim = victim;
+                Item.Damage();
         }
         if (Player.getCarriedItem() == items.tntsword) {
-                Level.explode(Entity.getX(victim), Entity.getY(victim), Entity.getZ(victim), 5);
-                ItemDamage(80, items.tntsword);
+                tntsword.active = true;
+                tntsword.victim = victim;
+                Item.Damage();
         }
 }
 
@@ -1479,22 +1489,6 @@ function screenChangeHook(screenName) {
 ////////////////////////////////////////
 //////CUSTOM FUNKTIONEN/////////////////
 ////////////////////////////////////////
-
-function ItemDamage() {
-        var pcid = Player.getCarriedItemData();
-        for (var i in maxDamages) {
-                if (Player.getCarriedItem() == maxDamages[i][0]) {
-                        if (pcid >= maxDamages[i][1]) {
-                                Level.playSound(Player.getX(), Player.getY(), Player.getZ(), "random.break", 2);
-                                Entity.setCarriedItem(getPlayerEnt(), 0, 0, 0);
-                        } else {
-                                Entity.setCarriedItem(getPlayerEnt(), id, 1, pcid + 1);
-                        }
-                }
-        }
-}
-
-
 
 function rideEntity(entity) {
         var shootDir = lookDir(getYaw(), getPitch());
@@ -1659,10 +1653,17 @@ Item.newArmor = function(id, iconName, iconIndex, name, texture, damageReduceAmo
         }
 };
 
-Item.maxDmg = function(item, max) {
-        Item.setMaxDamage(item, max);
-        MaxDamages.push([item, max]);
+Item.Damage = function() {
+        var pcid = Player.getCarriedItemData();
+        if (pcid >= Item.getMaxDamage(Player.getCarriedItem())) {
+                Level.playSound(Player.getX(), Player.getY(), Player.getZ(), "random.break", 2);
+                Entity.setCarriedItem(getPlayerEnt(), 0, 0, 0);
+        } else {
+                Entity.setCarriedItem(getPlayerEnt(), id, 1, pcid + 1);
+        }
 };
+
+
 
 Item.defineItem = function(id, textureName, textureNumber, name, stackLimit) {
         try {
