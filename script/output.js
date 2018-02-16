@@ -66,13 +66,19 @@ var hypertntsword = {
 var tntpickaxe = {
         active: false,
         timer: 0,
-        victim: 0
+        victim: 0,
+        x: 0,
+        y: 0,
+        z: 0
 };
 
 var hypertntpickaxe = {
         active: false,
         timer: 0,
-        victim: 0
+        victim: 0,
+        x: 0,
+        y: 0,
+        z: 0
 };
 
 var hypershootertntshooter = {
@@ -127,6 +133,11 @@ var dragonglider = {
 };
 
 var recipes = [];
+var armors = [];
+var maxDamages = [];
+var swords = [];
+
+
 
 //Item ids
 const items = {
@@ -195,19 +206,25 @@ const items = {
         fastpadyneg: 3056,
         machinetester: 3057,
         jumperessence: 3058,
-        shop: 3059
+        shop: 3059,
+        tntammo: 3060,
+        cheststonedetector: 3061,
+        cheststonewardrobe: 3062
 
 };
 //ModPE.setGameSpeed(speed: default 20);
 
 //Ist bei 3033
 
-var maxDamages = [];
 
 const blocks = {
         chest: 54,
-        lapisblock: 22
+        lapisblock: 22,
+        cheststonebutton: 230
 };
+
+var cheststones = [];
+
 
 var target;
 var isPickingEntity = false;
@@ -229,7 +246,6 @@ var previousCarriedItem = 0;
 var previousSlotId = 0;
 
 
-var swords = [];
 
 
 
@@ -452,6 +468,7 @@ function createEmeraldItems() {
                 " b "
         ], ["a", items.emeraldingot, 0, "b", 280, 0]);
         Item.setMaxDamage(items.emeraldsword, 100);
+        Item.setSword(items.emeraldsword, 12);
         Item.setHandEquipped(items.emeraldsword, 1);
 
 
@@ -489,6 +506,13 @@ function createMachineItems() {
         ], ["a", 22, 0, "b", 247, 0]);
         Item.defineItem(items.jumperessence, "jumperessence", 0, "jumper essence");
         Item.addCraftRecipe(items.jumperessence, 4, 0, [265, 1, 0]);
+
+        Block.newBlock(items.cheststonebutton, "cheststone button", "cheststonebutton", 0, false, 0);
+        Item.recipe(items.cheststonebutton, 1, 0, [
+                "   ",
+                " a ",
+                "   "
+        ], ["a", 331, 0]);
 }
 
 
@@ -679,6 +703,12 @@ function createTntItems() {
 
         Item.setMaxDamage(items.tntboots, 5000);
 
+        Item.defineItem(items.tntammo, "tntammo", 0, "TNT ammo", 0);
+        Item.recipe(items.tntammo, 64, 0, [
+                "   ",
+                " a ",
+                "   "
+        ], ["a", 46, 0]);
 
 }
 
@@ -728,10 +758,6 @@ function newLevel() {
 
 function destroyBlock(x, y, z, side) {
         var destroyedblock = Level.getTile(x, y, z);
-        if (Player.getCarriedItem() == items.hypertntpickaxe) {
-                Level.explode(x, y, z, 10);
-                Item.Damage();
-        }
 }
 
 function startDestroyBlock(x, y, z, side) {
@@ -741,15 +767,17 @@ function startDestroyBlock(x, y, z, side) {
         if (item == items.tntpickaxe) {
                 clientMessage("better run");
                 tntpickaxe.active = true;
+                Item.damage();
+                Player.removeItem(items.tntammo, 1);
                 preventDefault();
-                Item.Damage();
         }
 
         if (item == items.hypertntpickaxe) {
                 clientMessage("better run");
                 hypertntpickaxe.active = true;
+                Item.damage();
+                Player.removeItem(items.tntammo, 1);
                 preventDefault();
-                Item.Damage();
         }
 
 
@@ -1070,10 +1098,9 @@ function useItem(x, y, z, itemId, blockId, side) {
 
 
         if (Player.getCarriedItem() == items.pigtnt) {
-                pigtnt.pig = Level.spawnMob(x, y + 1, z, 65, "mob/pig.png");
-                Level.spawnMob(x, y + 1, z, 65, "mob/pig.png");
-                pigtnt.active = true;
+                Level.spawnMob(x, y + 1, z, 65);
                 Player.addItemInventory(items.pigtnt, -1);
+                pigtnt.active = true;
         }
 
         if (Player.getCarriedItem() == items.chickentnt && chickentnt.active == false) {
@@ -1119,7 +1146,6 @@ function deathHook(murderer, victim) {
         }
 
 
-
         if (victim == meteorsheep.sheep) {
                 Level.explode(Entity.getX(sheep), Entity.getY(sheep), Entity.getZ(sheep), 40);
                 meteorsheep.timer1 = 0;
@@ -1135,6 +1161,7 @@ function entityRemovedHook(e) {
                 flyingtnt.active = false;
         }
 }
+
 
 function modTick() {
         //variablen für blöcke unterm spieler
@@ -1277,6 +1304,44 @@ function modTick() {
                 }
         }
 
+        if (tntpickaxe.active) {
+                tntpickaxe.timer++;
+                if (tntpickaxe.timer >= 100) {
+                        Level.explode(tntpickaxe.x, tntpickaxe.y, tntpickaxe.z, 5);
+                        tntpickaxe.timer = 0;
+                        tntpickaxe.active = false;
+                }
+        }
+
+
+        if (hypertntpickaxe.active) {
+                hypertntpickaxe.timer++;
+                if (hypertntpickaxe.timer >= 150) {
+                        Level.explode(hypertntpickaxe.x, hypertntpickaxe.y, hypertntpickaxe.z, 8);
+                        hypertntpickaxe.timer = 0;
+                        hypertntpickaxe.active = false;
+                }
+        }
+
+        if (tntsword.active) {
+                tntsword.timer++;
+                if (tntsword.timer >= 80) {
+                        Level.explode(Entity.getX(tntsword.victim), Entity.getY(tntsword.victim), Entity.getZ(tntsword.victim), 3);
+                        tntsword.timer = 0;
+                        tntsword.active = false;
+                }
+
+        }
+        if (hypertntsword.active) {
+                hypertntsword.timer++;
+                if (hypertntsword.timer >= 100) {
+                        Level.explode(Entity.getX(hypertntsword.victim), Entity.getY(hypertntsword.victim), Entity.getZ(hypertntsword.victim), 3);
+                        hypertntsword.timer = 0;
+                        hypertntsword.active = false;
+                }
+
+        }
+
 
 
         if (pigtnt.active == true) {
@@ -1341,46 +1406,51 @@ function modTick() {
 
 function attackHook(attacker, victim) {
         //firesword sets player on fire
-        if (Player.getCarriedItem() == items.firesword) {
+        var item = Player.getCarriedItem;
+        for (var i in swords) {
+                if (item == swords[i][0]) {
+                        Entity.damage(victim, swords[i][1]);
+                        Item.damage();
+                        break;
+                }
+        }
+
+        if (item == items.firesword) {
                 Entity.setFireTicks(Player.getEntity(), 5);
                 Entity.setHealth(Entity.getHealth(victim) - 20);
         }
 
         //Snowsword rains snowballs
-        if (Player.getCarriedItem() == items.snowsword) {
+        if (item == items.snowsword) {
                 snowsword.active = true;
                 snowsword.victim = victim;
         }
 
-        if (Player.getCarriedItem() == items.arrowsword) {
+        if (item == items.arrowsword) {
                 arrowsword.victim = victim;
                 arrowsword.active = true;
         }
 
-        if (Player.getCarriedItem() == items.lavasword) {
+        if (item == items.lavasword) {
                 Level.setTile(Entity.getX(victim), Entity.getY(victim), Entity.getZ(victim), 10);
         }
 
-        if (Player.getCarriedItem() == items.gravitygun) {
+        if (item == items.gravitygun) {
                 ggMob = victim;
                 isPickingEntity = true;
-                Item.Damage();
+                Item.damage();
         }
-
-        if (Player.getCarriedItem() == items.emeraldsword) {
-                Entity.setHealth(victim, Entity.getHealth(victim) - 12);
-                Item.Damage();
-        }
-
-        if (Player.getCarriedItem() == items.hypertntsword) {
+        if (item == items.hypertntsword) {
                 hypertntsword.active = true;
                 hypertntsword.victim = victim;
-                Item.Damage();
+                Item.damage();
+                Player.removeItem(items.tntammo, 2);
         }
-        if (Player.getCarriedItem() == items.tntsword) {
+        if (item == items.tntsword) {
                 tntsword.active = true;
                 tntsword.victim = victim;
-                Item.Damage();
+                Item.damage();
+                Player.removeItem(items.tntammo, 2);
         }
 }
 
@@ -1645,6 +1715,7 @@ function randomize(min, max) {
 }
 
 Item.newArmor = function(id, iconName, iconIndex, name, texture, damageReduceAmount, maxDamage, armorType) {
+        armors.push([id, armorType]);
         try {
                 //Item.newArmor(int id, String iconName, int iconIndex, String name, String texture, int damageReduceAmount, int maxDamage, int armorType)
                 Item.defineArmor(id, iconName, iconIndex, name, texture, damageReduceAmount, maxDamage, armorType);
@@ -1653,7 +1724,15 @@ Item.newArmor = function(id, iconName, iconIndex, name, texture, damageReduceAmo
         }
 };
 
-Item.Damage = function() {
+Item.setSword = function(id, damage) {
+        swords.push([id, damage]);
+};
+
+Item.setChestStone = function(id, type) {
+        cheststones.push([id, type]);
+};
+
+Item.damage = function() {
         var pcid = Player.getCarriedItemData();
         if (pcid >= Item.getMaxDamage(Player.getCarriedItem())) {
                 Level.playSound(Player.getX(), Player.getY(), Player.getZ(), "random.break", 2);
@@ -1683,6 +1762,51 @@ Item.recipe = function(id1, ammount1, damage1, order1, ingredients1) {
         });
 };
 
+Block.newBlock = function(id, name, textureNames, sourceId, opaque, renderType) {
+        try {
+                Block.defineBlock(id, name, textureNames, sourceId, opaque, renderType);
+        } catch (e) {
+                errorWithModResources();
+
+                Block.defineBlock(id, name, "enchanting_table_top", sourceId, opaque, renderType);
+        }
+}
+
+Player.removeItem = function(item, ammount) {
+        if (Player.hasItemCount(item) != 0) {
+                Player.setInventorySlot(Player.hasItemSlots(item)[0], item, Player.getInventorySlotCount(Player.hasItemSlots(item)[0]) - 1, 0);
+        } else {
+                clientMessage("you need" + item);
+        }
+};
+
+Player.hasItemSlots = function(item) {
+        var i = 0;
+        var slots = [];
+        while (i < 27) {
+                i++;
+                if (Player.getInventorySlot(i) == item) {
+                        gotit.push(i);
+                }
+                return slots;
+        }
+};
+
+Player.hasItemCount = function(item) {
+        var count = 0;
+        var i = 0;
+        while (i < 28) {
+                i++;
+                if (Player.getInventorySlot(i) == item) {
+                        count += Player.getInventorySlotCount(i);
+                }
+        }
+        return count;
+};
+
+Entity.damage = function(victim, damage) {
+        Entity.setHealth(Entity.getHealth(victim) - damage);
+};
 
 function createRecipies() {
         for (var i in recipes) {
