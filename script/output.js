@@ -181,21 +181,21 @@ const items = {
         instanttnt: 3027,
         sheeptntthrower: 3028,
         tntshooter: 3035,
-        tardisessence: 3036,
+        tardischeststone: 3036,
         //Lucky blocks
-        luckyessence: 3037,
-        redluckyessence: 3038,
-        greenluckyessence: 3039,
-        blueluckyessence: 3040,
-        bigluckyessence: 3041,
-        miniluckyessence: 3042,
+        luckycheststone: 3037,
+        redluckycheststone: 3038,
+        greenluckycheststone: 3039,
+        blueluckycheststone: 3040,
+        bigluckycheststone: 3041,
+        miniluckycheststone: 3042,
 
         luckypotion: 3043,
         medicine: 3044,
         help: 3045,
         debugger: 3046,
         mobstacker: 3047,
-        elevatoressence: 3048,
+        elevatorcheststone: 3048,
         slomosword: 3049,
         enderboots: 3050,
         enderparachute: 3051,
@@ -205,7 +205,7 @@ const items = {
         fastpadypos: 3055,
         fastpadyneg: 3056,
         machinetester: 3057,
-        jumperessence: 3058,
+        jumpercheststone: 3058,
         shop: 3059,
         tntammo: 3060,
         cheststonedetector: 3061,
@@ -390,18 +390,18 @@ Entity.Throwable = function(type, vel) {
 
 
 function createLuckyItems() {
-        Item.defineItem(items.greenluckyessence, "greenluckyessence", 0, "greenluckyessence", 1);
-        Item.defineItem(items.blueluckyessence, "blueluckyessence", 0, "blue lucky essence", 1);
+        Item.defineItem(items.greenluckycheststone, "greenluckycheststone", 0, "greenluckycheststone", 1);
+        Item.defineItem(items.blueluckycheststone, "blueluckycheststone", 0, "blue lucky cheststone", 1);
 
 
 
-        Item.defineItem(items.redluckyessence, "redluckyessence", 0, "red lucky essence", 1);
+        Item.defineItem(items.redluckycheststone, "redluckycheststone", 0, "red lucky cheststone", 1);
 
 
-        Item.defineItem(items.miniluckyessence, "miniluckyessence", 0, "mini lucky essence");
+        Item.defineItem(items.miniluckycheststone, "miniluckycheststone", 0, "mini lucky cheststone");
 
 
-        Item.defineItem(items.bigluckyessence, "bigluckyessence", 0, "big lucky essence");
+        Item.defineItem(items.bigluckycheststone, "bigluckycheststone", 0, "big lucky cheststone");
 
         Item.defineItem(items.luckypotion, "luckypotion", 0, "lucky potion");
 
@@ -498,14 +498,14 @@ function createEmeraldItems() {
 function createMachineItems() {
         Item.defineItem(items.debugger, "debugger", 0, "debugger", 1);
         Item.defineItem(items.mobstacker, "mobstacker", 0, "mob stacker", 1);
-        Item.defineItem(items.tardisessence, "tardisessence", 0, "tardis essence", 0);
-        Item.recipe(items.tardisessence, 1, 0, [
+        Item.defineItem(items.tardischeststone, "tardischeststone", 0, "tardis cheststone", 0);
+        Item.recipe(items.tardischeststone, 1, 0, [
                 " a ",
                 " a ",
                 " b "
         ], ["a", 22, 0, "b", 247, 0]);
-        Item.defineItem(items.jumperessence, "jumperessence", 0, "jumper essence");
-        Item.addCraftRecipe(items.jumperessence, 4, 0, [265, 1, 0]);
+        Item.defineItem(items.jumpercheststone, "jumpercheststone", 0, "jumper cheststone");
+        Item.addCraftRecipe(items.jumpercheststone, 4, 0, [265, 1, 0]);
 
         Block.newBlock(items.cheststonebutton, "cheststone button", "cheststonebutton", 0, false, 0);
         Item.recipe(items.cheststonebutton, 1, 0, [
@@ -791,15 +791,15 @@ function startDestroyBlock(x, y, z, side) {
         }
         //Lucky blocks
         if (attemptblock == blocks.chest) {
-                var essence = Level.getChestSlot(x, y, z, 0);
-                if (essence == items.miniluckyessence) {
+                var cheststone = Level.getChestSlot(x, y, z, 0);
+                if (cheststone == items.miniluckycheststone) {
                         randItem(x, y + 1, z);
                         setTile(x, y, z, 0);
                 }
-                if (essence == items.greenluckyessence) {
+                if (cheststone == items.greenluckycheststone) {
                         randPotion(getPlayerEnt());
                 }
-                if (essence == items.bigluckyessence) {
+                if (cheststone == items.bigluckycheststone) {
                         placeRandomBlock(x + 1, y, z);
                         placeRandomBlock(x - 1, y, z);
                         placeRandomBlock(x, y, z + 1);
@@ -830,15 +830,15 @@ function startDestroyBlock(x, y, z, side) {
                         placeRandomBlock(x - 1, y + 1, z + 1);
                         placeRandomBlock(x + 1, y + 1, z - 1);
                 }
-                if (essence == items.blueluckyessence) {
+                if (cheststone == items.blueluckycheststone) {
                         placeRandomBlock(x, y, z);
                 }
-                if (essence == items.redluckyessence) {
+                if (cheststone == items.redluckycheststone) {
                         mobTurm(x, y, z, 0);
                         setTile(x, y, z, 0);
                 }
 
-                if (essence == items.luckyessence) {
+                if (cheststone == items.luckycheststone) {
                         var rnd = Math.floor(Math.random() * (10));
 
                         if (rnd == 0 || rnd == 1) {
@@ -1060,19 +1060,22 @@ function startDestroyBlock(x, y, z, side) {
 }
 
 function useItem(x, y, z, itemId, blockId, side) {
-        if (Level.getTile(x, y + 1, z) == blocks.chest) {
-                var essence = Level.getChestSlot(x, y + 1, z, 0);
-                if (blockId == blocks.lapisblock && essence == items.tardisessence) {
-                        //saving position
-                        tardis.formerposition.x = x;
-                        tardis.formerposition.y = y + 3;
-                        tardis.formerposition.z = z;
-                        clientMessage("welcome to the tardis. tap and hold on the walls to exit. hope you brought torches");
+        if (itemId == items.machinetester) {
 
-                        Entity.setPosition(Player.getEntity(), 0, 25, 0);
-                        tardis.inside = true;
+        }
 
-
+        if (blockId == items.cheststonebutton) {
+                if (Level.getTile(x, y + 1, z) == blocks.chest) {
+                        var cheststone = Level.getChestSlot(x, y + 1, z, 0);
+                        if (blockId == blocks.lapisblock && cheststone == items.tardischeststone) {
+                                //saving position
+                                tardis.formerposition.x = x;
+                                tardis.formerposition.y = y + 3;
+                                tardis.formerposition.z = z;
+                                clientMessage("welcome to the tardis. tap and hold on the walls to exit. hope you brought torches");
+                                Entity.setPosition(Player.getEntity(), 0, 25, 0);
+                                tardis.inside = true;
+                        }
                 }
         }
 
@@ -1169,13 +1172,13 @@ function modTick() {
         var blockUnderPlayer = Level.getTile(Math.floor(Player.getX()), Math.floor(Player.getY()) - 2, Math.floor(Player.getZ()));
         var flatBlockUnderPlayer = Level.getTile(Math.floor(Player.getX()), Math.floor(Player.getY()) - 1, Math.floor(Player.getZ()));
 
-        //essence hooks
+        //cheststone hooks
         if (blockUnderPlayer == blocks.chest) {
-                var essence = Level.getChestSlot(Math.floor(Player.getX()), Math.floor(Player.getY()) - 2, Math.floor(Player.getZ(), 0));
-                if (essence == items.jumperessence) {
+                var cheststone = Level.getChestSlot(Math.floor(Player.getX()), Math.floor(Player.getY()) - 2, Math.floor(Player.getZ(), 0));
+                if (cheststone == items.jumpercheststone) {
                         Entity.setVelY(Player.getEntity(), 1);
                 }
-                if (essence == items.elevatoressence) {
+                if (cheststone == items.elevatorcheststone) {
                         elevator.active = true;
                 }
         }
