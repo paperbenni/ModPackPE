@@ -209,10 +209,10 @@ const items = {
         enderboots: 3050,
         enderparachute: 3051,
         fastbuilder: 3052,
-        fastpadxpos: 3053,
-        fastpadxneg: 3054,
-        fastpadypos: 3055,
-        fastpadyneg: 3056,
+        faststonexpos: 3053,
+        faststonexneg: 3054,
+        faststonezpos: 3055,
+        faststonezneg: 3056,
         machinetester: 3057,
         jumpercheststone: 3058,
         shop: 3059,
@@ -221,7 +221,15 @@ const items = {
         wardrobecheststone: 3062,
         cheststonebeam: 3063,
         cheststoneblocker: 3064,
-        cheststonebridge: 3065
+        cheststonebridge: 3065,
+        screwdriverred: 3066,
+        screwdrivergreen: 3067,
+        screwdriverblue: 3068,
+        ironstick: 3069,
+        irondust: 3080,
+        blueirondust: 3071,
+        redirondust: 3072,
+        greenirondust: 3073
 
 };
 
@@ -536,6 +544,9 @@ function createCheststoneItems() {
         Item.defineItem(items.jumpercheststone, "jumpercheststone", 0, "jumper cheststone");
         Item.addCraftRecipe(items.jumpercheststone, 4, 0, [265, 1, 0]);
 
+        Item.defineItem(items.screwdriverblue, "screwdriverblue", 0, "Blue screwdriver", 1);
+        Item.defineItem(items.screwdriverred, "screwdriverred", 0, "Red screwdriver", 1);
+        Item.defineItem(items.screwdrivergreen, "screwdrivergreen", 0, "Green screwdriver", 1);
 
         Block.newBlock(items.cheststonebutton, "cheststone button", "cheststonebutton", 0, false, 0);
         Item.recipe(items.cheststonebutton, 1, 0, [
@@ -543,6 +554,7 @@ function createCheststoneItems() {
                 " a ",
                 "   "
         ], ["a", 331, 0]);
+
 
 }
 
@@ -606,6 +618,8 @@ function createMiscellaniousItems() {
                 "b b",
                 " c "
         ], ["a", 35, 0, "b", 265, 0, "c", 334, 0]);
+
+        Item.defineItem(items.irondust, "irondust", 0, "iron dust", 16);//weiter
 
 
 }
@@ -1453,6 +1467,7 @@ function modTick() {
                         meteorsheep.active = false;
                 }
         }
+
         if (cheststonebridge.active) {
                 var playX = Math.floor(Player.getX());
                 var playY = Math.floor(Player.getY());
@@ -1486,694 +1501,709 @@ function modTick() {
                         cheststonebridge.active = false;
                 }
         }
+}
 
-        function secondHook() {
-                if (Player.getArmorSlot(0) == items.tnthelmet && Player.getArmorSlot(1) == items.tntchestplate &&
-                        Player.getArmorSlot(2) == items.tntleggings && Player.getArmorSlot(3) == items.tntboots) {
-                        if (tntarmor.wearing == false) {
-                                tntarmor.wearing = true;
-                                Player.setCanFly(1);
-                                clientMessage("TNT armor active. Maybe try double jumping?");
-                        }
-                } else if (tntarmor.active) {
-                        tntarmor.active = false;
-                        Player.setCanFly(0);
+function secondHook() {
+        if (Player.getArmorSlot(0) == items.tnthelmet && Player.getArmorSlot(1) == items.tntchestplate &&
+                Player.getArmorSlot(2) == items.tntleggings && Player.getArmorSlot(3) == items.tntboots) {
+                if (tntarmor.wearing == false) {
+                        tntarmor.wearing = true;
+                        Player.setCanFly(1);
+                        clientMessage("TNT armor active. Maybe try double jumping?");
                 }
+        } else if (tntarmor.active) {
+                tntarmor.active = false;
+                Player.setCanFly(0);
         }
+}
 
-        function cheststoneHook(x, y, z, id) {
-                if (id == items.jumpercheststone) {
-                        Entity.setVelY(Player.getEntity(), 1);
-                }
-                if (id == items.elevatorcheststone) {
-                        elevator.active = true;
-                }
-                if (id == items.tardischeststone) {
-                        //saving position
-                        tardis.formerposition.x = x;
-                        tardis.formerposition.y = y + 3;
-                        tardis.formerposition.z = z;
-                        clientMessage("welcome to the tardis. tap and hold on the walls to exit. hope you brought torches");
-                        Entity.setPosition(Player.getEntity(), 0, 25, 0);
-                        tardis.inside = true;
-                }
-                if (id == items.cheststonebeam) {
-                        for (var i = 0; i < 64; i++) {
-                                if (Level.getTile(x + i, y, z) != 0 && Level.getTile(x + i, y, z) != blocks.chest) {
-                                        break;
-                                }
-                                checkChestStoneHook(x + i, y, z);
-                        }
-                        for (var p = 0; p < 64; p++) {
-                                if (Level.getTile(x - p, y, z) != 0 && Level.getTile(x - p, y, z) != blocks.chest) {
-                                        break;
-                                }
-                                checkChestStoneHook(x - p, y, z);
-                        }
-
-
-                        for (var o = 0; o < 64; o++) {
-                                if (Level.getTile(x, y + o, z) != 0 && Level.getTile(x, y + o, z) != blocks.chest) {
-                                        break;
-                                }
-                                checkChestStoneHook(x, y + o, z);
-                        }
-
-                        for (var u = 0; u < 64; u++) {
-                                if (Level.getTile(x, y - u, z) != 0 && Level.getTile(x, y - u, z) != blocks.chest) {
-                                        break;
-                                }
-                                checkChestStoneHook(x, y - u, z);
-                        }
-
-                        for (var e = 0; e < 64; e++) {
-                                if (Level.getTile(x, y, z + e) != 0 && Level.getTile(x, y, z + e) != blocks.chest) {
-                                        break;
-                                }
-                                checkChestStoneHook(x, y, z + e);
-                        }
-                        for (var s = 0; s < 64; s++) {
-                                if (Level.getTile(x, y, z - s) != 0 && Level.getTile(x, y, z - s) != blocks.chest) {
-                                        break;
-                                }
-                                checkChestStoneHook(x, y, z - s);
-                        }
-
-
-                }
-                if (id == items.cheststonewardrobe) {
-                        if (Level.getTile(x, y - 1, z) == blocks.chest) {
-                                var helmet = [Player.getArmorSlot(ArmorType.helmet), Player.getArmorSlotDamage(ArmorType.helmet)];
-                                var chestplate = [Player.getArmorSlot(ArmorType.chestplate), Player.getArmorSlotDamage(ArmorType.chestplate)];
-                                var leggings = [Player.getArmorSlot(ArmorType.leggings), Player.getArmorSlotDamage(ArmorType.leggings)];
-                                var boots = [Player.getArmorSlot(ArmorType.boots), Player.getArmorSlotDamage(ArmorType.boots)];
-
-                                var slot0 = [Level.getChestSlot(x, y - 1, z, 0), Level.getChestSlotData(x, y - 1, z, 0)];
-                                var slot1 = [Level.getChestSlot(x, y - 1, z, 1), Level.getChestSlotData(x, y - 1, z, 1)];
-                                var slot2 = [Level.getChestSlot(x, y - 1, z, 2), Level.getChestSlotData(x, y - 1, z, 2)];
-                                var slot3 = [Level.getChestSlot(x, y - 1, z, 3), Level.getChestSlotData(x, y - 1, z, 3)];
-
-                                for (var it in armors) {
-                                        if (slot0[0] == armors[it][0]) {
-                                                Player.setArmorSlot(armors[it][1], armors[it][0], slot0[1]);
-                                                Level.setChestSlot(x, y - 1, z, 0, helmet[0], helmet[1], 1);
-                                        }
-                                        if (slot1[0] == armors[it][0]) {
-                                                Player.setArmorSlot(armors[it][1], armors[it][0], slot1[1]);
-                                                Level.setChestSlot(x, y - 1, z, 0, chestplate[0], chestplate[1], 1);
-                                        }
-                                        if (slot2[0] == armors[it][0]) {
-                                                Player.setArmorSlot(armors[it][1], armors[it][0], slot2[1]);
-                                                Level.setChestSlot(x, y - 1, z, 0, leggings[0], leggings[1], 1);
-                                        }
-                                        if (slot3[0] == armors[it][0]) {
-                                                Player.setArmorSlot(armors[it][1], armors[it][0], slot3[1]);
-                                                Level.setChestSlot(x, y - 1, z, 0, boots[0], boots[1], 1);
-                                        }
-                                }
-                                ModPE.showTipMessage("Swapped Armor");
-                        }
-                }
-                if (id == items.cheststonebridge) {
-                        cheststonebridge.active = true;
-                        cheststonebridge.x = x;
-                        cheststonebridge.y = y;
-                        cheststonebridge.z = z;
-                        ModPE.showTipMessage("bridge active");
-                }
+function cheststoneHook(x, y, z, id) {
+        if (id == items.jumpercheststone) {
+                Entity.setVelY(Player.getEntity(), 1);
         }
-
-
-
-        function attackHook(attacker, victim) {
-                //firesword sets player on fire
-                var item = Player.getCarriedItem;
-                for (var i in swords) {
-                        if (item == swords[i][0]) {
-                                Entity.damage(victim, swords[i][1]);
-                                Item.damage();
+        if (id == items.elevatorcheststone) {
+                elevator.active = true;
+        }
+        if (id == items.tardischeststone) {
+                //saving position
+                tardis.formerposition.x = x;
+                tardis.formerposition.y = y + 3;
+                tardis.formerposition.z = z;
+                clientMessage("welcome to the tardis. tap and hold on the walls to exit. hope you brought torches");
+                Entity.setPosition(Player.getEntity(), 0, 25, 0);
+                tardis.inside = true;
+        }
+        if (id == items.cheststonebeam) {
+                for (var i = 0; i < 64; i++) {
+                        if (Level.getTile(x + i, y, z) != 0 && Level.getTile(x + i, y, z) != blocks.chest) {
                                 break;
                         }
+                        checkChestStoneHook(x + i, y, z);
+                }
+                for (var p = 0; p < 64; p++) {
+                        if (Level.getTile(x - p, y, z) != 0 && Level.getTile(x - p, y, z) != blocks.chest) {
+                                break;
+                        }
+                        checkChestStoneHook(x - p, y, z);
                 }
 
-                if (item == items.firesword) {
-                        Entity.setFireTicks(Player.getEntity(), 5);
-                        Entity.setHealth(Entity.getHealth(victim) - 20);
+
+                for (var o = 0; o < 64; o++) {
+                        if (Level.getTile(x, y + o, z) != 0 && Level.getTile(x, y + o, z) != blocks.chest) {
+                                break;
+                        }
+                        checkChestStoneHook(x, y + o, z);
                 }
 
-                //Snowsword rains snowballs
-                if (item == items.snowsword) {
-                        snowsword.active = true;
-                        snowsword.victim = victim;
+                for (var u = 0; u < 64; u++) {
+                        if (Level.getTile(x, y - u, z) != 0 && Level.getTile(x, y - u, z) != blocks.chest) {
+                                break;
+                        }
+                        checkChestStoneHook(x, y - u, z);
                 }
 
-                if (item == items.arrowsword) {
-                        arrowsword.victim = victim;
-                        arrowsword.active = true;
+                for (var e = 0; e < 64; e++) {
+                        if (Level.getTile(x, y, z + e) != 0 && Level.getTile(x, y, z + e) != blocks.chest) {
+                                break;
+                        }
+                        checkChestStoneHook(x, y, z + e);
+                }
+                for (var s = 0; s < 64; s++) {
+                        if (Level.getTile(x, y, z - s) != 0 && Level.getTile(x, y, z - s) != blocks.chest) {
+                                break;
+                        }
+                        checkChestStoneHook(x, y, z - s);
                 }
 
-                if (item == items.lavasword) {
-                        Level.setTile(Entity.getX(victim), Entity.getY(victim), Entity.getZ(victim), 10);
-                }
 
-                if (item == items.gravitygun) {
-                        ggMob = victim;
-                        isPickingEntity = true;
+        }
+        if (id == items.cheststonewardrobe) {
+                if (Level.getTile(x, y - 1, z) == blocks.chest) {
+                        var helmet = [Player.getArmorSlot(ArmorType.helmet), Player.getArmorSlotDamage(ArmorType.helmet)];
+                        var chestplate = [Player.getArmorSlot(ArmorType.chestplate), Player.getArmorSlotDamage(ArmorType.chestplate)];
+                        var leggings = [Player.getArmorSlot(ArmorType.leggings), Player.getArmorSlotDamage(ArmorType.leggings)];
+                        var boots = [Player.getArmorSlot(ArmorType.boots), Player.getArmorSlotDamage(ArmorType.boots)];
+
+                        var slot0 = [Level.getChestSlot(x, y - 1, z, 0), Level.getChestSlotData(x, y - 1, z, 0)];
+                        var slot1 = [Level.getChestSlot(x, y - 1, z, 1), Level.getChestSlotData(x, y - 1, z, 1)];
+                        var slot2 = [Level.getChestSlot(x, y - 1, z, 2), Level.getChestSlotData(x, y - 1, z, 2)];
+                        var slot3 = [Level.getChestSlot(x, y - 1, z, 3), Level.getChestSlotData(x, y - 1, z, 3)];
+
+                        for (var it in armors) {
+                                if (slot0[0] == armors[it][0]) {
+                                        Player.setArmorSlot(armors[it][1], armors[it][0], slot0[1]);
+                                        Level.setChestSlot(x, y - 1, z, 0, helmet[0], helmet[1], 1);
+                                }
+                                if (slot1[0] == armors[it][0]) {
+                                        Player.setArmorSlot(armors[it][1], armors[it][0], slot1[1]);
+                                        Level.setChestSlot(x, y - 1, z, 0, chestplate[0], chestplate[1], 1);
+                                }
+                                if (slot2[0] == armors[it][0]) {
+                                        Player.setArmorSlot(armors[it][1], armors[it][0], slot2[1]);
+                                        Level.setChestSlot(x, y - 1, z, 0, leggings[0], leggings[1], 1);
+                                }
+                                if (slot3[0] == armors[it][0]) {
+                                        Player.setArmorSlot(armors[it][1], armors[it][0], slot3[1]);
+                                        Level.setChestSlot(x, y - 1, z, 0, boots[0], boots[1], 1);
+                                }
+                        }
+                        ModPE.showTipMessage("Swapped Armor");
+                }
+        }
+        if (id == items.cheststonebridge) {
+                cheststonebridge.active = true;
+                cheststonebridge.x = x;
+                cheststonebridge.y = y;
+                cheststonebridge.z = z;
+                ModPE.showTipMessage("bridge active");
+        }
+        if (id == items.faststonexpos) {
+                Entity.setVelX(Player.getEntity, 0.1 * Level.getChestSlotData(x, y, z, 0));
+        }
+
+        if (id == items.faststonexneg) {
+                Entity.setVelX(Player.getEntity, -0.1 * Level.getChestSlotData(x, y, z, 0));
+        }
+        if (id == items.faststonezpos) {
+                Entity.setVelZ(Player.getEntity, 0.1 * Level.getChestSlotData(x, y, z, 0));
+        }
+
+        if (id == items.faststonezneg) {
+                Entity.setVelZ(Player.getEntity, -0.1 * Level.getChestSlotData(x, y, z, 0));
+        }
+}
+
+
+
+function attackHook(attacker, victim) {
+        //firesword sets player on fire
+        var item = Player.getCarriedItem;
+        for (var i in swords) {
+                if (item == swords[i][0]) {
+                        Entity.damage(victim, swords[i][1]);
+                        Item.damage();
+                        break;
+                }
+        }
+
+        if (item == items.firesword) {
+                Entity.setFireTicks(Player.getEntity(), 5);
+                Entity.setHealth(Entity.getHealth(victim) - 20);
+        }
+
+        //Snowsword rains snowballs
+        if (item == items.snowsword) {
+                snowsword.active = true;
+                snowsword.victim = victim;
+        }
+
+        if (item == items.arrowsword) {
+                arrowsword.victim = victim;
+                arrowsword.active = true;
+        }
+
+        if (item == items.lavasword) {
+                Level.setTile(Entity.getX(victim), Entity.getY(victim), Entity.getZ(victim), 10);
+        }
+
+        if (item == items.gravitygun) {
+                ggMob = victim;
+                isPickingEntity = true;
+                Item.damage();
+        }
+        if (item == items.hypertntsword) {
+                if (Player.removeItem(items.tntammo, 2) == true) {
+                        hypertntsword.active = true;
+                        hypertntsword.victim = victim;
                         Item.damage();
                 }
-                if (item == items.hypertntsword) {
-                        if (Player.removeItem(items.tntammo, 2) == true) {
-                                hypertntsword.active = true;
-                                hypertntsword.victim = victim;
-                                Item.damage();
+        }
+        if (item == items.tntsword) {
+
+                if (Player.removeItem(items.tntammo, 2) == true) {
+                        tntsword.active = true;
+                        tntsword.victim = victim;
+                        Item.damage();
+                }
+        }
+}
+
+
+
+
+function entityAddedHook(added) {
+
+        //TNT makes you faster
+        if (Entity.getEntityTypeId(added) == 65 && Player.getArmorSlot(3) == items.tntboots) {
+                Entity.addEffect(getPlayerEnt(), MobEffect.speed, 3 * 20, 0, false, true);
+        }
+
+
+        switch (Entity.getRenderType(added)) {
+                case Item.getCustomThrowableRenderType(items.slingshot):
+                        Entity.remove(added);
+                        Entity.setCarriedItem(Player.getEntity(), items.slingshot, 1, 0);
+                        shootEntity(Player.getEntity(), 6, 6, 6);
+                        break;
+
+                case Item.getCustomThrowableRenderType(items.hypershooter): //hypershooter
+                        Entity.remove(added);
+                        Entity.setCarriedItem(Player.getEntity(), items.hypershooter, 1, 0);
+                        if (hypershooter.active == false) {
+                                hypershooter.active = true;
                         }
-                }
-                if (item == items.tntsword) {
+                        break;
 
-                        if (Player.removeItem(items.tntammo, 2) == true) {
-                                tntsword.active = true;
-                                tntsword.victim = victim;
-                                Item.damage();
+                case Item.getCustomThrowableRenderType(items.gravitygun): //gravitygun
+                        Entity.remove(added);
+                        Entity.setCarriedItem(Player.getEntity(), items.gravitygun, 1, 0);
+                        if (isPickingEntity) {
+                                shootEntity(ggMob, 4, 4, 4);
+                                isPickingEntity = false;
                         }
-                }
+                        break;
+
+                case Item.getCustomThrowableRenderType(items.tntshooter): //tntshooter
+                        Entity.remove(added);
+                        Entity.setCarriedItem(Player.getEntity(), items.tntshooter, 1, 0);
+                        var ShootDir = lookDir(getYaw(), getPitch());
+                        arrow = Level.spawnMob(getPlayerX() + (ShootDir.x * 2), getPlayerY() + (ShootDir.y * 2), getPlayerZ() + (ShootDir.z * 2), 65);
+                        shootEntity(arrow, 4, 4, 4);
+                        fireThrow = 2;
+                        break;
+
+                case Item.getCustomThrowableRenderType(items.sheeptntthrower): //sheeptntthrower
+                        Entity.remove(added);
+                        sheeptntthrower.ShootDir = lookDir(getYaw(), getPitch());
+                        arrow = Level.spawnMob(getPlayerX() + (ShootDir.x * 2), getPlayerY() + (ShootDir.y * 2), getPlayerZ() + (ShootDir.z * 2), 13);
+                        shootEntity(arrow, 4, 4, 4);
+                        fireThrow = 1;
+                        break;
         }
 
+}
 
+function leaveGame() {
+        saveTardis();
+}
 
-
-        function entityAddedHook(added) {
-
-                //TNT makes you faster
-                if (Entity.getEntityTypeId(added) == 65 && Player.getArmorSlot(3) == items.tntboots) {
-                        Entity.addEffect(getPlayerEnt(), MobEffect.speed, 3 * 20, 0, false, true);
-                }
-
-
-                switch (Entity.getRenderType(added)) {
-                        case Item.getCustomThrowableRenderType(items.slingshot):
-                                Entity.remove(added);
-                                Entity.setCarriedItem(Player.getEntity(), items.slingshot, 1, 0);
-                                shootEntity(Player.getEntity(), 6, 6, 6);
+var currentScreen = "null"; // will remain to null if screenChangeHook doesn't work or is not called (for example with BL for MCPE 0.14)
+function screenChangeHook(screenName) {
+        switch (screenName) {
+                case "play_screen - worlds":
+                        {
+                                currentScreen = "not_in_game";
                                 break;
-
-                        case Item.getCustomThrowableRenderType(items.hypershooter): //hypershooter
-                                Entity.remove(added);
-                                Entity.setCarriedItem(Player.getEntity(), items.hypershooter, 1, 0);
-                                if (hypershooter.active == false) {
-                                        hypershooter.active = true;
+                        }
+                case "hud_screen":
+                        {
+                                if (currentScreen != "not_in_game" && currentScreen != "hud_screen") {
+                                        previousCarriedItem = 0;
                                 }
+
+                                currentScreen = "hud_screen";
                                 break;
-
-                        case Item.getCustomThrowableRenderType(items.gravitygun): //gravitygun
-                                Entity.remove(added);
-                                Entity.setCarriedItem(Player.getEntity(), items.gravitygun, 1, 0);
-                                if (isPickingEntity) {
-                                        shootEntity(ggMob, 4, 4, 4);
-                                        isPickingEntity = false;
-                                }
+                        }
+                case "creative_inventory_screen":
+                case "inventory_screen_pocket":
+                case "inventory_screen":
+                case "survival_inventory_screen":
+                case "pause_screen":
+                case "chat_screen":
+                case "hopper_screen":
+                case "small_chest_screen":
+                case "large_chest_screen":
+                case "dropper_screen":
+                case "dispenser_screen":
+                case "furnace_screen":
+                case "brewing_stand_screen":
+                case "anvil_screen":
+                case "horse_screen":
+                        {
+                                currentScreen = screenName;
                                 break;
+                        }
+        }
+}
 
-                        case Item.getCustomThrowableRenderType(items.tntshooter): //tntshooter
-                                Entity.remove(added);
-                                Entity.setCarriedItem(Player.getEntity(), items.tntshooter, 1, 0);
-                                var ShootDir = lookDir(getYaw(), getPitch());
-                                arrow = Level.spawnMob(getPlayerX() + (ShootDir.x * 2), getPlayerY() + (ShootDir.y * 2), getPlayerZ() + (ShootDir.z * 2), 65);
-                                shootEntity(arrow, 4, 4, 4);
-                                fireThrow = 2;
-                                break;
 
-                        case Item.getCustomThrowableRenderType(items.sheeptntthrower): //sheeptntthrower
-                                Entity.remove(added);
-                                sheeptntthrower.ShootDir = lookDir(getYaw(), getPitch());
-                                arrow = Level.spawnMob(getPlayerX() + (ShootDir.x * 2), getPlayerY() + (ShootDir.y * 2), getPlayerZ() + (ShootDir.z * 2), 13);
-                                shootEntity(arrow, 4, 4, 4);
-                                fireThrow = 1;
-                                break;
-                }
 
+
+
+////////////////////////////////////////
+//////CUSTOM FUNKTIONEN/////////////////
+////////////////////////////////////////
+
+function rideEntity(entity) {
+        var shootDir = lookDir(getYaw(), getPitch());
+        setVelX(entity, shootDir.x * reit);
+        setVelZ(entity, shootDir.z * reit);
+}
+
+function ParticleRow(type, x1, y1, z1, x2, y2, z2, ammount, size, velocity) {
+        var dirx = 0;
+        var diry = 0;
+        var dirz = 0;
+        var distance = {
+                x: 0,
+                y: 0,
+                z: 0,
+                abs: 0
+        };
+        var anteil = {
+                x: 0,
+                y: 0,
+                z: 0
+        };
+        if (x2 > x1) {
+                dirx = 1;
+                distance.x = Math.abs(x2) - Math.abs(x1);
+        } else {
+                dirx = -1;
+                distance.x = Math.abs(x1) - Math.abs(x2);
+        }
+        if (y2 > y1) {
+                diry = 1;
+                distance.y = Math.abs(y2) - Math.abs(y1);
+        } else {
+                diry = -1;
+                distance.y = Math.abs(y1) - Math.abs(y2);
+        }
+        if (z2 > z1) {
+                dirz = 1;
+                distance.z = Math.abs(z2) - Math.abs(z1);
+        } else {
+                dirz = -1;
+                distance.z = Math.abs(z1) - Math.abs(z2);
+        }
+        for (var i = 0; i < ammount; i++) {
+                Level.addParticle(type, x + (distance.x / ammount * i) * dirx, y + (distance.y / ammount * i) * diry, z + (distance.z / ammount * i) * dirz, 0, 0, 0, 1);
         }
 
-        function leaveGame() {
-                saveTardis();
-        }
+}
 
-        var currentScreen = "null"; // will remain to null if screenChangeHook doesn't work or is not called (for example with BL for MCPE 0.14)
-        function screenChangeHook(screenName) {
-                switch (screenName) {
-                        case "play_screen - worlds":
-                                {
-                                        currentScreen = "not_in_game";
-                                        break;
-                                }
-                        case "hud_screen":
-                                {
-                                        if (currentScreen != "not_in_game" && currentScreen != "hud_screen") {
-                                                previousCarriedItem = 0;
-                                        }
+function placeRandomBlock(x, y, z) {
+        var rnd = Math.floor(Math.random() * (blockDataValues.length));
+        setTile(x, y, z, blockDataValues[rnd], 0);
+}
 
-                                        currentScreen = "hud_screen";
-                                        break;
-                                }
-                        case "creative_inventory_screen":
-                        case "inventory_screen_pocket":
-                        case "inventory_screen":
-                        case "survival_inventory_screen":
-                        case "pause_screen":
-                        case "chat_screen":
-                        case "hopper_screen":
-                        case "small_chest_screen":
-                        case "large_chest_screen":
-                        case "dropper_screen":
-                        case "dispenser_screen":
-                        case "furnace_screen":
-                        case "brewing_stand_screen":
-                        case "anvil_screen":
-                        case "horse_screen":
-                                {
-                                        currentScreen = screenName;
-                                        break;
-                                }
-                }
-        }
+function randPotion(entity) {
+        var potionLv = Math.floor(Math.random() * (potionLevels.length));
+        var potionId = Math.floor(Math.random() * (potionValues.length));
+        Entity.addEffect(entity, potionValues[potionId], 10000 * 20, potionLevels[potionLv], false, true);
+}
+
+function randItem(x, y, z) {
+        var itemId = Math.floor(Math.random() * (itemValues.length));
+        Level.dropItem(x, y, z, 0, itemValues[itemId], 1, 0);
+}
+
+function randPassiveMob(x, y, z) {
+        var mobId = Math.floor(Math.random() * (passiveMobs.length));
+        Level.spawnMob(x, y, z, passiveMobs[mobId]);
+}
+
+function randHostileMob(x, y, z) {
+        var mobId = Math.floor(Math.random() * (hostileMobs.length));
+        Level.spawnMob(x, y, z, hostileMobs[mobId]);
+}
 
 
 
-
-
-        ////////////////////////////////////////
-        //////CUSTOM FUNKTIONEN/////////////////
-        ////////////////////////////////////////
-
-        function rideEntity(entity) {
-                var shootDir = lookDir(getYaw(), getPitch());
-                setVelX(entity, shootDir.x * reit);
-                setVelZ(entity, shootDir.z * reit);
-        }
-
-        function ParticleRow(type, x1, y1, z1, x2, y2, z2, ammount, size, velocity) {
-                var dirx = 0;
-                var diry = 0;
-                var dirz = 0;
-                var distance = {
-                        x: 0,
-                        y: 0,
-                        z: 0,
-                        abs: 0
-                };
-                var anteil = {
-                        x: 0,
-                        y: 0,
-                        z: 0
-                };
-                if (x2 > x1) {
-                        dirx = 1;
-                        distance.x = Math.abs(x2) - Math.abs(x1);
-                } else {
-                        dirx = -1;
-                        distance.x = Math.abs(x1) - Math.abs(x2);
-                }
-                if (y2 > y1) {
-                        diry = 1;
-                        distance.y = Math.abs(y2) - Math.abs(y1);
-                } else {
-                        diry = -1;
-                        distance.y = Math.abs(y1) - Math.abs(y2);
-                }
-                if (z2 > z1) {
-                        dirz = 1;
-                        distance.z = Math.abs(z2) - Math.abs(z1);
-                } else {
-                        dirz = -1;
-                        distance.z = Math.abs(z1) - Math.abs(z2);
-                }
-                for (var i = 0; i < ammount; i++) {
-                        Level.addParticle(type, x + (distance.x / ammount * i) * dirx, y + (distance.y / ammount * i) * diry, z + (distance.z / ammount * i) * dirz, 0, 0, 0, 1);
-                }
-
-        }
-
-        function placeRandomBlock(x, y, z) {
-                var rnd = Math.floor(Math.random() * (blockDataValues.length));
-                setTile(x, y, z, blockDataValues[rnd], 0);
-        }
-
-        function randPotion(entity) {
-                var potionLv = Math.floor(Math.random() * (potionLevels.length));
-                var potionId = Math.floor(Math.random() * (potionValues.length));
-                Entity.addEffect(entity, potionValues[potionId], 10000 * 20, potionLevels[potionLv], false, true);
-        }
-
-        function randItem(x, y, z) {
-                var itemId = Math.floor(Math.random() * (itemValues.length));
-                Level.dropItem(x, y, z, 0, itemValues[itemId], 1, 0);
-        }
-
-        function randPassiveMob(x, y, z) {
+function mobTurm(x, y, z, mobid) {
+        if (mobid == 0) {
                 var mobId = Math.floor(Math.random() * (passiveMobs.length));
-                Level.spawnMob(x, y, z, passiveMobs[mobId]);
+                var mob1 = Level.spawnMob(x, y, z, passiveMobs[mobId]);
+
+                var mob2 = Level.spawnMob(x, y, z, passiveMobs[mobId]);
+                rideAnimal(mob2, mob1);
+                var mob3 = Level.spawnMob(x, y, z, passiveMobs[mobId]);
+                rideAnimal(mob3, mob2);
+                var mob4 = Level.spawnMob(x, y, z, passiveMobs[mobId]);
+                rideAnimal(mob4, mob3);
+                var mob5 = Level.spawnMob(x, y, z, passiveMobs[mobId]);
+                rideAnimal(mob5, mob4);
+                var mob6 = Level.spawnMob(x, y, z, passiveMobs[mobId]);
+                rideAnimal(mob6, mob5);
+        } else {
+                var turmmob1 = Level.spawnMob(x, y, z, mobid);
+                var turmmob2 = Level.spawnMob(x, y, z, mobid);
+                rideAnimal(turmmob2, turmmob1);
+                var turmmob3 = Level.spawnMob(x, y, z, mobid);
+                rideAnimal(turmmob3, turmmob2);
+                var turmmob4 = Level.spawnMob(x, y, z, mobid);
+                rideAnimal(turmmob4, turmmob3);
+                var turmmob5 = Level.spawnMob(x, y, z, mobid);
+                rideAnimal(turmmob5, turmmob4);
+                var turmmob6 = Level.spawnMob(x, y, z, mobid);
+                rideAnimal(turmmob6, turmmob5);
         }
+}
 
-        function randHostileMob(x, y, z) {
-                var mobId = Math.floor(Math.random() * (hostileMobs.length));
-                Level.spawnMob(x, y, z, hostileMobs[mobId]);
-        }
+function shootEntity(entity, x, y, z) {
+        var shootDir = lookDir(getYaw(), getPitch());
+        setVelX(entity, shootDir.x * x);
+        setVelY(entity, shootDir.y * y);
+        setVelZ(entity, shootDir.z * z);
+}
 
+function lookDir(yaw, pitch) {
+        var direction = new vector3d(0, 0, 0);
+        direction.y = -Math.sin(java.lang.Math.toRadians(pitch));
+        direction.x = -Math.sin(java.lang.Math.toRadians(yaw)) * Math.cos(java.lang.Math.toRadians(pitch));
+        direction.z = Math.cos(java.lang.Math.toRadians(yaw)) * Math.cos(java.lang.Math.toRadians(pitch));
+        return direction;
+}
 
+function vector3d(x, y, z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+}
 
-        function mobTurm(x, y, z, mobid) {
-                if (mobid == 0) {
-                        var mobId = Math.floor(Math.random() * (passiveMobs.length));
-                        var mob1 = Level.spawnMob(x, y, z, passiveMobs[mobId]);
+function addHovRenderType(renderer) {
+        var model = renderer.getModel();
+        var head = model.getPart("head");
+        var body = model.getPart("body");
+        var rArm = model.getPart("rightArm");
+        var lArm = model.getPart("leftArm");
+        var rLeg = model.getPart("rightLeg");
+        var lLeg = model.getPart("leftLeg");
+        head.clear();
+        body.clear();
+        body.addBox(-30, 0, -7, 60, -5, 10);
+        rArm.clear();
+        lArm.clear();
+        rLeg.clear();
+        lLeg.clear();
+}
 
-                        var mob2 = Level.spawnMob(x, y, z, passiveMobs[mobId]);
-                        rideAnimal(mob2, mob1);
-                        var mob3 = Level.spawnMob(x, y, z, passiveMobs[mobId]);
-                        rideAnimal(mob3, mob2);
-                        var mob4 = Level.spawnMob(x, y, z, passiveMobs[mobId]);
-                        rideAnimal(mob4, mob3);
-                        var mob5 = Level.spawnMob(x, y, z, passiveMobs[mobId]);
-                        rideAnimal(mob5, mob4);
-                        var mob6 = Level.spawnMob(x, y, z, passiveMobs[mobId]);
-                        rideAnimal(mob6, mob5);
-                } else {
-                        var turmmob1 = Level.spawnMob(x, y, z, mobid);
-                        var turmmob2 = Level.spawnMob(x, y, z, mobid);
-                        rideAnimal(turmmob2, turmmob1);
-                        var turmmob3 = Level.spawnMob(x, y, z, mobid);
-                        rideAnimal(turmmob3, turmmob2);
-                        var turmmob4 = Level.spawnMob(x, y, z, mobid);
-                        rideAnimal(turmmob4, turmmob3);
-                        var turmmob5 = Level.spawnMob(x, y, z, mobid);
-                        rideAnimal(turmmob5, turmmob4);
-                        var turmmob6 = Level.spawnMob(x, y, z, mobid);
-                        rideAnimal(turmmob6, turmmob5);
-                }
-        }
-
-        function shootEntity(entity, x, y, z) {
-                var shootDir = lookDir(getYaw(), getPitch());
-                setVelX(entity, shootDir.x * x);
-                setVelY(entity, shootDir.y * y);
-                setVelZ(entity, shootDir.z * z);
-        }
-
-        function lookDir(yaw, pitch) {
-                var direction = new vector3d(0, 0, 0);
-                direction.y = -Math.sin(java.lang.Math.toRadians(pitch));
-                direction.x = -Math.sin(java.lang.Math.toRadians(yaw)) * Math.cos(java.lang.Math.toRadians(pitch));
-                direction.z = Math.cos(java.lang.Math.toRadians(yaw)) * Math.cos(java.lang.Math.toRadians(pitch));
-                return direction;
-        }
-
-        function vector3d(x, y, z) {
-                this.x = x;
-                this.y = y;
-                this.z = z;
-        }
-
-        function addHovRenderType(renderer) {
-                var model = renderer.getModel();
-                var head = model.getPart("head");
-                var body = model.getPart("body");
-                var rArm = model.getPart("rightArm");
-                var lArm = model.getPart("leftArm");
-                var rLeg = model.getPart("rightLeg");
-                var lLeg = model.getPart("leftLeg");
-                head.clear();
-                body.clear();
-                body.addBox(-30, 0, -7, 60, -5, 10);
-                rArm.clear();
-                lArm.clear();
-                rLeg.clear();
-                lLeg.clear();
-        }
-
-        var HovRenderer = Renderer.createHumanoidRenderer();
-        addHovRenderType(HovRenderer);
+var HovRenderer = Renderer.createHumanoidRenderer();
+addHovRenderType(HovRenderer);
 
 
 
 
-        function Wall(minX, minY, minZ, maxX, maxY, maxZ, mat) {
-                for (i = 0; i <= maxX; i++) {
-                        for (j = 0; j <= maxY; j++) {
-                                for (k = 0; k < maxZ; k++) {
-                                        Level.setTile(minX - 2 + i, minY - 2 + k, minZ + j - 2, mat);
-                                }
+function Wall(minX, minY, minZ, maxX, maxY, maxZ, mat) {
+        for (i = 0; i <= maxX; i++) {
+                for (j = 0; j <= maxY; j++) {
+                        for (k = 0; k < maxZ; k++) {
+                                Level.setTile(minX - 2 + i, minY - 2 + k, minZ + j - 2, mat);
                         }
                 }
         }
+}
 
-        function hugeBlock(minX, minY, minZ, maxX, maxY, maxZ, id) {
-                if (minX < maxX && minY < maxY && minZ < maxZ) {
-                        for (x = minX; x < maxX; x++) {
-                                for (var y = minY; y < maxY; y++) {
-                                        for (var z = minZ; z < maxZ; z++) {
-                                                setTile(x, y, z, id);
+function hugeBlock(minX, minY, minZ, maxX, maxY, maxZ, id) {
+        if (minX < maxX && minY < maxY && minZ < maxZ) {
+                for (x = minX; x < maxX; x++) {
+                        for (var y = minY; y < maxY; y++) {
+                                for (var z = minZ; z < maxZ; z++) {
+                                        setTile(x, y, z, id);
+                                }
+                        }
+                }
+        } else {
+                clientMessage("please put in correct values.\n If you happen to see this as a casual player, you just need to know that something went wrong, you can't do anything about it and i'ts all the programmers fault!");
+        }
+}
+
+function shootAtTarget(xx, yy, zz, target, id) {
+        var x = Entity.getX(target);
+        var y = Entity.getY(target);
+        var z = Entity.getZ(target);
+        arrow = Level.spawnMob(x + xx, y + yy, z + zz, id);
+        Entity.setVelY(arrow, -2);
+}
+
+function flipCoin() {
+        var rnd = Math.round(Math.random());
+        if (rnd == 0) {
+                return false;
+        } else {
+                return true;
+        }
+}
+
+function checkChestStoneHook(x, y, z) {
+        if (Level.getTile(x, y, z) == blocks.chest) {
+                var cheststone = Level.getChestSlot(x, y, z, 0);
+                for (var i in cheststones) {
+                        if (cheststone == cheststones[i][0]) {
+                                cheststoneHook(x, y, z, cheststone);
+                        }
+                }
+        }
+}
+
+function randomize(min, max) {
+        return Math.random() * (max - min) + min;
+}
+
+Item.newArmor = function(id, iconName, iconIndex, name, texture, damageReduceAmount, maxDamage, armorType) {
+        armors.push([id, armorType]);
+        try {
+                //Item.newArmor(int id, String iconName, int iconIndex, String name, String texture, int damageReduceAmount, int maxDamage, int armorType)
+                Item.defineArmor(id, iconName, iconIndex, name, texture, damageReduceAmount, maxDamage, armorType);
+        } catch (e) {
+                Item.defineArmor(id, "skull_zombie", 0, name, "armor/chain_2.png", damageReduceAmount, maxDamage, armorType);
+        }
+};
+
+Item.setSword = function(id, damage) {
+        swords.push([id, damage]);
+};
+
+Item.setChestStone = function(id) {
+        cheststones.push(id);
+};
+
+Item.damage = function() {
+        var pcid = Player.getCarriedItemData();
+        if (pcid >= Item.getMaxDamage(Player.getCarriedItem())) {
+                Level.playSound(Player.getX(), Player.getY(), Player.getZ(), "random.break", 2);
+                Entity.setCarriedItem(getPlayerEnt(), 0, 0, 0);
+        } else {
+                Entity.setCarriedItem(getPlayerEnt(), id, 1, pcid + 1);
+        }
+};
+
+
+
+Item.defineItem = function(id, textureName, textureNumber, name, stackLimit) {
+        try {
+                ModPE.setItem(id, textureName, textureNumber, name, stackLimit);
+        } catch (e) {
+                ModPE.setItem(id, "skull_zombie", 0, name, stackLimit);
+        }
+};
+
+Item.recipe = function(id1, ammount1, damage1, order1, ingredients1) {
+        recipes.push({
+                id: id1,
+                ammount: ammount1,
+                damage: damage1,
+                order: order1,
+                ingredients: ingredients1
+        });
+};
+
+Block.newBlock = function(id, name, textureNames, sourceId, opaque, renderType) {
+        try {
+                Block.defineBlock(id, name, textureNames, sourceId, opaque, renderType);
+        } catch (e) {
+                errorWithModResources();
+
+                Block.defineBlock(id, name, "enchanting_table_top", sourceId, opaque, renderType);
+        }
+};
+
+Player.removeItem = function(item, ammount) {
+        if (Player.hasItemCount(item) != 0) {
+                Player.setInventorySlot(Player.hasItemSlots(item)[0], item, Player.getInventorySlotCount(Player.hasItemSlots(item)[0]) - 1, 0);
+                return true;
+        } else {
+                clientMessage("you need" + Item.getName(item, 0, false));
+                Item.getName(par1int, par2int, par3boolean);
+                return false;
+        }
+};
+
+Player.setFloor = function(id, damage) {
+        Level.setTile(Math.floor(Player.getX(), Math.floor(Player.getY()) - 2, Math.floor(Player.getZ()), id, damage));
+};
+
+Player.hasItemSlots = function(item) {
+        var i = 0;
+        var slots = [];
+        while (i < 27) {
+                i++;
+                if (Player.getInventorySlot(i) == item) {
+                        gotit.push(i);
+                }
+                return slots;
+        }
+};
+
+Player.hasItemCount = function(item) {
+        var count = 0;
+        var i = 0;
+        while (i < 28) {
+                i++;
+                if (Player.getInventorySlot(i) == item) {
+                        count += Player.getInventorySlotCount(i);
+                }
+        }
+        return count;
+};
+
+Entity.damage = function(victim, damage) {
+        Entity.setHealth(Entity.getHealth(victim) - damage);
+};
+
+function createRecipies() {
+        for (var i in recipes) {
+                Item.addShapedRecipe(recipes[i].id, recipes[i].ammount, recipes[i].damage, recipes[i].order, recipes[i].ingredients);
+        }
+}
+
+
+function checkChangedCarriedItem() {
+        if (currentScreen == "hud_screen" || currentScreen == "null") {
+                if (Player.getCarriedItem() != previousCarriedItem)
+                        changeCarriedItemHook(Player.getCarriedItem(), previousCarriedItem);
+                else {
+                        // switching between items with same id but different damage for example
+                        if (Player.getSelectedSlotId() != previousSlotId) {
+                                changeCarriedItemHook(previousCarriedItem, previousCarriedItem);
+                        }
+                }
+                previousCarriedItem = Player.getCarriedItem();
+                previousSlotId = Player.getSelectedSlotId();
+        }
+}
+
+function changeCarriedItemHook() {
+        clientMessage("changed item");
+}
+
+function loadTardis() {
+        currentActivity.runOnUiThread(new java.lang.Runnable({
+                run: function() {
+                        try {
+                                var loadFile = java.io.File(new android.os.Environment.getExternalStorageDirectory() + "/games/com.mojang/minecraftWorlds/" + Level.getWorldDir() + "/paperbenni/paperbenni.dat");
+                                if (loadFile.exists()) {
+                                        // load streams
+                                        var streamInput = new java.io.FileInputStream(loadFile);
+                                        var streamReader = new java.io.InputStreamReader(streamInput);
+
+                                        var properties = new java.util.Properties();
+                                        properties.load(streamReader);
+
+                                        tardis.generated = Convert.stringToBoolean(properties.getProperty("tardis", "0"));
+                                        tardis.inside = Convert.stringToBoolean(properties.getProperty("inside", "0"));
+                                        if (tardis.generated && tardis.inside) {
+                                                tardis.formerposition.x = parseInt(properties.getProperty("tardisformerx"));
+                                                tardis.formerposition.y = parseInt(properties.getProperty("tardisformery"));
+                                                tardis.formerposition.z = parseInt(properties.getProperty("tardisformerz"));
+                                                clientMessage("welcome back to the tardis. Remember to tap and hold on a wall to exit");
                                         }
+                                        // close streams
+                                        streamReader.close();
+                                        streamInput.close();
+                                } else {
+                                        generateTardis();
+                                        saveTardis();
                                 }
-                        }
-                } else {
-                        clientMessage("please put in correct values.\n If you happen to see this as a casual player, you just need to know that something went wrong, you can't do anything about it and i'ts all the programmers fault!");
-                }
-        }
-
-        function shootAtTarget(xx, yy, zz, target, id) {
-                var x = Entity.getX(target);
-                var y = Entity.getY(target);
-                var z = Entity.getZ(target);
-                arrow = Level.spawnMob(x + xx, y + yy, z + zz, id);
-                Entity.setVelY(arrow, -2);
-        }
-
-        function flipCoin() {
-                var rnd = Math.round(Math.random());
-                if (rnd == 0) {
-                        return false;
-                } else {
-                        return true;
-                }
-        }
-
-        function checkChestStoneHook(x, y, z) {
-                if (Level.getTile(x, y, z) == blocks.chest) {
-                        var cheststone = Level.getChestSlot(x, y, z, 0);
-                        for (var i in cheststones) {
-                                if (cheststone == cheststones[i][0]) {
-                                        cheststoneHook(x, y, z, cheststone);
-                                }
+                        } catch (err) {
+                                clientMessage("Error: " + err);
                         }
                 }
+        }));
+}
+
+
+function saveTardis() {
+        var saveFolder = new java.io.File(new android.os.Environment.getExternalStorageDirectory() + "/games/com.mojang/minecraftWorlds/" + Level.getWorldDir() + "/paperbenni-mod");
+        saveFolder.mkdirs();
+        var saveFile = new java.io.File(new android.os.Environment.getExternalStorageDirectory() + "/games/com.mojang/minecraftWorlds/" + Level.getWorldDir() + "/paperbenni-mod/paperbenni.dat");
+        if (saveFile.exists()) {
+                saveFile['delete']();
         }
+        saveFile.createNewFile();
+        var streamOutput = new java.io.FileOutputStream(saveFile);
+        var streamWriter = new java.io.OutputStreamWriter(streamOutput);
 
-        function randomize(min, max) {
-                return Math.random() * (max - min) + min;
+        var properties = new java.util.Properties();
+
+        properties.setProperty("tardis", String(tardis.generated));
+        properties.setProperty("inside", String(tardis.inside));
+
+        if (tardis.generated && tardis.inside) {
+                properties.setProperty("tardisformerx", tardis.formerposition.x1);
+                properties.setProperty("tardisformery", tardis.formerposition.x1);
+                properties.setProperty("tardisformerz", tardis.formerposition.x1);
         }
+        properties.store(streamWriter, "paperbennis modpack");
+        streamWriter.close();
+        streamOutput.close();
+}
 
-        Item.newArmor = function(id, iconName, iconIndex, name, texture, damageReduceAmount, maxDamage, armorType) {
-                armors.push([id, armorType]);
-                try {
-                        //Item.newArmor(int id, String iconName, int iconIndex, String name, String texture, int damageReduceAmount, int maxDamage, int armorType)
-                        Item.defineArmor(id, iconName, iconIndex, name, texture, damageReduceAmount, maxDamage, armorType);
-                } catch (e) {
-                        Item.defineArmor(id, "skull_zombie", 0, name, "armor/chain_2.png", damageReduceAmount, maxDamage, armorType);
-                }
-        };
+function generateTardis() {
+        hugeBlock(-20, 20, -20, 20, 30, 20, 7);
+        hugeBlock(-19, 21, -19, 19, 29, 0);
+        tardis.generated = true;
+}
 
-        Item.setSword = function(id, damage) {
-                swords.push([id, damage]);
-        };
+function startup() {
+        createEmeraldItems();
+        createTntItems();
+        createSwordItems();
+        createMachineItems();
+        createShooterItems();
+        createMiscellaniousItems();
 
-        Item.setChestStone = function(id) {
-                cheststones.push(id);
-        };
+        createRecipies();
+}
 
-        Item.damage = function() {
-                var pcid = Player.getCarriedItemData();
-                if (pcid >= Item.getMaxDamage(Player.getCarriedItem())) {
-                        Level.playSound(Player.getX(), Player.getY(), Player.getZ(), "random.break", 2);
-                        Entity.setCarriedItem(getPlayerEnt(), 0, 0, 0);
-                } else {
-                        Entity.setCarriedItem(getPlayerEnt(), id, 1, pcid + 1);
-                }
-        };
-
-
-
-        Item.defineItem = function(id, textureName, textureNumber, name, stackLimit) {
-                try {
-                        ModPE.setItem(id, textureName, textureNumber, name, stackLimit);
-                } catch (e) {
-                        ModPE.setItem(id, "skull_zombie", 0, name, stackLimit);
-                }
-        };
-
-        Item.recipe = function(id1, ammount1, damage1, order1, ingredients1) {
-                recipes.push({
-                        id: id1,
-                        ammount: ammount1,
-                        damage: damage1,
-                        order: order1,
-                        ingredients: ingredients1
-                });
-        };
-
-        Block.newBlock = function(id, name, textureNames, sourceId, opaque, renderType) {
-                try {
-                        Block.defineBlock(id, name, textureNames, sourceId, opaque, renderType);
-                } catch (e) {
-                        errorWithModResources();
-
-                        Block.defineBlock(id, name, "enchanting_table_top", sourceId, opaque, renderType);
-                }
-        };
-
-        Player.removeItem = function(item, ammount) {
-                if (Player.hasItemCount(item) != 0) {
-                        Player.setInventorySlot(Player.hasItemSlots(item)[0], item, Player.getInventorySlotCount(Player.hasItemSlots(item)[0]) - 1, 0);
-                        return true;
-                } else {
-                        clientMessage("you need" + Item.getName(item, 0, false));
-                        Item.getName(par1int, par2int, par3boolean);
-                        return false;
-                }
-        };
-
-        Player.setFloor = function(id, damage) {
-                Level.setTile(Math.floor(Player.getX(), Math.floor(Player.getY()) - 2, Math.floor(Player.getZ()), id, damage));
-        };
-
-        Player.hasItemSlots = function(item) {
-                var i = 0;
-                var slots = [];
-                while (i < 27) {
-                        i++;
-                        if (Player.getInventorySlot(i) == item) {
-                                gotit.push(i);
-                        }
-                        return slots;
-                }
-        };
-
-        Player.hasItemCount = function(item) {
-                var count = 0;
-                var i = 0;
-                while (i < 28) {
-                        i++;
-                        if (Player.getInventorySlot(i) == item) {
-                                count += Player.getInventorySlotCount(i);
-                        }
-                }
-                return count;
-        };
-
-        Entity.damage = function(victim, damage) {
-                Entity.setHealth(Entity.getHealth(victim) - damage);
-        };
-
-        function createRecipies() {
-                for (var i in recipes) {
-                        Item.addShapedRecipe(recipes[i].id, recipes[i].ammount, recipes[i].damage, recipes[i].order, recipes[i].ingredients);
-                }
-        }
-
-
-        function checkChangedCarriedItem() {
-                if (currentScreen == "hud_screen" || currentScreen == "null") {
-                        if (Player.getCarriedItem() != previousCarriedItem)
-                                changeCarriedItemHook(Player.getCarriedItem(), previousCarriedItem);
-                        else {
-                                // switching between items with same id but different damage for example
-                                if (Player.getSelectedSlotId() != previousSlotId) {
-                                        changeCarriedItemHook(previousCarriedItem, previousCarriedItem);
-                                }
-                        }
-                        previousCarriedItem = Player.getCarriedItem();
-                        previousSlotId = Player.getSelectedSlotId();
-                }
-        }
-
-        function changeCarriedItemHook() {
-                clientMessage("changed item");
-        }
-
-        function loadTardis() {
-                currentActivity.runOnUiThread(new java.lang.Runnable({
-                        run: function() {
-                                try {
-                                        var loadFile = java.io.File(new android.os.Environment.getExternalStorageDirectory() + "/games/com.mojang/minecraftWorlds/" + Level.getWorldDir() + "/paperbenni/paperbenni.dat");
-                                        if (loadFile.exists()) {
-                                                // load streams
-                                                var streamInput = new java.io.FileInputStream(loadFile);
-                                                var streamReader = new java.io.InputStreamReader(streamInput);
-
-                                                var properties = new java.util.Properties();
-                                                properties.load(streamReader);
-
-                                                tardis.generated = Convert.stringToBoolean(properties.getProperty("tardis", "0"));
-                                                tardis.inside = Convert.stringToBoolean(properties.getProperty("inside", "0"));
-                                                if (tardis.generated && tardis.inside) {
-                                                        tardis.formerposition.x = parseInt(properties.getProperty("tardisformerx"));
-                                                        tardis.formerposition.y = parseInt(properties.getProperty("tardisformery"));
-                                                        tardis.formerposition.z = parseInt(properties.getProperty("tardisformerz"));
-                                                        clientMessage("welcome back to the tardis. Remember to tap and hold on a wall to exit");
-                                                }
-                                                // close streams
-                                                streamReader.close();
-                                                streamInput.close();
-                                        } else {
-                                                generateTardis();
-                                                saveTardis();
-                                        }
-                                } catch (err) {
-                                        clientMessage("Error: " + err);
-                                }
-                        }
-                }));
-        }
-
-
-        function saveTardis() {
-                var saveFolder = new java.io.File(new android.os.Environment.getExternalStorageDirectory() + "/games/com.mojang/minecraftWorlds/" + Level.getWorldDir() + "/paperbenni-mod");
-                saveFolder.mkdirs();
-                var saveFile = new java.io.File(new android.os.Environment.getExternalStorageDirectory() + "/games/com.mojang/minecraftWorlds/" + Level.getWorldDir() + "/paperbenni-mod/paperbenni.dat");
-                if (saveFile.exists()) {
-                        saveFile['delete']();
-                }
-                saveFile.createNewFile();
-                var streamOutput = new java.io.FileOutputStream(saveFile);
-                var streamWriter = new java.io.OutputStreamWriter(streamOutput);
-
-                var properties = new java.util.Properties();
-
-                properties.setProperty("tardis", String(tardis.generated));
-                properties.setProperty("inside", String(tardis.inside));
-
-                if (tardis.generated && tardis.inside) {
-                        properties.setProperty("tardisformerx", tardis.formerposition.x1);
-                        properties.setProperty("tardisformery", tardis.formerposition.x1);
-                        properties.setProperty("tardisformerz", tardis.formerposition.x1);
-                }
-                properties.store(streamWriter, "paperbennis modpack");
-                streamWriter.close();
-                streamOutput.close();
-        }
-
-        function generateTardis() {
-                hugeBlock(-20, 20, -20, 20, 30, 20, 7);
-                hugeBlock(-19, 21, -19, 19, 29, 0);
-                tardis.generated = true;
-        }
-
-        function startup() {
-                createEmeraldItems();
-                createTntItems();
-                createSwordItems();
-                createMachineItems();
-                createShooterItems();
-                createMiscellaniousItems();
-
-                createRecipies();
-        }
-
-        startup();
+startup();
