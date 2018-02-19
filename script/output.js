@@ -619,7 +619,7 @@ function createMiscellaniousItems() {
                 " c "
         ], ["a", 35, 0, "b", 265, 0, "c", 334, 0]);
 
-        Item.defineItem(items.irondust, "irondust", 0, "iron dust", 16);//weiter
+        Item.defineItem(items.irondust, "irondust", 0, "iron dust", 16); //weiter
 
 
 }
@@ -1119,6 +1119,14 @@ function useItem(x, y, z, itemId, blockId, side) {
                 checkChestStoneHook(x, y, z - 1);
         }
 
+        if (itemId == items.screwdriverblue) {
+                if (Level.getSurroundingBlock(x, y, z, blocks.chest)) {
+                        var chestitem = Level.getChestSlot(x, y, z, 0);
+                        if (chestitem == items.faststonexpos || chestitem == items.faststonexneg || chest == items.faststonezpos || chestitem == items.faststonezneg) {
+
+                        }
+                }
+        }
 
 
 
@@ -2099,6 +2107,30 @@ Player.hasItemCount = function(item) {
 
 Entity.damage = function(victim, damage) {
         Entity.setHealth(Entity.getHealth(victim) - damage);
+};
+
+Level.getSurroundingBlock = function(x, y, z, id) {
+        if (Level.getTile(x, y + 1, z) == id ||
+                Level.getTile(x, y - 1, z) == id ||
+                Level.getTile(x + 1, y, z) == id ||
+                Level.getTile(x - 1, y, z) == id ||
+                Level.getTile(x, y, z + 1) == id ||
+                Level.getTile(x, y, z - 1) == id) {
+                return true;
+        } else {
+                return false;
+        }
+};
+
+Level.getSurroundingIds = function(x, y, z){
+        var ids = [];
+        ids.push(Level.getTile(x+1, y, z));
+        ids.push(Level.getTile(x-1, y, z));
+        ids.push(Level.getTile(x, y+1, z));
+        ids.push(Level.getTile(x, y-1, z));
+        ids.push(Level.getTile(x, y, z+1));
+        ids.push(Level.getTile(x, y, z-1));
+        return ids;
 };
 
 function createRecipies() {
