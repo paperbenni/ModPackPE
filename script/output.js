@@ -1110,7 +1110,7 @@ function useItem(x, y, z, itemId, blockId, side) {
 
         }
 
-        if (blockId == items.cheststonebutton) {
+        if (blockId == items.cheststonebutton && itemId != items.screwdriverblue && itemId != screwdriverred && itemId != screwdrivergreen) {
                 checkChestStoneHook(x + 1, y, z);
                 checkChestStoneHook(x, y + 1, z);
                 checkChestStoneHook(x, y, z + 1);
@@ -1120,13 +1120,9 @@ function useItem(x, y, z, itemId, blockId, side) {
         }
 
         if (itemId == items.screwdriverblue) {
-                if (Level.getSurroundingBlock(x, y, z, blocks.chest)) {
-                        var chestitem = Level.getChestSlot(x, y, z, 0);
-                        if (chestitem == items.faststonexpos || chestitem == items.faststonexneg || chest == items.faststonezpos || chestitem == items.faststonezneg) {
-
-                        }
-                }
+                checkScrewdriverHook(x, y, z);
         }
+
 
 
 
@@ -1522,6 +1518,59 @@ function secondHook() {
         } else if (tntarmor.active) {
                 tntarmor.active = false;
                 Player.setCanFly(0);
+        }
+}
+
+function checkScrewdriverHook(x, y, z) {
+        ScrewdriverHook(x + 1, y, z);
+        ScrewdriverHook(x - 1, y, z);
+        ScrewdriverHook(x, y + 1, z);
+        ScrewdriverHook(x, y - 1, z);
+        ScrewdriverHook(x, y, z + 1);
+        ScrewdriverHook(x, y, z - 1);
+}
+
+function ScrewdriverHook(x, y, z) {
+        var id = Level.getTile(x, y, z);
+        if (id == blocks.chest) {
+                if (Level.getChestSlot(x, y, z, 0) == items.faststonexpos ||
+                        Level.getChestSlot(x, y, z, 0) == items.faststonexneg ||
+                        Level.getChestSlot(x, y, z, 0) == items.faststonezpos ||
+                        Level.getChestSlot(x, y, z, 0) == items.faststonezneg) {
+                        var dmg = Level.getChestSlotData(x, y, z, 0);
+                        var distance = {
+                                x: 0,
+                                z: 0
+                        };
+                        if (Player.getX() < x) {
+                                distance.x = x - Player.getX();
+                        } else {
+                                distance.x = Player.getX() - x;
+                        }
+                        if (Player.getZ() < z) {
+                                distance.z = z - Player.getZ();
+                        } else {
+                                distance.z = Player.getZ() - z;
+                        }
+                        if (distance.x > distance.z) {
+                                if (Player.getX() > x) {
+                                        Level.setChestSlot(x, y, z, 0, items.faststonexpos, dmg);
+                                }
+                                if (Player.getX() < x) {
+                                        Level.setChestSlot(x, y, z, 0, items.faststonexneg, dmg);
+                                }
+                        }
+                        if (distance.z > distance.x) {
+                                if (Player.getZ() > z) {
+                                        Level.setChestSlot(x, y, z, 0, items.faststonezpos, dmg);
+                                }
+                                if (Player.getZ() < z) {
+                                        Level.setChestSlot(x, y, z, 0, items.faststonezneg, dmg);
+                                }
+                        }
+
+                }
+
         }
 }
 
@@ -2122,14 +2171,14 @@ Level.getSurroundingBlock = function(x, y, z, id) {
         }
 };
 
-Level.getSurroundingIds = function(x, y, z){
+Level.getSurroundingIds = function(x, y, z) {
         var ids = [];
-        ids.push(Level.getTile(x+1, y, z));
-        ids.push(Level.getTile(x-1, y, z));
-        ids.push(Level.getTile(x, y+1, z));
-        ids.push(Level.getTile(x, y-1, z));
-        ids.push(Level.getTile(x, y, z+1));
-        ids.push(Level.getTile(x, y, z-1));
+        ids.push(Level.getTile(x + 1, y, z));
+        ids.push(Level.getTile(x - 1, y, z));
+        ids.push(Level.getTile(x, y + 1, z));
+        ids.push(Level.getTile(x, y - 1, z));
+        ids.push(Level.getTile(x, y, z + 1));
+        ids.push(Level.getTile(x, y, z - 1));
         return ids;
 };
 
