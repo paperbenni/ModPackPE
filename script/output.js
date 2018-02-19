@@ -545,7 +545,9 @@ function createCheststoneItems() {
         Item.addCraftRecipe(items.jumpercheststone, 4, 0, [265, 1, 0]);
 
         Item.defineItem(items.screwdriverblue, "screwdriverblue", 0, "Blue screwdriver", 1);
+
         Item.defineItem(items.screwdriverred, "screwdriverred", 0, "Red screwdriver", 1);
+
         Item.defineItem(items.screwdrivergreen, "screwdrivergreen", 0, "Green screwdriver", 1);
 
         Block.newBlock(items.cheststonebutton, "cheststone button", "cheststonebutton", 0, false, 0);
@@ -1123,8 +1125,13 @@ function useItem(x, y, z, itemId, blockId, side) {
                 checkScrewdriverHook(x, y, z);
         }
 
+        if (itemId == items.screwdrivergreen) {
 
+        }
 
+        if (itemId == items.screwdriverred) {
+
+        }
 
 
 
@@ -1571,6 +1578,62 @@ function ScrewdriverHook(x, y, z) {
 
                 }
 
+        }
+}
+
+
+
+function checkScrewdriverGreenHook(x, y, z) {
+        ScrewdriverGreenHook(x + 1, y, z);
+        ScrewdriverGreenHook(x - 1, y, z);
+        ScrewdriverGreenHook(x, y + 1, z);
+        ScrewdriverGreenHook(x, y - 1, z);
+        ScrewdriverGreenHook(x, y, z + 1);
+        ScrewdriverGreenHook(x, y, z - 1);
+}
+
+function ScrewdriverGreenHook(x, y, z) {
+        var id = Level.getTile(x, y, z);
+        if (id == blocks.chest) {
+                if (Level.getChestSlot(x, y, z, 0) == items.faststonexpos ||
+                        Level.getChestSlot(x, y, z, 0) == items.faststonexneg ||
+                        Level.getChestSlot(x, y, z, 0) == items.faststonezpos ||
+                        Level.getChestSlot(x, y, z, 0) == items.faststonezneg) {
+                        var item = Level.getChestSlot(x, y, z, 0);
+                        var dmg = Level.getChestSlotData(x, y, z, 0);
+                        if (dmg <= 10) {
+                                Level.setChestSlot(x, y, z, 0, item, dmg + 1);
+                        }else{
+                                ModPE.showTipMessage("Maximum strength reached");
+                        }
+                }
+        }
+}
+
+function checkScrewdriverRedHook(x, y, z) {
+        ScrewdriverRedHook(x + 1, y, z);
+        ScrewdriverRedHook(x - 1, y, z);
+        ScrewdriverRedHook(x, y + 1, z);
+        ScrewdriverRedHook(x, y - 1, z);
+        ScrewdriverRedHook(x, y, z + 1);
+        ScrewdriverRedHook(x, y, z - 1);
+}
+
+function ScrewdriverRedHook(x, y, z) {
+        var id = Level.getTile(x, y, z);
+        if (id == blocks.chest) {
+                if (Level.getChestSlot(x, y, z, 0) == items.faststonexpos ||
+                        Level.getChestSlot(x, y, z, 0) == items.faststonexneg ||
+                        Level.getChestSlot(x, y, z, 0) == items.faststonezpos ||
+                        Level.getChestSlot(x, y, z, 0) == items.faststonezneg) {
+                        var item = Level.getChestSlot(x, y, z, 0);
+                        var dmg = Level.getChestSlotData(x, y, z, 0);
+                        if (dmg <= 10) {
+                                Level.setChestSlot(x, y, z, 0, item, dmg - 1);
+                        }else{
+                                ModPE.showTipMessage("Minimum strength reached");
+                        }
+                }
         }
 }
 
