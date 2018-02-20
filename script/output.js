@@ -33,7 +33,7 @@ var snowsword = {
         victim: 0
 };
 
-var bridge = {
+var cheststonebridge = {
         active: false,
         x: 0,
         y: 0,
@@ -213,6 +213,7 @@ const items = {
         faststonexneg: 3054,
         faststonezpos: 3055,
         faststonezneg: 3056,
+        faststone: 3074,
         machinetester: 3057,
         jumpercheststone: 3058,
         shop: 3059,
@@ -549,6 +550,12 @@ function createCheststoneItems() {
         Item.defineItem(items.screwdriverred, "screwdriverred", 0, "Red screwdriver", 1);
 
         Item.defineItem(items.screwdrivergreen, "screwdrivergreen", 0, "Green screwdriver", 1);
+
+        Item.defineItem(items.faststonexneg, "fastpad", 0, "Fast Cheststone", 1);
+        Item.defineItem(items.faststonexpos, "fastpad", 0, "Fast Cheststone", 1);
+        Item.defineItem(items.faststonezneg, "fastpad", 0, "Fast Cheststone", 1);
+        Item.defineItem(items.faststonezpos, "fastpad", 0, "Fast Cheststone", 1);
+        Item.defineItem(items.faststone, "fastpad", 0, "Fast Cheststone", 1);
 
         Block.newBlock(items.cheststonebutton, "cheststone button", "cheststonebutton", 0, false, 0);
         Item.recipe(items.cheststonebutton, 1, 0, [
@@ -1515,6 +1522,7 @@ function modTick() {
 }
 
 function secondHook() {
+        var item = Player.getCarriedItem();
         if (Player.getArmorSlot(0) == items.tnthelmet && Player.getArmorSlot(1) == items.tntchestplate &&
                 Player.getArmorSlot(2) == items.tntleggings && Player.getArmorSlot(3) == items.tntboots) {
                 if (tntarmor.wearing == false) {
@@ -1525,6 +1533,9 @@ function secondHook() {
         } else if (tntarmor.active) {
                 tntarmor.active = false;
                 Player.setCanFly(0);
+        }
+        if (item == items.faststonexneg || item == items.faststonexpos || item == items.faststonezneg || item == items.faststonezpos) {
+                Entity.setCarriedItem(Player.getEntity(), items.faststone, 1, 1);
         }
 }
 
@@ -1543,7 +1554,8 @@ function ScrewdriverHook(x, y, z) {
                 if (Level.getChestSlot(x, y, z, 0) == items.faststonexpos ||
                         Level.getChestSlot(x, y, z, 0) == items.faststonexneg ||
                         Level.getChestSlot(x, y, z, 0) == items.faststonezpos ||
-                        Level.getChestSlot(x, y, z, 0) == items.faststonezneg) {
+                        Level.getChestSlot(x, y, z, 0) == items.faststonezneg ||
+                        Level.getChestSlot(x, y, z, 0 == items.faststone)) {
                         var dmg = Level.getChestSlotData(x, y, z, 0);
                         var distance = {
                                 x: 0,
@@ -1603,7 +1615,7 @@ function ScrewdriverGreenHook(x, y, z) {
                         var dmg = Level.getChestSlotData(x, y, z, 0);
                         if (dmg <= 10) {
                                 Level.setChestSlot(x, y, z, 0, item, dmg + 1);
-                        }else{
+                        } else {
                                 ModPE.showTipMessage("Maximum strength reached");
                         }
                 }
@@ -1630,7 +1642,7 @@ function ScrewdriverRedHook(x, y, z) {
                         var dmg = Level.getChestSlotData(x, y, z, 0);
                         if (dmg <= 10) {
                                 Level.setChestSlot(x, y, z, 0, item, dmg - 1);
-                        }else{
+                        } else {
                                 ModPE.showTipMessage("Minimum strength reached");
                         }
                 }
@@ -1750,6 +1762,9 @@ function cheststoneHook(x, y, z, id) {
 
         if (id == items.faststonezneg) {
                 Entity.setVelZ(Player.getEntity, -0.1 * Level.getChestSlotData(x, y, z, 0));
+        }
+        if (id == items.faststone) {
+                clientMessage("You need a blue screwdriver to choose the direction!");
         }
 }
 
