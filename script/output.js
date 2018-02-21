@@ -1227,6 +1227,20 @@ function entityRemovedHook(e) {
 }
 
 
+function procCmd(c) {
+        var p = c.split(" ");
+        var command = p[0];
+        switch (command) {
+                case 'gv':
+                        {
+                                Level.dropItem(Player.getX(), Player.getY(), Player.getZ(), 0, p[1], p[2], p[3]);
+                                        break;
+                                
+                        }
+        }
+}
+
+
 function modTick() {
         //variablen für blöcke unterm spieler
         checkChangedCarriedItem();
