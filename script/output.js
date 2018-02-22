@@ -231,7 +231,7 @@ const items = {
         blueirondust: 3071,
         redirondust: 3072,
         greenirondust: 3073,
-        compressedsnow: 3075, 
+        compressedsnow: 3075,
         enderingot: 3076
 
 };
@@ -671,6 +671,7 @@ function createMiscellaniousItems() {
 
 }
 
+
 function createCraftItems() {
         Item.defineItem(items.irondust, "irondust", 0, "iron dust", 16);
         Item.recipe(items.irondust, 4, 0, [
@@ -723,8 +724,8 @@ function createCraftItems() {
 
         Item.defineItem(items.enderingot, "enderingot", 0, "ender ingot", 0);
         Item.recipe(items.enderingot, 1, 0, [
-        "aaa", 
-                "aba", 
+                "aaa",
+                "aba",
                 "aaa"
         ], ["a", 368, 0, "b", 265, 0]);
 
@@ -739,11 +740,18 @@ function createSwordItems() {
                 " b "
         ], ["a", 325, 10, "b", items.ironstick, 0]);
         Item.setHandEquipped(items.lavasword, 1);
+        Item.setCategory(items.lavasword, ItemCategory.TOOL);
+        Player.addItemCreativeInv(items.lavasword, 1);
 
         Item.defineItem(items.watersword, "watersword", 0, "water sword");
         Item.setHandEquipped(items.watersword, 1);
+        Item.setCategory(items.watersword, ItemCategory.TOOL);
+        Player.addItemCreativeInv(items.watersword, 1);
 
         Item.defineItem(items.arrowsword, "arrowsword", 0, "arrow sword");
+        Item.setCategory(items.arrowsword, ItemCategory.TOOL);
+        Player.addItemCreativeInv(items.arrowsword, 1);
+
 
         Item.defineItem(items.snowsword, "snowsword", 0, "snow sword", 0);
         Item.recipe(items.snowsword, 1, 0, [
@@ -752,10 +760,14 @@ function createSwordItems() {
                 " b "
         ], ["a", 80, 0, "b", 280, 0]);
         Item.setHandEquipped(items.snowsword, 1);
+        Item.setCategory(items.snowsword, ItemCategory.TOOL);
+        Player.addItemCreativeInv(items.snowsword, 1);
 
 
         Item.defineItem(items.firesword, "firesword", 0, "fire sword", 1);
         Item.setHandEquipped(items.firesword, 1);
+        Item.setCategory(items.firesword, ItemCategory.TOOL);
+        Player.addItemCreativeInv(items.firesword, 1);
 
 }
 
