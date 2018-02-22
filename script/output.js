@@ -219,7 +219,7 @@ const items = {
         shop: 3059,
         tntammo: 3060,
         cheststonedetector: 3061,
-        wardrobecheststone: 3062,
+        cheststonewardrobe: 3062,
         cheststonebeam: 3063,
         cheststoneblocker: 3064,
         cheststonebridge: 3065,
@@ -230,7 +230,9 @@ const items = {
         irondust: 3080,
         blueirondust: 3071,
         redirondust: 3072,
-        greenirondust: 3073
+        greenirondust: 3073,
+        compressedsnow: 3075, 
+        enderingot: 3076
 
 };
 
@@ -251,6 +253,11 @@ const blocks = {
         cheststonebutton: 230
 };
 
+const events = {
+        slimerain: 1,
+        zombieinvasion: 2,
+        creeperday: 3
+};
 var cheststones = [];
 
 
@@ -480,12 +487,6 @@ function createEmeraldItems() {
         //Item.newArmor(LONG_FALL_BOOTS_ID,"longfallboots",0,"Long Fall Boots","armor/longfallboots.png",1,LONG_FALL_BOOTS_MAX_DAMAGE,ArmorType.boots);
 
         //emerald recipe ingredients
-        Item.defineItem(items.emeralddust, "emeralddust", 0, "emerald dust", 0);
-        Item.recipe(items.emeralddust, 4, 0, [
-                " a ",
-                "   ",
-                "   "
-        ], ["a", 388, 0]);
 
         Item.defineItem(items.emeraldingot, "emeraldingot", 0, "emerald ingot", 0);
         Item.recipe(items.emeraldingot, 1, 0, [
@@ -530,9 +531,10 @@ function createEmeraldItems() {
 
 
 function createMachineItems() {
-        Item.defineItem(items.debugger, "debugger", 0, "debugger", 1);
+
         Item.defineItem(items.mobstacker, "mobstacker", 0, "mob stacker", 1);
 }
+
 
 function createCheststoneItems() {
         Item.defineItem(items.tardischeststone, "tardischeststone", 0, "tardis cheststone", 0);
@@ -546,18 +548,43 @@ function createCheststoneItems() {
         Item.addCraftRecipe(items.jumpercheststone, 4, 0, [265, 1, 0]);
 
         Item.defineItem(items.screwdriverblue, "screwdriverblue", 0, "Blue screwdriver", 1);
+        Item.recipe(items.screwdriverblue, 1, 0, [
+                " a ",
+                " a ",
+                " b "
+        ], ["a", items.ironstick, 0, "b", items.blueirondust, 0]);
 
         Item.defineItem(items.screwdriverred, "screwdriverred", 0, "Red screwdriver", 1);
 
+        Item.recipe(items.screwdriverred, 1, 0, [
+                " a ",
+                " a ",
+                " b "
+        ], ["a", items.ironstick, 0, "b", items.redirondust, 0]);
+
         Item.defineItem(items.screwdrivergreen, "screwdrivergreen", 0, "Green screwdriver", 1);
 
-        Item.defineItem(items.faststonexneg, "fastpad", 0, "Fast Cheststone", 1);
-        Item.defineItem(items.faststonexpos, "fastpad", 0, "Fast Cheststone", 1);
-        Item.defineItem(items.faststonezneg, "fastpad", 0, "Fast Cheststone", 1);
-        Item.defineItem(items.faststonezpos, "fastpad", 0, "Fast Cheststone", 1);
+        Item.recipe(items.screwdrivergreen, 1, 0, [
+                " a ",
+                " a ",
+                " b "
+        ], ["a", items.ironstick, 0, "b", items.greenirondust, 0]);
+
+
+        Item.defineItem(items.faststonexneg, "fastpad", 0, "Fast Cheststone x-", 1);
+        Item.defineItem(items.faststonexpos, "fastpad", 0, "Fast Cheststone x+", 1);
+        Item.defineItem(items.faststonezneg, "fastpad", 0, "Fast Cheststone z-", 1);
+        Item.defineItem(items.faststonezpos, "fastpad", 0, "Fast Cheststone z+", 1);
+
         Item.defineItem(items.faststone, "fastpad", 0, "Fast Cheststone", 1);
 
-        Block.newBlock(items.cheststonebutton, "cheststone button", "cheststonebutton", 0, false, 0);
+        Item.defineItem(items.cheststonedetector, "cheststonedetector", 0, "cheststonedetector", 1);
+
+        Item.defineItem(items.cheststonewardrobe, "cheststonewardrobe", 0, "cheststonewardrobe", 1);
+
+
+
+        Block.newBlock(blocks.cheststonebutton, "cheststone button", "cheststonebutton", 0, false, 0);
         Item.recipe(items.cheststonebutton, 1, 0, [
                 "   ",
                 " a ",
@@ -567,14 +594,25 @@ function createCheststoneItems() {
 
 }
 
+function createModItems() {
 
-function createMiscellaniousItems() {
         Item.defineItem(items.help, "help", 0, "help", 1);
         Item.recipe(items.help, 1, 0, [
                 "   ",
                 " a ",
                 "   "
         ], ["a", 280, 0]);
+
+        Item.defineItem(items.debugger, "debugger", 0, "debugger", 1);
+        Item.recipe(items.debugger, 1, 0, [
+                "   ",
+                " a ",
+                "   "
+        ], ["a", 7, 0]);
+
+}
+
+function createMiscellaniousItems() {
         Item.defineItem(items.enderparachute, "enderparachute", 0, "enderparachute", 1);
         Item.newArmor(items.enderboots, "enderboots", 0, "ender boots", "armor/ender_2.png", 3, 351, ArmorType.boots);
         Item.recipe(items.enderboots, 1, 0, [
@@ -628,14 +666,78 @@ function createMiscellaniousItems() {
                 " c "
         ], ["a", 35, 0, "b", 265, 0, "c", 334, 0]);
 
-        Item.defineItem(items.irondust, "irondust", 0, "iron dust", 16); //weiter
 
+
+
+}
+
+function createCraftItems() {
+        Item.defineItem(items.irondust, "irondust", 0, "iron dust", 16);
+        Item.recipe(items.irondust, 4, 0, [
+                "   ",
+                " a ",
+                "   "
+        ], ["a", 265, 0]);
+        Item.defineItem(items.blueirondust, "blueirondust", 0, "iron dust", 16);
+        Item.recipe(items.blueirondust, 1, 0, [
+                "aaa",
+                "aba",
+                "aaa"
+        ], ["a", 351, 12, "b", 265, 0]);
+
+        Item.defineItem(items.greenirondust, "greenirondust", 0, "iron dust", 16);
+        Item.recipe(items.greenirondust, 1, 0, [
+                "aaa",
+                "aba",
+                "aaa"
+        ], ["a", 351, 10, "b", 265, 0]);
+
+        Item.defineItem(items.redirondust, "redirondust", 0, "iron dust", 16);
+
+        Item.recipe(items.redirondust, 1, 0, [
+                "aaa",
+                "aba",
+                "aaa"
+        ], ["a", 351, 13, "b", 265, 0]);
+
+        Item.defineItem(items.emeralddust, "emeralddust", 0, "emerald dust", 0);
+        Item.recipe(items.emeralddust, 4, 0, [
+                " a ",
+                "   ",
+                "   "
+        ], ["a", 388, 0]);
+
+        Item.defineItem(items.ironstick, "ironstick", 0, "ironstick", 0);
+        Item.recipe(items.ironstick, 1, 0, [
+                "   ",
+                " a ",
+                " a "
+        ], ["a", 265, 0]);
+
+        Item.defineItem(items.compressedsnow, "compressedsnow", 0, "compressed snow", 1);
+        Item.recipe(items.compressedsnow, 1, 0, [
+                "aaa",
+                "aaa",
+                "aaa"
+        ], ["a", 80, 0]);
+
+        Item.defineItem(items.enderingot, "enderingot", 0, "ender ingot", 0);
+        Item.recipe(items.enderingot, 1, 0, [
+        "aaa", 
+                "aba", 
+                "aaa"
+        ], ["a", 368, 0, "b", 265, 0]);
 
 }
 
 
 function createSwordItems() {
         Item.defineItem(items.lavasword, "lavasword", 0, "lava sword");
+        Item.recipe(items.lavasword, 1, 0, [
+                " a ",
+                " a ",
+                " b "
+        ], ["a", 325, 10, "b", items.ironstick, 0]);
         Item.setHandEquipped(items.lavasword, 1);
 
         Item.defineItem(items.watersword, "watersword", 0, "water sword");
@@ -650,6 +752,8 @@ function createSwordItems() {
                 " b "
         ], ["a", 80, 0, "b", 280, 0]);
         Item.setHandEquipped(items.snowsword, 1);
+
+
         Item.defineItem(items.firesword, "firesword", 0, "fire sword", 1);
         Item.setHandEquipped(items.firesword, 1);
 
@@ -1234,8 +1338,8 @@ function procCmd(c) {
                 case 'gv':
                         {
                                 Level.dropItem(Player.getX(), Player.getY(), Player.getZ(), 0, p[1], p[2], p[3]);
-                                        break;
-                                
+                                break;
+
                         }
         }
 }
@@ -1247,6 +1351,7 @@ function modTick() {
         var blockUnderPlayer = Level.getTile(Math.floor(Player.getX()), Math.floor(Player.getY()) - 2, Math.floor(Player.getZ()));
         var flatBlockUnderPlayer = Level.getTile(Math.floor(Player.getX()), Math.floor(Player.getY()) - 1, Math.floor(Player.getZ()));
 
+        var item = Player.getCarriedItem();
         //cheststone hooks
 
         checkChestStoneHook(Math.floor(Player.getX()), Math.floor(Player.getY()) - 2, Math.floor(Player.getZ()));
@@ -1289,6 +1394,10 @@ function modTick() {
                                 PlayerIsOnDetector = false;
                         }
                 }
+        }
+
+        if (item == items.debugger) {
+                ModPE.showTipMessage("Slot id: " + Player.getSelectedSlotId());
         }
 
         secondtimer++;
@@ -1480,12 +1589,11 @@ function modTick() {
 
         //meteorsheep start
         if (meteorsheep.active == true) {
-                setTile(Entity.getX(meteorsheep.sheep), Entity.getY(meteorsheep.sheep), Entity.getZ(meteorsheep.sheep), 12);
                 Entity.setVelX(meteorsheep.sheep, meteorsheep.x);
                 Entity.setVelY(meteorsheep.sheep, meteorsheep.y);
                 Entity.setVelZ(meteorsheep.sheep, meteorsheep.z);
                 meteorsheep.timer1++;
-                if (meteorsheep.timer == 20) {
+                if (meteorsheep.timer1 == 20) {
                         meteorsheep.timer1 = 0;
                         meteorsheep.timer2++;
                         meteorsheep.x = randomize(-1, 1);
@@ -1828,7 +1936,6 @@ function attackHook(attacker, victim) {
                 }
         }
         if (item == items.tntsword) {
-
                 if (Player.removeItem(items.tntammo, 2) == true) {
                         tntsword.active = true;
                         tntsword.victim = victim;
@@ -2236,9 +2343,7 @@ Player.hasItemSlots = function(item) {
 
 Player.hasItemCount = function(item) {
         var count = 0;
-        var i = 0;
-        while (i < 28) {
-                i++;
+        for (var i = 0; i < 28; i++) {
                 if (Player.getInventorySlot(i) == item) {
                         count += Player.getInventorySlotCount(i);
                 }
@@ -2375,7 +2480,9 @@ function startup() {
         createMachineItems();
         createShooterItems();
         createMiscellaniousItems();
-
+        createModItems();
+        createCraftItems();
+        createCheststoneItems();
         createRecipies();
 }
 
