@@ -420,25 +420,37 @@ Entity.Throwable = function(type, vel) {
 function createLuckyItems() {
         Item.defineItem(items.greenluckycheststone, "greenluckycheststone", 0, "greenluckycheststone", 1);
         Item.setChestStone(greenluckycheststone, cheststonetypes.destroy);
+        Item.setCategory(items.greenluckycheststone, ItemCategory.MATERIAL);
+        Player.addItemCreativeInv(items.greenluckycheststone, 1);
 
 
         Item.defineItem(items.blueluckycheststone, "blueluckycheststone", 0, "blue lucky cheststone", 1);
         Item.setChestStone(blueluckycheststone, cheststonetypes.destroy);
+        Item.setCategory(items.blueluckycheststone, ItemCategory.MATERIAL);
+        Player.addItemCreativeInv(items.blueluckycheststone, 1);
 
 
 
         Item.defineItem(items.redluckycheststone, "redluckycheststone", 0, "red lucky cheststone", 1);
         Item.setChestStone(redluckycheststone, cheststonetypes.destroy);
+        Item.setCategory(items.redluckycheststone, ItemCategory.MATERIAL);
+        Player.addItemCreativeInv(items.redluckycheststone, 1);
 
 
         Item.defineItem(items.miniluckycheststone, "miniluckycheststone", 0, "mini lucky cheststone");
         Item.setChestStone(miniluckycheststone, cheststonetypes.destroy);
+        Item.setCategory(items.miniluckycheststone, ItemCategory.MATERIAL);
+        Player.addItemCreativeInv(items.miniluckycheststone, 1);
 
 
         Item.defineItem(items.bigluckycheststone, "bigluckycheststone", 0, "big lucky cheststone");
         Item.setChestStone(bigluckycheststone, cheststonetypes.destroy);
+        Item.setCategory(items.bigluckycheststone, ItemCategory.MATERIAL);
+        Player.addItemCreativeInv(items.bigluckycheststone, 1);
 
         Item.defineItem(items.luckypotion, "luckypotion", 0, "lucky potion");
+        Item.setCategory(items.luckypotion, ItemCategory.FOOD);
+        Player.addItemCreativeInv(items.luckypotion, 1);
 
 }
 
@@ -453,6 +465,8 @@ function createEmeraldItems() {
                 "a a",
                 "   "
         ], ["a", items.emeraldingot, 0]);
+        Item.setCategory(items.emeraldingot, ItemCategory.MATERIAL);
+        Player.addItemCreativeInv(items.emeraldingot, 1);
 
 
 
@@ -462,6 +476,8 @@ function createEmeraldItems() {
                 "aaa",
                 "aaa"
         ], ["a", items.emeraldingot, 0]);
+        Item.setCategory(items.emeraldchestplate, ItemCategory.TOOL);
+        Player.addItemCreativeInv(items.emeraldchestplate, 1);
 
         Item.newArmor(items.emeraldleggings, "emeraldleggings", 0, "emerald leggings", "armor/emerald_2.png", 5, 351, ArmorType.leggings);
         Item.recipe(items.emeraldleggings, 1, 0, [
@@ -469,6 +485,8 @@ function createEmeraldItems() {
                 "a a",
                 "a a"
         ], ["a", items.emeraldingot, 0]);
+        Item.setCategory(items.emeraldleggings, ItemCategory.TOOL);
+        Player.addItemCreativeInv(items.emeraldleggings, 1);
 
         Item.newArmor(items.emeraldboots, "emeraldboots", 0, "emerald boots", "armor/emerald_1.png", 7, 351, ArmorType.boots);
         Item.recipe(items.emeraldboots, 1, 0, [
@@ -476,6 +494,8 @@ function createEmeraldItems() {
                 "a a",
                 "   "
         ], ["a", items.emeraldingot, 0]);
+        Item.setCategory(items.emeraldboots, ItemCategory.TOOL);
+        Player.addItemCreativeInv(items.emeraldboots, 1);
 
         //Item.newArmor(LONG_FALL_BOOTS_ID,"longfallboots",0,"Long Fall Boots","armor/longfallboots.png",1,LONG_FALL_BOOTS_MAX_DAMAGE,ArmorType.boots);
 
@@ -486,6 +506,8 @@ function createEmeraldItems() {
                 "   ",
                 "   "
         ], ["a", 388, 0]);
+        Item.setCategory(items.emeralddust, ItemCategory.MATERIAL);
+        Player.addItemCreativeInv(items.emeralddust, 1);
 
         Item.defineItem(items.emeraldingot, "emeraldingot", 0, "emerald ingot", 0);
         Item.recipe(items.emeraldingot, 1, 0, [
@@ -493,6 +515,8 @@ function createEmeraldItems() {
                 " b ",
                 "   "
         ], ["a", items.emeralddust, 0, "b", 266, 0]);
+        Item.setCategory(items.emeraldingot, ItemCategory.MATERIAL);
+        Player.addItemCreativeInv(items.emeraldingot, 1);
 
         //Emeralddsword
         Item.defineItem(items.emeraldsword, "emeraldsword", 0, "emerald sword", 0);
@@ -504,6 +528,8 @@ function createEmeraldItems() {
         Item.setMaxDamage(items.emeraldsword, 100);
         Item.setSword(items.emeraldsword, 12);
         Item.setHandEquipped(items.emeraldsword, 1);
+        Item.setCategory(items.emeraldsword, ItemCategory.TOOL);
+        Player.addItemCreativeInv(items.emeraldsword, 1);
 
 
         //Emerald pickaxe
@@ -515,6 +541,8 @@ function createEmeraldItems() {
         ], ["a", items.emeraldingot, 0, "b", 280, 0]);
         Item.setMaxDamage(items.emeraldpickaxe, 100);
         Item.setHandEquipped(items.emeraldpickaxe, 1);
+        Item.setCategory(items.emeraldpickaxe, ItemCategory.TOOL);
+        Player.addItemCreativeInv(items.emeraldpickaxe, 1);
 
 
         //Emerald shovel
@@ -526,12 +554,29 @@ function createEmeraldItems() {
         ], ["a", items.emeraldingot, 0, "b", 280, 0]);
         Item.setMaxDamage(items.emeraldshovel, 200);
         Item.setHandEquipped(items.emeraldshovel, 1);
+        Item.setCategory(items.emeraldshowel, ItemCategory.TOOL);
+        Player.addItemCreativeInv(items.emeraldshovel, 1);
 }
 
 
 function createMachineItems() {
-        Item.defineItem(items.debugger, "debugger", 0, "debugger", 1);
         Item.defineItem(items.mobstacker, "mobstacker", 0, "mob stacker", 1);
+}
+
+function createModItems() {
+
+        Item.defineItem(items.debugger, "debugger", 0, "debugger", 1);
+        Item.setCategory(items.debugger, ItemCategory.TOOL);
+        Player.addItemCreativeInv(items.debugger, 1);
+
+        Item.defineItem(items.help, "help", 0, "help", 1);
+        Item.recipe(items.help, 1, 0, [
+                "   ",
+                " a ",
+                "   "
+        ], ["a", 280, 0]);
+        Item.setCategory(items.help, ItemCategory.TOOL);
+        Player.addItemCreativeInv(items.help, 1);
 }
 
 function createCheststoneItems() {
@@ -569,12 +614,6 @@ function createCheststoneItems() {
 
 
 function createMiscellaniousItems() {
-        Item.defineItem(items.help, "help", 0, "help", 1);
-        Item.recipe(items.help, 1, 0, [
-                "   ",
-                " a ",
-                "   "
-        ], ["a", 280, 0]);
         Item.defineItem(items.enderparachute, "enderparachute", 0, "enderparachute", 1);
         Item.newArmor(items.enderboots, "enderboots", 0, "ender boots", "armor/ender_2.png", 3, 351, ArmorType.boots);
         Item.recipe(items.enderboots, 1, 0, [
@@ -2361,7 +2400,7 @@ function startup() {
         createMachineItems();
         createShooterItems();
         createMiscellaniousItems();
-
+        createCheststoneItems();
         createRecipies();
 }
 
