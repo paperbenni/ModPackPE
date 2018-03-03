@@ -603,7 +603,7 @@ function createCheststoneItems() {
                 " a ",
                 " b "
         ], ["a", 22, 0, "b", 247, 0]);
-        Item.setChestStone(item.tardischeststone);
+        Item.setChestStone(items.tardischeststone);
         Item.setCategory(items.tardischeststone, ItemCategory.INTERNAL);
         Player.addItemCreativeInv(items.tardischeststone, 1);
 
@@ -2638,8 +2638,9 @@ function startup() {
         createShooterItems();
         createMiscellaniousItems();
         createModItems();
-        createCraftItems();
         createCheststoneItems();
+        createCraftItems();
+
         createRecipies();
 }
 
