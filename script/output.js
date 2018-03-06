@@ -14,6 +14,8 @@ function Level.getChestSlotData(x, y, z, slot);
 var currentActivity = com.mojang.minecraftpe.MainActivity.currentMainActivity.get();
 var sdcard = android.os.Environment.getExternalStorageDirectory();
 
+var errors = [];
+
 var meteorsheep = {
         sheep: 0,
         active: false,
@@ -472,7 +474,7 @@ function createMagicItems() {
 function createInventory() {
         var x;
         for (x in items) {
-                var currentItem = txt += items[x];
+                var currentItem = items[x];
                 Item.setCategory(currentItem, ItemCategory.FOOD);
                 Player.addItemCreativeInv(currentItem, 1);
         }
@@ -1417,29 +1419,29 @@ function useItem(x, y, z, itemId, blockId, side) {
 
 
 
-        if (Player.getCarriedItem() == items.luckypotion) {
+        if (itemId == items.luckypotion) {
                 randPotion(Player.getEntity());
         }
-        if (Player.getCarriedItem() == items.medicine) {
+        if (itemId == items.medicine) {
                 Entity.removeAllEffects(Player.getEntity());
         }
-        if (Player.getCarriedItem() == 408) {
+        if (itemId == 408) {
                 Entity.removeAllEffects(Player.getEntity());
         }
-        if (Player.getCarriedItem() == items.tntrocket) {
+        if (itemId == items.tntrocket) {
                 var rocket = Level.spawnMob(x, y + 1, z, 65);
                 Entity.setVelY(rocket, 3);
                 Player.addItemInventory(items.tntrocket, -1);
         }
 
 
-        if (Player.getCarriedItem() == items.pigtnt) {
+        if (itemId == items.pigtnt) {
                 Level.spawnMob(x, y + 1, z, 65);
                 Player.addItemInventory(items.pigtnt, -1);
                 pigtnt.active = true;
         }
 
-        if (Player.getCarriedItem() == items.chickentnt && chickentnt.active == false) {
+        if (itemId == items.chickentnt && chickentnt.active == false) {
                 chickentnt.chicken = Level.spawnMob(x, y, z, 65);
                 chickentnt.active = true;
                 Player.addItemInventory(items.chickentnt, -1);
@@ -1447,7 +1449,7 @@ function useItem(x, y, z, itemId, blockId, side) {
 
 
 
-        if (Player.getCarriedItem() == items.meteorsheep && meteorsheep.active == false) {
+        if (itemId == items.meteorsheep && meteorsheep.active == false) {
                 meteorsheep.sheep = Level.spawnMob(x, y + 1, z, 13, "mob/sheep_14.png");
                 Entity.setNameTag(meteorsheep.sheep, "§cBooommmmm!");
                 Entity.setVelY(meteorsheep.sheep, 3);
@@ -1456,17 +1458,22 @@ function useItem(x, y, z, itemId, blockId, side) {
                 Entity.setHealth(meteorsheep.sheep, 3);
         }
 
-        if (Player.getCarriedItem() == items.flyingtnt) {
+        if (itemId == items.flyingtnt) {
                 flyingtnt.tnt = Level.spawnMob(x, y + 1, z, 65);
                 flyingtnt.active = true;
         }
 
-        if (Player.getCarriedItem() == items.instanttnt) {
+        if (itemId == items.instanttnt) {
                 instanttnt.active = true;
                 instanttnt.health = Entity.getHealth(Player.getEntity());
                 Player.setHealth(1000);
                 Player.addItemInventory(items.instanttnt, -1);
                 Level.explode(Entity.getX(sheep), Entity.getY(sheep), Entity.getZ(sheep), 40);
+        }
+        if (itemId == 280) {
+                if (blockId == 7) {
+                        clientErrors();
+                }
         }
 }
 
@@ -1504,11 +1511,12 @@ function procCmd(c) {
         var command = p[0];
         switch (command) {
                 case 'gv':
-                        {
-                                Level.dropItem(Player.getX(), Player.getY(), Player.getZ(), 0, p[1], p[2], p[3]);
-                                break;
+                        Level.dropItem(Player.getX(), Player.getY(), Player.getZ(), 0, p[1], p[2], p[3]);
+                        break;
+                case 'errors':
+                        clientErrors();
+                        break;
 
-                        }
         }
 }
 
@@ -2178,6 +2186,14 @@ function leaveGame() {
 //////CUSTOM FUNKTIONEN/////////////////
 ////////////////////////////////////////
 
+function clientErrors() {
+        var strings = " ";
+        for (var i in errors) {
+                strings = strings + errors[i];
+        }
+        clientMessage("errors: " + strings);
+}
+
 function rideEntity(entity) {
         var shootDir = lookDir(getYaw(), getPitch());
         setVelX(entity, shootDir.x * reit);
@@ -2370,6 +2386,7 @@ Item.newArmor = function(id, iconName, iconIndex, name, texture, damageReduceAmo
                 Item.defineArmor(id, iconName, iconIndex, name, texture, damageReduceAmount, maxDamage, armorType);
         } catch (e) {
                 print("error with armor " + id);
+                errors.push(e + " \n");
         }
 };
 
@@ -2398,6 +2415,7 @@ Item.defineItem = function(id, textureName, textureNumber, name, stackLimit) {
                 ModPE.setItem(id, textureName, textureNumber, name, stackLimit);
         } catch (e) {
                 print("error with item " + id + e);
+                errors.push(e + " \n");
         }
 };
 
@@ -2416,6 +2434,7 @@ Block.newBlock = function(id, name, textureNames, sourceId, opaque, renderType) 
                 Block.defineBlock(id, name, textureNames, sourceId, opaque, renderType);
         } catch (e) {
                 Block.defineBlock(id, name, "enchanting_table_top", sourceId, opaque, renderType);
+                errors.push(e + " \n");
         }
 };
 
@@ -2581,6 +2600,7 @@ function startup() {
         createCheststoneItems();
 
         createRecipies();
+        createInventory();
 }
 
 startup();
