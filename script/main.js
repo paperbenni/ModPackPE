@@ -470,11 +470,7 @@ function createMagicItems() {
 
 function createInventory() {
         var x;
-        for (x in items) {
-                var currentItem = items[x];
-                Item.setCategory(currentItem, ItemCategory.FOOD);
-                Player.addItemCreativeInv(currentItem, 1);
-        }
+        //weiter
 }
 
 
