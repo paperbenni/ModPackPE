@@ -15,6 +15,7 @@ var currentActivity = com.mojang.minecraftpe.MainActivity.currentMainActivity.ge
 var sdcard = android.os.Environment.getExternalStorageDirectory();
 
 var errors = [];
+var previousitem = 0;
 
 
 var meteorsheep = {
@@ -1429,9 +1430,9 @@ function procCmd(c) {
 
 function modTick() {
         //variablen für blöcke unterm spieler
-        checkChangedCarriedItem();
         var blockUnderPlayer = Level.getTile(Math.floor(Player.getX()), Math.floor(Player.getY()) - 2, Math.floor(Player.getZ()));
         var flatBlockUnderPlayer = Level.getTile(Math.floor(Player.getX()), Math.floor(Player.getY()) - 1, Math.floor(Player.getZ()));
+        checkChangedItem();
 
         var item = Player.getCarriedItem();
         //cheststone hooks
@@ -1740,6 +1741,13 @@ function secondHook() {
         }
         if (item == items.faststonexneg || item == items.faststonexpos || item == items.faststonezneg || item == items.faststonezpos) {
                 Entity.setCarriedItem(Player.getEntity(), items.faststone, 1, 1);
+        }
+}
+
+function checkChangedItem() {
+        if (previousitem != Player.getCarriedItem()) {
+                changeCarriedItemHook();
+                previousitem = Player.getCarriedItem();
         }
 }
 
@@ -2301,11 +2309,11 @@ Item.setSword = function(id, damage, max) {
         maxDamages.push([id, max]);
 };
 
-Item.max = function(id, max){
+Item.max = function(id, max) {
         maxDamages.push([id, max]);
 };
 
-Item.equip = function(id){
+Item.equip = function(id) {
         handitems.push(id);
 };
 
@@ -2429,14 +2437,14 @@ function createRecipies() {
 
 }
 
-function setMaxDamages(){
-        for(var i in maxDamages){
+function setMaxDamages() {
+        for (var i in maxDamages) {
                 Item.setMaxDamage(maxDamages[i][0], maxDamages[i][1]);
         }
 }
 
-function setHandItems(){
-        for(var i in handitems){
+function setHandItems() {
+        for (var i in handitems) {
                 Item.setHandEquipped(handitems[i], true);
         }
 }
@@ -2444,9 +2452,12 @@ function setHandItems(){
 
 
 function changeCarriedItemHook() {
-        clientMessage("changed item");
+        clientMessage("changed item!");
+
+
 }
-/*
+
+
 function loadTardis() {
         currentActivity.runOnUiThread(new java.lang.Runnable({
                 run: function() {
@@ -2508,7 +2519,9 @@ function saveTardis() {
         streamWriter.close();
         streamOutput.close();
 }
-*/
+
+
+
 function generateTardis() {
         hugeBlock(-20, 20, -20, 20, 30, 20, 7);
         hugeBlock(-19, 21, -19, 19, 29, 0);
@@ -2526,8 +2539,7 @@ function startup() {
         createCraftItems();
         createCheststoneItems();
 
-        createRecipies();
-       // createInventory();
+        // createInventory();
 }
 
 startup();
