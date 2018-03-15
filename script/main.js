@@ -2,14 +2,9 @@
 This is my biggest Mod. Thanks for downloading!
 Please dont steal my code!!!
 
-functions:
-function Level.getChestSlot(x, y, z, slot);
-function Level.getChestSlotCount(x, y, z, slot);
-function Level.getChestSlotData(x, y, z, slot);
-
 
 */
-//meteorsheep
+
 
 var currentActivity = com.mojang.minecraftpe.MainActivity.currentMainActivity.get();
 var sdcard = android.os.Environment.getExternalStorageDirectory();
@@ -30,6 +25,9 @@ var meteorsheep = {
 
 var secondtimer = 0;
 var PlayerIsOnDetector = false;
+var blockUnderPlayer = 0;
+
+
 //snowsword
 var snowsword = {
         active: false,
@@ -41,7 +39,8 @@ var cheststonebridge = {
         active: false,
         x: 0,
         y: 0,
-        z: 0
+        z: 0,
+        direction: 0
 };
 
 //arrowsword
@@ -244,6 +243,15 @@ const items = {
 
 };
 
+const globaldirections = {
+        posx: 0,
+        negx: 1,
+        posy: 2,
+        negy: 3,
+        posz: 4,
+        negz: 5
+};
+
 const cheststonetypes = {
         step: 1,
         tap: 2,
@@ -338,15 +346,12 @@ const potionValues = [
         MobEffect.weakness,
         MobEffect.wither,
 ];
-//1, 3, 5, 8, 10, 21, 11, 12, 13, 14, 2, 4, 18, 9, 19, 20];
-//var potionTimes = [
-const itemValues = [256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 268, 269, 270, 270, 271,
-        272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294,
-        295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317,
-        318, 319, 320, 321, 323, 324, 325, 328, 329, 330, 331, 332, 333, 334, 336, 337, 338, 339, 340, 341, 344, 345,
-        items.emeraldpickaxe, 347, 348, 351, 352, 352, 353, 354, 355, 357, 359, 360, 261, 362, 363, 364, 365, 366, 383,
-        388, 391, 392, 393, 405, 406, 457, 458, 459
-];
+
+
+
+var itemValues = [];
+
+
 
 //const mobValues = [
 const hostileMobs = [
@@ -999,6 +1004,11 @@ function startDestroyBlock(x, y, z, side) {
         //emeraldpickaxe
         var attemptblock = Level.getTile(x, y, z);
         var item = Player.getCarriedItem();
+        if (cheststonebridge.active) {
+                preventDefault();
+                ModPE.showTipMessage("You can't break blocks while on a cheststone bridge!");
+        }
+
         if (item == items.tntpickaxe) {
                 if (Player.removeItem(items.tntammo, 1) == true) {
                         clientMessage("better run");
@@ -1430,7 +1440,7 @@ function procCmd(c) {
 
 function modTick() {
         //variablen für blöcke unterm spieler
-        var blockUnderPlayer = Level.getTile(Math.floor(Player.getX()), Math.floor(Player.getY()) - 2, Math.floor(Player.getZ()));
+        blockUnderPlayer = Level.getTile(Math.floor(Player.getX()), Math.floor(Player.getY()) - 2, Math.floor(Player.getZ()));
         var flatBlockUnderPlayer = Level.getTile(Math.floor(Player.getX()), Math.floor(Player.getY()) - 1, Math.floor(Player.getZ()));
         checkChangedItem();
 
@@ -1692,36 +1702,26 @@ function modTick() {
         }
 
         if (cheststonebridge.active) {
-                var playX = Math.floor(Player.getX());
-                var playY = Math.floor(Player.getY());
-                var playZ = Math.floor(Player.getZ());
-                if (blockUnderPlayer == 0 && (
-                                playX == cheststonebridge.x && playY == cheststonebridge.y ||
-                                playY == cheststonebridge.y && playZ == cheststonebridge.z ||
-                                playZ == cheststonebridge.z && playX == cheststonebridge.x)) {
-                        Player.setFloor(7);
-
-                        if (Level.getTile(playX + 1, playY - 2, playZ) == 7) {
-                                Level.setTile(playX + 1, playY - 2, playZ, 0);
-                        }
-                        if (Level.getTile(playX - 1, playY - 2, playZ) == 7) {
-                                Level.setTile(playX - 1, playY - 2, playZ, 0);
-                        }
-                        if (Level.getTile(playX, playY - 2, playZ + 1) == 7) {
-                                Level.setTile(playX, playY - 2, playZ + 1, 0);
-                        }
-                        if (Level.getTile(playX, playY - 2, playZ - 1) == 7) {
-                                Level.setTile(playX, playY - 2, playZ - 1, 0);
-                        }
-                        if (Level.getTile(playX, playY - 3, playZ) == 7) {
-                                Level.setTile(playX, playY - 3, playZ, 0);
+                if (floorY() - 2 < cheststonebridge.y) {
+                        cheststonebridge.active = false;
+                }
+                if (cheststonebridge.direction == globaldirections.posx || cheststonebridge.direction == globaldirections.negx) {
+                        if (floorX() < cheststonebridge.x || floorX() > cheststonebridge.x) {
+                                cheststonebridge.active = false;
+                        } else {
+                                if (blockUnderPlayer == 0) {
+                                        Level.setTile(floorX(), floorY() - 2, floorZ(), 7);
+                                }
                         }
                 }
-
-                if (playX != cheststonebridge.x && playY != cheststonebridge.y ||
-                        playY != cheststonebridge.y && playZ != cheststonebridge.z ||
-                        playZ != cheststonebridge.z && playX != cheststonebridge.x) {
-                        cheststonebridge.active = false;
+                if (cheststonebridge.direction == globaldirections.posz || cheststonebridge.direction == globaldirections.negz) {
+                        if (floorZ() < cheststonebridge.z || floorZ() > cheststonebridge.z) {
+                                cheststonebridge.active = false;
+                        } else {
+                                if (blockUnderPlayer == 0) {
+                                        Level.setTile(floorX(), floorY() - 2, floorZ(), 7);
+                                }
+                        }
                 }
         }
 }
@@ -1742,6 +1742,7 @@ function secondHook() {
         if (item == items.faststonexneg || item == items.faststonexpos || item == items.faststonezneg || item == items.faststonezpos) {
                 Entity.setCarriedItem(Player.getEntity(), items.faststone, 1, 1);
         }
+
 }
 
 function checkChangedItem() {
@@ -1955,12 +1956,27 @@ function cheststoneHook(x, y, z, id) {
                 }
         }
         if (id == items.cheststonebridge) {
+                if (Level.getTile(x + 1, y, z) == 152) {
+                        cheststonebridge.direction = globaldirections.posx;
+                }
+                if (Level.getTile(x - 1, y, z) == 152) {
+                        cheststonebridge.direction = globaldirections.negx;
+                }
+                if (Level.getTile(x, y, z + 1) == 152) {
+                        cheststonebridge.direction = globaldirections.posz;
+                }
+                if (Level.getTile(x, y, z - 1) == 152) {
+                        cheststonebridge.direction = globaldirections.negz;
+                }
                 cheststonebridge.active = true;
                 cheststonebridge.x = x;
                 cheststonebridge.y = y;
                 cheststonebridge.z = z;
                 ModPE.showTipMessage("bridge active");
         }
+
+
+
         if (id == items.faststonexpos) {
                 Entity.setVelX(Player.getEntity, 0.1 * Level.getChestSlotData(x, y, z, 0));
         }
@@ -2221,6 +2237,38 @@ function shootEntity(entity, x, y, z) {
         setVelZ(entity, shootDir.z * z);
 }
 
+function shootAtEntity(arrow, victim, speed) {
+        var vicpos = new vector3d(Entity.getX(victim), Entity.getY(victim), Entity.getZ(victim));
+        var arrowpos = new vector3d(Entity.getX(arrow), Entity.getY(arrow), Entity.getZ(arrow));
+
+        var betweenvector = vectorBetween(vicpos, arrowpos);
+        var vectorlength = Math.sqrt(Math.pow(betweenvector.x) + Math.pow(betweenvector.y) + Math.pow(betweenvector.z));
+
+        var shootvector = new vector3d((betweenvector.x / vectorlength) * speed, (betweenvector.y / vectorlength) * speed, (betweenvector.z / vectorlength) * speed);
+
+        Entity.setVelX(victim, shootvector.x);
+        Entity.setVelY(victim, shootvector.y);
+        Entity.setVelZ(victim, shootvector.z);
+
+
+}
+
+function shootAtPos(arrow, x, y, z, speed) {
+        var destination = new vector3d(x, y, z);
+        var arrowpos = new vector3d(Entity.getX(arrow), Entity.getY(arrow), Entity.getZ(arrow));
+
+        var betweenvector = vectorBetween(destination, arrowpos);
+        var vectorlength = Math.sqrt(Math.pow(betweenvector.x) + Math.pow(betweenvector.y) + Math.pow(betweenvector.z));
+
+        var shootvector = new vector3d((betweenvector.x / vectorlength) * speed, (betweenvector.y / vectorlength) * speed, (betweenvector.z / vectorlength) * speed);
+
+        Entity.setVelX(victim, shootvector.x);
+        Entity.setVelY(victim, shootvector.y);
+        Entity.setVelZ(victim, shootvector.z);
+
+
+}
+
 function lookDir(yaw, pitch) {
         var direction = new vector3d(0, 0, 0);
         direction.y = -Math.sin(java.lang.Math.toRadians(pitch));
@@ -2233,6 +2281,26 @@ function vector3d(x, y, z) {
         this.x = x;
         this.y = y;
         this.z = z;
+}
+
+function vectorBetween(vector1, vector2) {
+        if (vector1.x == undefined || vector2.x == undefined) {
+                print("please put in a vector");
+        } else {
+                var returnvector = new vector3d(vector1.x - vector2.x, vector1.y - vector2.y, vector1.z - vector2.z);
+                return returnvector;
+
+        }
+}
+
+function addVectors(vector1, vector2) {
+        if (vector1.x == undefined || vector2.x == undefined) {
+                print("please put in a vector");
+        } else {
+                var returnvector = new vector3d(vector1.x + vector2.x, vector1.y + vector2.y, vector1.z + vector2.z);
+                return returnvector;
+
+        }
 }
 
 
@@ -2268,6 +2336,8 @@ function shootAtTarget(xx, yy, zz, target, id) {
         arrow = Level.spawnMob(x + xx, y + yy, z + zz, id);
         Entity.setVelY(arrow, -2);
 }
+
+
 
 function flipCoin() {
         var rnd = Math.round(Math.random());
@@ -2335,6 +2405,7 @@ Item.damage = function() {
 Item.defineItem = function(id, textureName, textureNumber, name, stackLimit) {
         try {
                 ModPE.setItem(id, textureName, textureNumber, name, stackLimit);
+                itemValues.push(id);
         } catch (e) {
                 print("error with item " + id + e);
                 errors.push(e + " \n");
@@ -2457,6 +2528,70 @@ function changeCarriedItemHook() {
 
 }
 
+function floorX() {
+        return Math.floor(Player.getX());
+}
+
+function floorY() {
+        return Math.floor(Player.getY());
+}
+
+function floorZ() {
+        return Math.floor(Player.getZ());
+}
+
+function resetBridge(x, y, z, direction) {
+        var pos = 0;
+        if (direction == globaldirections.posx) {
+                while (pos <= 100) {
+                        if (Level.getTile(x + pos, y, z) == 7) {
+                                Level.setTile(x + pos, y, z, 0);
+                        }
+                        pos++;
+                        if (Level.getTile(x + pos, y, z) != 7 || Level.getTile(x + pos, y, z) != 0) {
+                                break;
+                        }
+                }
+        }
+
+        if (direction == globaldirections.negx) {
+                while (pos <= 100) {
+                        if (Level.getTile(x - pos, y, z) == 7) {
+                                Level.setTile(x - pos, y, z, 0);
+                        }
+                        pos++;
+                        if (Level.getTile(x - pos, y, z) != 7 || Level.getTile(x - pos, y, z) != 0) {
+                                break;
+                        }
+                }
+        }
+
+
+        if (direction == globaldirections.posz) {
+                while (pos <= 100) {
+                        if (Level.getTile(x - pos, y, z) == 7) {
+                                Level.setTile(x - pos, y, z, 0);
+                        }
+                        pos++;
+                        if (Level.getTile(x - pos, y, z) != 7 || Level.getTile(x - pos, y, z) != 0) {
+                                break;
+                        }
+                }
+        }
+
+
+        if (direction == globaldirections.negz) {
+                while (pos <= 100) {
+                        if (Level.getTile(x, y, z - pos) == 7) {
+                                Level.setTile(x, y, z - pos, 0);
+                        }
+                        pos++;
+                        if (Level.getTile(x, y, z - pos) != 7 || Level.getTile(x, y, z - pos) != 0) {
+                                break;
+                        }
+                }
+        }
+}
 
 function loadTardis() {
         currentActivity.runOnUiThread(new java.lang.Runnable({
