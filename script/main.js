@@ -12,6 +12,14 @@ var sdcard = android.os.Environment.getExternalStorageDirectory();
 var errors = [];
 var previousitem = 0;
 
+var mana = 0;
+var manabar;
+var maxmana = 100;
+var power = 0;
+var maxpower = 100;
+var hasmagicitem = false;
+var haspoweritem = false;
+
 
 var meteorsheep = {
         sheep: 0,
@@ -40,7 +48,8 @@ var cheststonebridge = {
         x: 0,
         y: 0,
         z: 0,
-        direction: 0
+        direction: 0,
+        range: 0
 };
 
 //arrowsword
@@ -239,8 +248,11 @@ const items = {
         greenirondust: 3073,
         compressedsnow: 3075,
         enderingot: 3076,
-        magicbook: 3077
-
+        magicbook: 3077,
+        manapotion: 3078,
+        manaorb: 3079,
+        battery: 3080,
+        charger: 3081
 };
 
 const globaldirections = {
@@ -274,7 +286,10 @@ const events = {
         zombieinvasion: 2,
         creeperday: 3
 };
+
 var cheststones = [];
+var poweritems = [];
+var magicitems = [];
 
 
 var target;
@@ -302,7 +317,9 @@ var previousSlotId = 0;
 
 var fireThrow = 0;
 var arrow;
+
 var GUI;
+
 var dauer = false;
 var bio = 0;
 var ride = false;
@@ -470,6 +487,23 @@ function createLuckyItems() {
 
 function createMagicItems() {
         Item.defineItem(items.magicbook, "magicbook", 0, "magic book", 1);
+        Item.recipe(items.magicbook, 1, 0, [
+                "aaa",
+                "aba",
+                "aaa"
+        ], ["a", items.manaorb, 0, "b", 340, 0]);
+        Item.setMagic(items.manaorb);
+
+        Item.defineItem(items.manapotion, "manapotion", 0, "mana potion", 1);
+        Item.recipe(items.manapotion, 1, 0, [
+                "   ",
+                " a ",
+                " b "
+        ], ["a", items.manaorb, 0, "b", 374, 0]);
+        Item.setMagic(items.manapotion);
+
+        Item.defineItem(items.manaorb, "manaorb", 0, "mana orb", 16);
+        Item.setMagic(items.manaorb);
         //Item.setCategory(items.magicbook, ItemCategory.TOOL);
 
 }
@@ -575,7 +609,50 @@ function createEmeraldItems() {
 
 function createMachineItems() {
         Item.defineItem(items.mobstacker, "mobstacker", 0, "mob stacker", 1);
+        Item.setPower(items.mobstacker);
+
+        Item.defineItem(items.battery, "battery", 0, "battery", 1);
+        Item.setMaxDamage(battery, 100);
+        Item.recipe(items.battery, 1, 0, [
+                "aaa",
+                "aba",
+                "aaa"
+        ], ["a", 152, 0, "b", items.manaorb, 0]);
+        Item.setPower(items.battery);
+
+        Item.defineItem(items.charger, "charger", 0, "charger", 1);
+        Item.recipe(items.charger, 1, 0, [
+                "aaa",
+                "aba",
+                "aaa"
+        ], ["a", 266, 0, "b", items.manaorb]);
+        Item.setPower(items.charger);
         //Item.setCategory(items.mobstacker, ItemCategory.TOOL);
+        Item.defineThrowable(items.hypershooter, "hypershooter", 0, "Hyper shoter", 1);
+        Item.recipe(items.hypershooter, 1, 0, [
+                " a ",
+                "bcb",
+                "bcb"
+        ], ["a", 46, 0, "b", 265, 0, "c", 331, 0]);
+        Item.setPower(items.hypershooter);
+
+
+        Item.defineThrowable(items.tntshooter, "tntshooter", 0, "tnt shooter", 0);
+        Item.recipe(items.tntshooter, 1, 0, [
+                " a ",
+                "bcb",
+                "bcb"
+        ], ["a", 46, 0, "b", 265, 0, "c", 331, 0]);
+        Item.setPower(items.tntshooter);
+        //Item.setCategory(items.tntshooter, ItemCategory.TOOL);
+
+        Item.defineThrowable(items.sheeptntthrower, "sheeptntthrower", 0, "sheep TNT thrower", 0);
+        Item.recipe(items.sheeptntthrower, 1, 0, [
+                " a ",
+                "bbb",
+                "cdc"
+        ], ["a", 46, 0, "b", 35, 0, "c", 265, 0, "d", 331, 0]);
+        Item.setPower(items.sheeptntthrower);
 }
 
 function createModItems() {
@@ -954,37 +1031,6 @@ function createTntItems() {
         //Item.setCategory(items.tntammo, ItemCategory.MATERIAL);
 
 }
-
-function createShooterItems() {
-        //
-        Item.defineThrowable(items.hypershooter, "hypershooter", 0, "Hyper shoter", 1);
-        Item.recipe(items.hypershooter, 1, 0, [
-                " a ",
-                "bcb",
-                "bcb"
-        ], ["a", 46, 0, "b", 265, 0, "c", 331, 0]);
-        //Item.setCategory(items.hypershooter, ItemCategory.TOOL);
-
-
-
-        Item.defineThrowable(items.tntshooter, "tntshooter", 0, "tnt shooter", 0);
-        Item.recipe(items.tntshooter, 1, 0, [
-                " a ",
-                "bcb",
-                "bcb"
-        ], ["a", 46, 0, "b", 265, 0, "c", 331, 0]);
-        //Item.setCategory(items.tntshooter, ItemCategory.TOOL);
-
-        Item.defineThrowable(items.sheeptntthrower, "sheeptntthrower", 0, "sheep TNT thrower", 0);
-        Item.recipe(items.sheeptntthrower, 1, 0, [
-                " a ",
-                "bbb",
-                "cdc"
-        ], ["a", 46, 0, "b", 35, 0, "c", 265, 0, "d", 331, 0]);
-        //Item.setCategory(items.sheeptntthrower, ItemCategory.TOOL);
-
-}
-
 
 
 
@@ -1396,6 +1442,15 @@ function useItem(x, y, z, itemId, blockId, side) {
 
 
 function deathHook(murderer, victim) {
+        var vx = Entity.getX(victim);
+        var vy = Entity.getY(victim);
+        var vz = Entity.getZ(victim);
+        if (murderer == Player.getEntity()) {
+                if (Math.round(Math.random()) == 1) {
+                        Level.dropItem(vx, vy + 1, vz, 0, items.manaorb, 1, 0);
+                }
+        }
+
         if (victim == arrowsword.victim) {
                 arrowsword.active = false;
                 arrowsword.timer = 0;
@@ -1469,6 +1524,21 @@ function modTick() {
 
                 }
         }
+
+        for (var mgid in magicitems) {
+                if (!hasmagicitem && id == magicitems[mgid]) {
+                        ModPE.showTipMessage(ChatColor.ORANGE + "mana: " + power);
+                        hasmagicitem = true;
+                }
+        }
+
+        for (var pwid in poweritems) {
+                if (!hasmagicitem && id == poweritems[pwid]) {
+                        ModPE.showTipMessage(ChatColor.ORANGE + "Power: " + power);
+                        haspoweritem = true;
+                }
+        }
+
 
         if (blockUnderPlayer == blocks.chest) {
                 var x = Math.floor(Player.getX());
@@ -1559,7 +1629,12 @@ function modTick() {
         }
 
         if (Player.getArmorSlot(3, items.hoverboots)) {
-                Entity.setVelY(Player.getEntity(), 0);
+                if (mana != 0) {
+                        Entity.setVelY(Player.getEntity(), 0);
+                        addMana(-1);
+                } else {
+                        ModPE.showTipMessage("out of mana!");
+                }
         }
 
         if (Player.getArmorSlot(1) == items.jetpack) {
@@ -1569,8 +1644,13 @@ function modTick() {
 
         if (Player.getArmorSlot(3) == items.enderboots) {
                 if (Entity.getVelY() <= 0.02) {
-                        Entity.setPosition(Player.getEntity(), Player.getX(), Player.getY() + 3, Player.getZ());
-                        Entity.setVelY(Player.getEntity(), 0);
+                        if (mana >= 10) {
+                                Entity.setPosition(Player.getEntity(), Player.getX(), Player.getY() + 3, Player.getZ());
+                                Entity.setVelY(Player.getEntity(), 0);
+                                addMana(-10);
+                        } else {
+                                ModPE.showTipMessage(ChatColor.RED + "not enough mana! You're gonna die, sorry!");
+                        }
                 }
         }
 
@@ -1581,9 +1661,11 @@ function modTick() {
                 shootEntity(Player.getEntity(), -0.2);
                 Level.playSound(Player.getX(), Player.getY(), Player.getZ(), "random.bow", 30, 5);
                 hypershooter.timer++;
+                power--;
+                ModPE.showTipMessage(ChatColor.ORANGE + "Power" + power);
         }
 
-        if (hypershooter.timer == 100) {
+        if (hypershooter.timer == 100 || power <= 0) {
                 hypershooter.active = false;
                 hypershooter.timer = 0;
         }
@@ -1704,9 +1786,11 @@ function modTick() {
         if (cheststonebridge.active) {
                 if (floorY() - 2 < cheststonebridge.y) {
                         cheststonebridge.active = false;
+                        resetBridge();
                 }
                 if (cheststonebridge.direction == globaldirections.posx || cheststonebridge.direction == globaldirections.negx) {
                         if (floorX() < cheststonebridge.x || floorX() > cheststonebridge.x) {
+                                resetBridge(cheststonebridge.x, cheststonebridge.y, cheststonebridge.z, cheststonebridge.direction);
                                 cheststonebridge.active = false;
                         } else {
                                 if (blockUnderPlayer == 0) {
@@ -1716,6 +1800,7 @@ function modTick() {
                 }
                 if (cheststonebridge.direction == globaldirections.posz || cheststonebridge.direction == globaldirections.negz) {
                         if (floorZ() < cheststonebridge.z || floorZ() > cheststonebridge.z) {
+                                resetBridge(cheststonebridge.x, cheststonebridge.y, cheststonebridge.z, cheststonebridge.direction);
                                 cheststonebridge.active = false;
                         } else {
                                 if (blockUnderPlayer == 0) {
@@ -1723,7 +1808,9 @@ function modTick() {
                                 }
                         }
                 }
+
         }
+
 }
 
 function secondHook() {
@@ -1743,6 +1830,12 @@ function secondHook() {
                 Entity.setCarriedItem(Player.getEntity(), items.faststone, 1, 1);
         }
 
+        if (mana < 100) {
+                mana++;
+        }
+        if (item == items.battery) {
+                power += 5;
+        }
 }
 
 function checkChangedItem() {
@@ -1771,19 +1864,10 @@ function ScrewdriverHook(x, y, z) {
                         Level.getChestSlot(x, y, z, 0 == items.faststone)) {
                         var dmg = Level.getChestSlotData(x, y, z, 0);
                         var distance = {
-                                x: 0,
-                                z: 0
+                                x: floorX() - x,
+                                z: floorY() - z,
                         };
-                        if (Player.getX() < x) {
-                                distance.x = x - Player.getX();
-                        } else {
-                                distance.x = Player.getX() - x;
-                        }
-                        if (Player.getZ() < z) {
-                                distance.z = z - Player.getZ();
-                        } else {
-                                distance.z = Player.getZ() - z;
-                        }
+
                         if (distance.x > distance.z) {
                                 if (Player.getX() > x) {
                                         Level.setChestSlot(x, y, z, 0, items.faststonexpos, dmg);
@@ -1955,24 +2039,55 @@ function cheststoneHook(x, y, z, id) {
                         ModPE.showTipMessage("Swapped Armor");
                 }
         }
+
         if (id == items.cheststonebridge) {
-                if (Level.getTile(x + 1, y, z) == 152) {
-                        cheststonebridge.direction = globaldirections.posx;
+                if (!cheststonebridge.active) {
+                        cheststonebridge.x = x;
+                        cheststonebridge.y = y;
+                        cheststonebridge.z = z;
+
+                        if (Level.getTile(x + 1, y, z) == 152) {
+                                cheststonebridge.direction = globaldirections.posx;
+                                for (var rangex = 0; rangex <= 100; rangex++) {
+                                        if (Level.getTile(x + rangex, y, z) != 0 && Level.getTile(x, y, z) != 7) {
+                                                cheststonebridge.range = rangex;
+                                                break;
+                                        }
+                                }
+                        }
+
+                        if (Level.getTile(x - 1, y, z) == 152) {
+                                cheststonebridge.direction = globaldirections.negx;
+                                for (var nrangex = 0; nrangex <= 100; nrangex++) {
+                                        if (Level.getTile(x + nrangex, y, z) != 0 && Level.getTile(x, y, z) != 7) {
+                                                cheststonebridge.range = nrangex;
+                                                break;
+                                        }
+                                }
+                        }
+
+                        if (Level.getTile(x, y, z + 1) == 152) {
+                                cheststonebridge.direction = globaldirections.posz;
+                                for (var rangez = 0; rangez <= 100; rangez++) {
+                                        if (Level.getTile(x + rangez, y, z) != 0 && Level.getTile(x, y, z) != 7) {
+                                                cheststonebridge.range = rangez;
+                                                break;
+                                        }
+                                }
+                        }
+
+
+                        if (Level.getTile(x, y, z - 1) == 152) {
+                                cheststonebridge.direction = globaldirections.negz;
+                        }
+
+
+
+                        cheststonebridge.active = true;
+                        ModPE.showTipMessage("bridge active");
+                } else {
+                        ModPE.showTipMessage("you can't activate two bridges at once");
                 }
-                if (Level.getTile(x - 1, y, z) == 152) {
-                        cheststonebridge.direction = globaldirections.negx;
-                }
-                if (Level.getTile(x, y, z + 1) == 152) {
-                        cheststonebridge.direction = globaldirections.posz;
-                }
-                if (Level.getTile(x, y, z - 1) == 152) {
-                        cheststonebridge.direction = globaldirections.negz;
-                }
-                cheststonebridge.active = true;
-                cheststonebridge.x = x;
-                cheststonebridge.y = y;
-                cheststonebridge.z = z;
-                ModPE.showTipMessage("bridge active");
         }
 
 
@@ -1994,8 +2109,17 @@ function cheststoneHook(x, y, z, id) {
         if (id == items.faststone) {
                 clientMessage("You need a blue screwdriver to choose the direction!");
         }
-}
 
+        if (id == items.charger) {
+                ModPE.showTipMessage("charging");
+                chargerHook(x + 1, y, z);
+                chargerHook(x - 1, y, z);
+                chargerHook(x, y + 1, z);
+                chargerHook(x, y - 1, z);
+                chargerHook(x, y, z + 1);
+                chargerHook(x, y, z - 1);
+        }
+}
 
 
 function attackHook(attacker, victim) {
@@ -2390,6 +2514,12 @@ Item.equip = function(id) {
 Item.setChestStone = function(id) {
         cheststones.push(id);
 };
+Item.setPower = function(id) {
+        poweritems.push(id);
+};
+Item.setMagic = function(id) {
+        magicitems.push(id);
+};
 
 Item.damage = function() {
         var pcid = Player.getCarriedItemData();
@@ -2657,6 +2787,82 @@ function saveTardis() {
 
 
 
+function chargerHook(x, y, z) {
+        if (Level.getTile(x, y, z) == blocks.chest) {
+                if (Level.getChestSlot(x, y, z, 0) == items.battery) {
+                        Level.setChestSlot(x, y, z, 0, items.battery, 0, 1);
+                        ModPE.showTipMessage(ChatColor.GREEN + "charge successfull");
+                } else {
+                        clientMessage(ChatColor.RED + "no batteries found!");
+                }
+        }
+}
+
+
+function setupgui() {
+        var ctx = com.mojang.minecraftpe.MainActivity.currentMainActivity.get();
+        ctx.runOnUiThread(new java.lang.Runnable({
+                run: function() {
+                        try {
+                                var layout = new android.widget.LinearLayout(ctx);
+                                layout.setOrientation(1);
+
+                                var button = new android.widget.Button(ctx);
+                                button.setText("Button");
+                                button.setOnClickListener(new android.view.View.OnClickListener({
+                                        onClick: function(viewarg) {
+                                                //Your Code;
+                                        }
+                                }));
+                                layout.addView(button);
+
+
+                                manabar = new android.widget.ProgressBar(ctx, null, android.R.attr.progressBarStyleHorizontal);
+                                manabar.setMax(100);
+                                manabar.setProgress(75);
+                                layout.addView(manabar);
+
+
+                                GUI = new android.widget.PopupWindow(layout, android.widget.RelativeLayout.LayoutParams.WRAP_CONTENT, android.widget.RelativeLayout.LayoutParams.WRAP_CONTENT);
+                                GUI.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+                                GUI.showAtLocation(ctx.getWindow().getDecorView(), android.view.Gravity.RIGHT | android.view.Gravity.TOP, 0, 0);
+                        } catch (err) {
+                                print("An error occured: " + err);
+                        }
+                }
+        }));
+}
+
+function quitgui() {
+        var ctx = com.mojang.minecraftpe.MainActivity.currentMainActivity.get();
+        ctx.runOnUiThread(new java.lang.Runnable({
+                run: function() {
+                        if (GUI != null) {
+                                GUI.dismiss();
+                                GUI = null;
+                        }
+                }
+        }));
+}
+
+function mapnumber(value, in_min, in_max, out_min, out_max) {
+        if (value < in_min) {
+                print("value smaller than min 1");
+        } else {
+                if (value > in_max) {
+                        print("value bigger than max 1");
+                } else {
+                        return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+                }
+        }
+}
+
+function addMana(ammount) {
+        mana += ammount;
+        progress = Math.round(mapnumber(mana, 0, maxmana, 0, 100));
+        manabar.setProgress(progress);
+}
+
 function generateTardis() {
         hugeBlock(-20, 20, -20, 20, 30, 20, 7);
         hugeBlock(-19, 21, -19, 19, 29, 0);
@@ -2668,8 +2874,8 @@ function startup() {
         createTntItems();
         createSwordItems();
         createMachineItems();
-        createShooterItems();
         createMiscellaniousItems();
+        createMagicItems();
         createModItems();
         createCraftItems();
         createCheststoneItems();
