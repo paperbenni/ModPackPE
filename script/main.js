@@ -13,10 +13,11 @@ var errors = [];
 var previousitem = 0;
 
 var mana = 0;
-var manabar;
 var maxmana = 100;
+var manastring = "||||||||||";
 var power = 0;
 var maxpower = 100;
+var powerstring = "||||||||||";
 var hasmagicitem = false;
 var haspoweritem = false;
 
@@ -29,6 +30,11 @@ var meteorsheep = {
         x: 0,
         y: 0,
         z: 0
+};
+
+var ruler = {
+        active: false,
+        direction: 0
 };
 
 var secondtimer = 0;
@@ -252,7 +258,11 @@ const items = {
         manapotion: 3078,
         manaorb: 3079,
         battery: 3080,
-        charger: 3081
+        charger: 3081,
+        supermanapotion: 3082,
+        powerboost: 3083,
+        manacore: 3084,
+        ruler: 3085
 };
 
 const globaldirections = {
@@ -509,8 +519,14 @@ function createMagicItems() {
 }
 
 function createInventory() {
-        var x;
-        //weiter
+        try {
+                for (var i in items) {
+                        Item.setCategory(items[i], ItemCategory.FOOD);
+                        Player.addItemCreativeInv(items[i], 1, 0);
+                }
+        } catch (e) {
+                print("creative inv " + e);
+        }
 }
 
 
@@ -653,6 +669,8 @@ function createMachineItems() {
                 "cdc"
         ], ["a", 46, 0, "b", 35, 0, "c", 265, 0, "d", 331, 0]);
         Item.setPower(items.sheeptntthrower);
+
+        Item.defineItem(items.ruler, "ruler", 0, "ruler", 1);
 }
 
 function createModItems() {
@@ -1352,8 +1370,19 @@ function startDestroyBlock(x, y, z, side) {
 }
 
 function useItem(x, y, z, itemId, blockId, side) {
-        if (itemId == items.machinetester) {
 
+        if (itemId == items.help) {
+                clientMessage("the ducumentation is not finished yet, please refer my youtube channel: paperbenni");
+        }
+
+        if (itemId == items.machinetester) {
+                if (blockId == blocks.chest) {
+                        for (var i in cheststones) {
+                                if (Level.getChestSlot(x, y, z, 0) == cheststones[i]) {
+                                        clientMessage(ChatColor.GREEN + "cheststone found!");
+                                }
+                        }
+                }
         }
 
         if (blockId == items.cheststonebutton && itemId != items.screwdriverblue && itemId != screwdriverred && itemId != screwdrivergreen) {
@@ -1504,7 +1533,7 @@ function modTick() {
 
         checkChestStoneHook(Math.floor(Player.getX()), Math.floor(Player.getY()) - 2, Math.floor(Player.getZ()));
 
-        if (Player.getCarriedItem() == items.enderparachute) {
+        if (item == items.enderparachute) {
                 if (blockUnderPlayer == 0) {
                         var distance = 0;
                         while (distance <= 30) {
@@ -1516,7 +1545,7 @@ function modTick() {
                 }
         }
 
-        if (Player.getCarriedItem() == items.fastbuilder && Player.getCarriedItemData() != 0 && blockUnderPlayer == 0) {
+        if (item == items.fastbuilder && Player.getCarriedItemData() != 0 && blockUnderPlayer == 0) {
                 if (Player.removeItem(Player.getCarriedItemData()) == true) {
                         Level.setTile(Math.floor(Player.getX()), Math.floor(Player.getY()) - 2, Math.floor(Player.getZ()), Player.getCarriedItemData());
                         ModPE.showTipMessage("building");
@@ -1527,15 +1556,42 @@ function modTick() {
 
         for (var mgid in magicitems) {
                 if (!hasmagicitem && id == magicitems[mgid]) {
-                        ModPE.showTipMessage(ChatColor.ORANGE + "mana: " + power);
+                        ModPE.showTipMessage(ChatColor.BLUE + "mana: " + mana + "\n" + manastring);
                         hasmagicitem = true;
                 }
         }
 
         for (var pwid in poweritems) {
                 if (!hasmagicitem && id == poweritems[pwid]) {
-                        ModPE.showTipMessage(ChatColor.ORANGE + "Power: " + power);
+                        ModPE.showTipMessage(ChatColor.ORANGE + "Power: " + power + "\n" + powerstring);
                         haspoweritem = true;
+                }
+        }
+
+        if (item == items.ruler) {
+                if (!ruler.active) {
+                        if (Entity.getVelX(Player.getEntity()) == 0 && Entity.getVelZ(Player.getEntity()) == 0) {
+                                ModPE.showTipMessage("please move to activate!");
+                        } else {
+                                if (pVelX < pVelZ) {
+                                        ruler.direction = 0;
+                                } else {
+                                        ruler.direction = 1;
+                                }
+                                ruler.active = true;
+                                ModPE.showTipMessage(ChatColor.GREEN + "ruler active");
+                        }
+                }else{
+                        if(ruler.direction == 0){
+                                Entity.setVelX(Player.getEntity(), 0);
+                        }else{
+                                Entity.setVelZ(Player.getEntity(), 0);
+                        }
+                }
+        } else {
+                if (ruler.active) {
+                        ruler.active = false;
+                        ModPE.showTipMessage("ruler deactivated!");
                 }
         }
 
@@ -1616,16 +1672,18 @@ function modTick() {
                 elevator.timer = 0;
         }
 
-
-        if (Level.getTile(Player.getX(), Player.getY() - 3, Player.getZ()) != 0 && dragonglider.gliding == true) {
-                Entity.addEffect(Player.getEntity(), MobEffect.levitation, 20, 10, false, false);
-                dragonglider.gliding = false;
-        }
-        if (dragonglider.gliding == true) {
-                Entity.setVelY(Player.getEntity(), -0.01);
-        }
         if (Player.getArmorSlot(1) == items.dragonglider && Entity.getVelY(Player.getEntity()) <= -0.5 && dragonglider.gliding == false) {
                 dragonglider.gliding = true;
+        }
+
+        if (dragonglider.gliding == true) {
+                Entity.setVelY(Player.getEntity(), -0.01);
+                addMana(-1);
+        }
+
+        if (Level.getTile(floorX(), floorY() - 3, floorZ()) != 0 && dragonglider.gliding == true) {
+                Entity.addEffect(Player.getEntity(), MobEffect.levitation, 20, 10, false, false);
+                dragonglider.gliding = false;
         }
 
         if (Player.getArmorSlot(3, items.hoverboots)) {
@@ -1831,10 +1889,21 @@ function secondHook() {
         }
 
         if (mana < 100) {
-                mana++;
+                if (item == items.manacore) {
+                        mana += 2;
+                } else {
+                        mana++;
+                }
         }
+
+
         if (item == items.battery) {
-                power += 5;
+                if (Player.getCarriedItemData() <= 100) {
+                        power += 5;
+                        Entity.setCarriedItem(Player.getEntity(), items.battery, 1, Player.getCarriedItemData() + 5);
+                } else {
+                        ModPE.showTipMessage(ChatColor.RED + "Battery empty");
+                }
         }
 }
 
@@ -2670,6 +2739,21 @@ function floorZ() {
         return Math.floor(Player.getZ());
 }
 
+function pVelX() {
+        return Entity.getVelX(Player.getEntity());
+}
+
+function pVelY() {
+        return Entity.getVelY(Player.getEntity());
+}
+
+
+function pVelZ() {
+        return Entity.getVelZ(Player.getEntity());
+}
+
+
+
 function resetBridge(x, y, z, direction) {
         var pos = 0;
         if (direction == globaldirections.posx) {
@@ -2858,9 +2942,17 @@ function mapnumber(value, in_min, in_max, out_min, out_max) {
 }
 
 function addMana(ammount) {
+        var defaultstring = "||||||||||";
+        var str = Math.round(map(mana, 0, maxmana, 0, 10));
         mana += ammount;
-        progress = Math.round(mapnumber(mana, 0, maxmana, 0, 100));
-        manabar.setProgress(progress);
+        manastring = defaultstring.slice(0, str);
+}
+
+function addPower(ammount) {
+        var defaultstring = "||||||||||";
+        var str = Math.round(map(power, 0, maxpower, 0, 10));
+        power += ammount;
+        powerstring = defaultstring.slice(0, str);
 }
 
 function generateTardis() {
@@ -2879,8 +2971,7 @@ function startup() {
         createModItems();
         createCraftItems();
         createCheststoneItems();
-
-        // createInventory();
+        createInventory();
 }
 
 startup();
