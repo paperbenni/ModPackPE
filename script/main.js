@@ -32,6 +32,12 @@ var meteorsheep = {
         z: 0
 };
 
+var mobstacker = {
+        state: 0,
+        entity1: 0,
+        entity2: 0
+};
+
 var ruler = {
         active: false,
         direction: 0
@@ -320,8 +326,6 @@ var fly = 0;
 
 var previousCarriedItem = 0;
 var previousSlotId = 0;
-
-
 
 
 
@@ -643,7 +647,7 @@ function createMachineItems() {
                 "aaa"
         ], ["a", 266, 0, "b", items.manaorb]);
         Item.setPower(items.charger);
-        //Item.setCategory(items.mobstacker, ItemCategory.TOOL);
+
         Item.defineThrowable(items.hypershooter, "hypershooter", 0, "Hyper shoter", 1);
         Item.recipe(items.hypershooter, 1, 0, [
                 " a ",
@@ -671,6 +675,11 @@ function createMachineItems() {
         Item.setPower(items.sheeptntthrower);
 
         Item.defineItem(items.ruler, "ruler", 0, "ruler", 1);
+
+
+        Item.defineItem(items.powerboost, "powerboost", 0, "powerboost", 1);
+
+
 }
 
 function createModItems() {
@@ -1425,7 +1434,10 @@ function useItem(x, y, z, itemId, blockId, side) {
                 Entity.setVelY(rocket, 3);
                 Player.addItemInventory(items.tntrocket, -1);
         }
-
+        if (item == items.supermanapotion) {
+                addMana(100);
+                clientMessage("Super mana boost!!");
+        }
 
         if (itemId == items.pigtnt) {
                 Level.spawnMob(x, y + 1, z, 65);
@@ -1581,10 +1593,10 @@ function modTick() {
                                 ruler.active = true;
                                 ModPE.showTipMessage(ChatColor.GREEN + "ruler active");
                         }
-                }else{
-                        if(ruler.direction == 0){
+                } else {
+                        if (ruler.direction == 0) {
                                 Entity.setVelX(Player.getEntity(), 0);
-                        }else{
+                        } else {
                                 Entity.setVelZ(Player.getEntity(), 0);
                         }
                 }
@@ -2202,6 +2214,24 @@ function attackHook(attacker, victim) {
                 }
         }
 
+        if (item == items.mobstacker) {
+                preventDefault();
+                if (power >= 30) {
+                        if (!mobstacker.state) {
+                                mobstacker.entity1 = victim;
+                                mobstacker.state = true;
+                                ModPE.showTipMessage(ChatColor.GREEN + "Tap another animal to place it on!");
+                        } else {
+                                mobstacker.state = false;
+                                Entity.rideAnimal(entity1, victim);
+                                ModPE.showTipMessage("deployed!");
+                        }
+                        addPower(-30);
+                } else {
+                        clientMessage("isufficient power!");
+                }
+        }
+
         if (item == items.firesword) {
                 Entity.setFireTicks(Player.getEntity(), 5);
                 Entity.setHealth(Entity.getHealth(victim) - 20);
@@ -2324,43 +2354,11 @@ function rideEntity(entity) {
 }
 
 function ParticleRow(type, x1, y1, z1, x2, y2, z2, ammount, size, velocity) {
-        var dirx = 0;
-        var diry = 0;
-        var dirz = 0;
-        var distance = {
-                x: 0,
-                y: 0,
-                z: 0,
-                abs: 0
-        };
-        var anteil = {
-                x: 0,
-                y: 0,
-                z: 0
-        };
-        if (x2 > x1) {
-                dirx = 1;
-                distance.x = Math.abs(x2) - Math.abs(x1);
-        } else {
-                dirx = -1;
-                distance.x = Math.abs(x1) - Math.abs(x2);
-        }
-        if (y2 > y1) {
-                diry = 1;
-                distance.y = Math.abs(y2) - Math.abs(y1);
-        } else {
-                diry = -1;
-                distance.y = Math.abs(y1) - Math.abs(y2);
-        }
-        if (z2 > z1) {
-                dirz = 1;
-                distance.z = Math.abs(z2) - Math.abs(z1);
-        } else {
-                dirz = -1;
-                distance.z = Math.abs(z1) - Math.abs(z2);
-        }
-        for (var i = 0; i < ammount; i++) {
-                Level.addParticle(type, x + (distance.x / ammount * i) * dirx, y + (distance.y / ammount * i) * diry, z + (distance.z / ammount * i) * dirz, 0, 0, 0, 1);
+        var dir = new vector3d(x2 - x1, y2 - y1, z2 - z1);
+        var lang = Math.sqrt(Math.pow(dir.x), Math.pow(dir.y), Math.pow(dir.z));
+
+        for (var i = 0; i < (lang * 10); i++) {
+                Level.addParticle(type, x1 + dir.x * (i / (lang * 10)), y1 + dir.y * (i / (lang * 10)), dir.z * (i / (lang * 10)), 0, 0, 10);
         }
 
 }
@@ -2973,5 +2971,4 @@ function startup() {
         createCheststoneItems();
         createInventory();
 }
-
 startup();
