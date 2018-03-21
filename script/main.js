@@ -33,7 +33,7 @@ var meteorsheep = {
 };
 
 var mobstacker = {
-        state: 0,
+        state: false,
         entity1: 0,
         entity2: 0
 };
@@ -518,7 +518,8 @@ function createMagicItems() {
 
         Item.defineItem(items.manaorb, "manaorb", 0, "mana orb", 16);
         Item.setMagic(items.manaorb);
-        //Item.setCategory(items.magicbook, ItemCategory.TOOL);
+
+        Item.defineItem(items.supermanapotion, "supermanapotion", 0, "supermanapotion", 1);
 
 }
 
@@ -632,7 +633,8 @@ function createMachineItems() {
         Item.setPower(items.mobstacker);
 
         Item.defineItem(items.battery, "battery", 0, "battery", 1);
-        Item.setMaxDamage(battery, 100);
+        Item.setMaxDamage(items.battery, 100);
+
         Item.recipe(items.battery, 1, 0, [
                 "aaa",
                 "aba",
@@ -2969,6 +2971,7 @@ function startup() {
         createModItems();
         createCraftItems();
         createCheststoneItems();
-        createInventory();
+        createLuckyItems();
+       // createInventory();
 }
 startup();
