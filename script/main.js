@@ -12,10 +12,10 @@ var sdcard = android.os.Environment.getExternalStorageDirectory();
 var errors = [];
 var previousitem = 0;
 
-var mana = 0;
+var mana = 90;
 var maxmana = 100;
 var manastring = "||||||||||";
-var power = 0;
+var power = 90;
 var maxpower = 100;
 var powerstring = "||||||||||";
 var hasmagicitem = false;
@@ -33,7 +33,7 @@ var meteorsheep = {
 };
 
 var mobstacker = {
-        state: 0,
+        state: false,
         entity1: 0,
         entity2: 0
 };
@@ -44,6 +44,8 @@ var ruler = {
 };
 
 var secondtimer = 0;
+var tensecondtimer = 0;
+
 var PlayerIsOnDetector = false;
 var blockUnderPlayer = 0;
 
@@ -518,7 +520,11 @@ function createMagicItems() {
 
         Item.defineItem(items.manaorb, "manaorb", 0, "mana orb", 16);
         Item.setMagic(items.manaorb);
-        //Item.setCategory(items.magicbook, ItemCategory.TOOL);
+
+        Item.defineItem(items.supermanapotion, "supermanapotion", 0, "supermanapotion", 1);
+        Item.setMagic(items.supermanapotion);
+
+        Item.defineItem(items.manacore, "manacore", 0, "manacore", 1);
 
 }
 
@@ -632,7 +638,8 @@ function createMachineItems() {
         Item.setPower(items.mobstacker);
 
         Item.defineItem(items.battery, "battery", 0, "battery", 1);
-        Item.setMaxDamage(battery, 100);
+        Item.setMaxDamage(items.battery, 100);
+
         Item.recipe(items.battery, 1, 0, [
                 "aaa",
                 "aba",
@@ -944,8 +951,8 @@ function createTntItems() {
                 " b "
         ], ["a", 46, 0, "b", 280, 0]);
         Item.setMaxDamage(items.tntpickaxe, 80);
-        //Item.setHandEquipped(items.tntpickaxe, true);
-        //Item.setCategory(items.tntpickaxe, ItemCategory.TOOL);
+        Item.setHandEquipped(items.tntpickaxe, true);
+        Item.setPower(items.tntpickaxe);
 
         Item.defineItem(items.hypertntpickaxe, "hypertntpickaxe", 0, "Hyper TNT pickaxe", 1);
         Item.recipe(items.hypertntpickaxe, 1, 0, [
@@ -953,9 +960,9 @@ function createTntItems() {
                 " b ",
                 " b "
         ], ["a", 46, 0, "b", 265, 0]);
-        //Item.setHandEquipped(items.hypertntpickaxe, true);
+        Item.setHandEquipped(items.hypertntpickaxe, true);
         Item.setMaxDamage(items.hypertntpickaxe, 200);
-        //Item.setCategory(items.hypertntpickaxe, ItemCategory.TOOL);
+        Item.setPower(items.hypertntpickaxe);
 
         Item.defineItem(items.tntrocket, "tntrocket", 0, "TNT rocket");
         Item.recipe(items.tntrocket, 1, 0, [
@@ -990,11 +997,11 @@ function createTntItems() {
                 " b "
         ], ["a", 46, 0, "b", 280, 0]);
         Item.setMaxDamage(items.tntsword, 80);
-        //Item.setCategory(items.tntsword, ItemCategory.TOOL);
+        Item.setHandEquipped(items.tntsword);
+        Item.setPower(items.tntsword);
 
         //Hyper Tnt sword
         Item.defineItem(items.chickentnt, "chickentnt", 0, "chicken TNT", 0);
-        //Item.setCategory(items.chickentnt, ItemCategory.TOOL);
 
 
         Item.defineItem(items.hypertntsword, "hypertntsword", 0, "Hyper TNT sword", 1);
@@ -1004,8 +1011,8 @@ function createTntItems() {
                 " b "
         ], ["a", items.tntsword, 0, "b", 280, 0]);
         Item.setMaxDamage(items.hypertntsword, 200);
-        //Item.setHandEquipped(items.hypertntsword, true);
-        //Item.setCategory(items.hypertntsword, ItemCategory.TOOL);
+        Item.setHandEquipped(items.hypertntsword, true);
+        Item.setPower(items.hypertntsword);
 
 
         Item.defineItem(items.pigtnt, "pigtnt", 0, "pig TNT", 0);
@@ -1408,10 +1415,13 @@ function useItem(x, y, z, itemId, blockId, side) {
         }
 
         if (itemId == items.screwdrivergreen) {
+                checkGreenScrewdriverHook(x, y, z);
+
 
         }
 
         if (itemId == items.screwdriverred) {
+                checkRedScrewdriverHook(x, y, z);
 
         }
 
@@ -1426,18 +1436,22 @@ function useItem(x, y, z, itemId, blockId, side) {
         if (itemId == items.medicine) {
                 Entity.removeAllEffects(Player.getEntity());
         }
-        if (itemId == 408) {
-                Entity.removeAllEffects(Player.getEntity());
-        }
+
         if (itemId == items.tntrocket) {
                 var rocket = Level.spawnMob(x, y + 1, z, 65);
                 Entity.setVelY(rocket, 3);
                 Player.addItemInventory(items.tntrocket, -1);
         }
-        if (item == items.supermanapotion) {
-                addMana(100);
+
+        if (itemId == items.supermanapotion) {
+                mana += 100;
                 clientMessage("Super mana boost!!");
         }
+        if (itemId == items.manapotion) {
+                mana += 50;
+                clientMessage("Mana boost!!");
+        }
+
 
         if (itemId == items.pigtnt) {
                 Level.spawnMob(x, y + 1, z, 65);
@@ -1565,19 +1579,12 @@ function modTick() {
 
                 }
         }
-
-        for (var mgid in magicitems) {
-                if (!hasmagicitem && id == magicitems[mgid]) {
-                        ModPE.showTipMessage(ChatColor.BLUE + "mana: " + mana + "\n" + manastring);
-                        hasmagicitem = true;
-                }
+        if (hasmagicitem) {
+                ModPE.showTipMessage(ChatColor.BLUE + "mana: " + mana + manastring);
         }
 
-        for (var pwid in poweritems) {
-                if (!hasmagicitem && id == poweritems[pwid]) {
-                        ModPE.showTipMessage(ChatColor.ORANGE + "Power: " + power + "\n" + powerstring);
-                        haspoweritem = true;
-                }
+        if (haspoweritem) {
+                ModPE.showTipMessage(ChatColor.ORANGE + "Power: " + power + powerstring);
         }
 
         if (item == items.ruler) {
@@ -1596,7 +1603,8 @@ function modTick() {
                 } else {
                         if (ruler.direction == 0) {
                                 Entity.setVelX(Player.getEntity(), 0);
-                        } else {
+                        }
+                        if (ruler.direction == 1) {
                                 Entity.setVelZ(Player.getEntity(), 0);
                         }
                 }
@@ -1635,6 +1643,12 @@ function modTick() {
         if (secondtimer >= 20) {
                 secondtimer = 0;
                 secondHook();
+        }
+
+        tensecondtimer++;
+        if (tensecondtimer >= 200) {
+                tensecondtimer = 0;
+                tenSecondHook();
         }
 
 
@@ -1690,7 +1704,7 @@ function modTick() {
 
         if (dragonglider.gliding == true) {
                 Entity.setVelY(Player.getEntity(), -0.01);
-                addMana(-1);
+                mana -= 1;
         }
 
         if (Level.getTile(floorX(), floorY() - 3, floorZ()) != 0 && dragonglider.gliding == true) {
@@ -1701,7 +1715,7 @@ function modTick() {
         if (Player.getArmorSlot(3, items.hoverboots)) {
                 if (mana != 0) {
                         Entity.setVelY(Player.getEntity(), 0);
-                        addMana(-1);
+                        mana -= 1;
                 } else {
                         ModPE.showTipMessage("out of mana!");
                 }
@@ -1717,7 +1731,7 @@ function modTick() {
                         if (mana >= 10) {
                                 Entity.setPosition(Player.getEntity(), Player.getX(), Player.getY() + 3, Player.getZ());
                                 Entity.setVelY(Player.getEntity(), 0);
-                                addMana(-10);
+                                mana -= 10;
                         } else {
                                 ModPE.showTipMessage(ChatColor.RED + "not enough mana! You're gonna die, sorry!");
                         }
@@ -1905,6 +1919,9 @@ function secondHook() {
                         mana += 2;
                 } else {
                         mana++;
+                        if (mana == maxmana - 1) {
+                                ModPE.showTipMessage(ChatColor.BLUE + "Max Mana reached!");
+                        }
                 }
         }
 
@@ -1917,6 +1934,16 @@ function secondHook() {
                         ModPE.showTipMessage(ChatColor.RED + "Battery empty");
                 }
         }
+        updateMana();
+}
+
+
+
+function tenSecondHook(){
+        
+
+
+
 }
 
 function checkChangedItem() {
@@ -1934,6 +1961,34 @@ function checkScrewdriverHook(x, y, z) {
         ScrewdriverHook(x, y, z + 1);
         ScrewdriverHook(x, y, z - 1);
 }
+
+function checkGreenScrewdriverHook(x, y, z) {
+        GreenScrewdriverHook(x + 1, y, z);
+        GreenScrewdriverHook(x - 1, y, z);
+        GreenScrewdriverHook(x, y + 1, z);
+        GreenScrewdriverHook(x, y - 1, z);
+        GreenScrewdriverHook(x, y, z + 1);
+        GreenScrewdriverHook(x, y, z - 1);
+}
+
+function checkRedScrewdriverHook(x, y, z) {
+        RedScrewdriverHook(x + 1, y, z);
+        RedScrewdriverHook(x - 1, y, z);
+        RedScrewdriverHook(x, y + 1, z);
+        RedScrewdriverHook(x, y - 1, z);
+        RedScrewdriverHook(x, y, z + 1);
+        RedScrewdriverHook(x, y, z - 1);
+}
+
+
+function RedScrewdriverHook(x, y, z) {
+        ModPE.showTipMessage(ChatColor.RED + "||");
+}
+
+function GreenScrewdriverHook(x, y, z) {
+        ModPE.showTipMessage(ChatColor.GREEN + "||");
+}
+
 
 function ScrewdriverHook(x, y, z) {
         var id = Level.getTile(x, y, z);
@@ -2226,7 +2281,7 @@ function attackHook(attacker, victim) {
                                 Entity.rideAnimal(entity1, victim);
                                 ModPE.showTipMessage("deployed!");
                         }
-                        addPower(-30);
+                        power -= 30;
                 } else {
                         clientMessage("isufficient power!");
                 }
@@ -2604,6 +2659,7 @@ Item.defineItem = function(id, textureName, textureNumber, name, stackLimit) {
                 ModPE.setItem(id, textureName, textureNumber, name, stackLimit);
                 itemValues.push(id);
         } catch (e) {
+                ModPE.setItem(id, "stick", 0, name, stackLimit);
                 print("error with item " + id + e);
                 errors.push(e + " \n");
         }
@@ -2721,6 +2777,20 @@ function setHandItems() {
 
 function changeCarriedItemHook() {
         clientMessage("changed item!");
+        for (var i in magicitems) {
+                if (Player.getCarriedItem() == magicitems[i]) {
+                        hasmagicitem = true;
+                } else {
+                        hasmagicitem = false;
+                }
+        }
+        for (var u in poweritems) {
+                if (Player.getCarriedItem() == poweritems[i]) {
+                        haspoweritem = true;
+                } else {
+                        haspoweritem = false;
+                }
+        }
 
 
 }
@@ -2939,17 +3009,15 @@ function mapnumber(value, in_min, in_max, out_min, out_max) {
         }
 }
 
-function addMana(ammount) {
+function updateMana() {
         var defaultstring = "||||||||||";
         var str = Math.round(map(mana, 0, maxmana, 0, 10));
-        mana += ammount;
         manastring = defaultstring.slice(0, str);
 }
 
-function addPower(ammount) {
-        var defaultstring = "||||||||||";
+function updatePower() {
+        var defaultstring = "||||||||||||||||||||";
         var str = Math.round(map(power, 0, maxpower, 0, 10));
-        power += ammount;
         powerstring = defaultstring.slice(0, str);
 }
 
@@ -2969,6 +3037,8 @@ function startup() {
         createModItems();
         createCraftItems();
         createCheststoneItems();
-        createInventory();
+        createLuckyItems();
+        createRecipies();
+        // createInventory();
 }
 startup();
